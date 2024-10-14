@@ -1,0 +1,30 @@
+# Requirements for APRIL Project
+
+# Web scraping and HTTP requests
+beautifulsoup4==4.12.2    # Library for parsing HTML and XML
+requests==2.31.0          # HTTP requests library
+
+# Data manipulation and storage
+pandas==1.5.3             # Data manipulation and analysis
+numpy==1.21.2             # Numerical computations
+
+# Utilities
+os-sys==2.1.4             # OS and system utilities (for some OS-related functionality)
+Counter==1.0.0            # Data structure for counting hashable items
+
+# Google search functionality
+googlesearch-python==1.1.0  # Library for performing Google searches (note: may require API configuration)
+
+# Regular expressions
+regex==2023.6.3           # Enhanced regular expression library, if needed (standard `re` is built-in)
+
+# Database dependencies
+
+# Visualization libraries
+matplotlib==3.4.3       # Plotting and visualization
+seaborn==0.11.2         # Statistical data visualization
+plotly==5.3.1           # Interactive plots and charts
+
+# Testing dependencies
+pytest==6.2.5           # Testing framework
+coverage==5.5           # Code coverage measurement
