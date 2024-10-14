@@ -39,6 +39,11 @@ For more usage options, you can refer to the project documentation.
 
 ## Features
 
+- **Feature 1**: Describe feature 1 here.
+- **Feature 2**: Describe feature 2 here.
+- **Feature 3**: Describe feature 3 here.
+
+For a full list of features and detailed documentation, [visit the Wiki](https://github.com/thibaut-dst/APRIL/wiki).
 
 ## Contributing
 We welcome contributions! Please follow these steps to contribute:
