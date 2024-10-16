@@ -9,24 +9,21 @@ def meta_scraping(url):
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Extract the title
+        # Extract all meta tags and print their 'name' or 'http-equiv' and 'content'
+        meta_tags = soup.find_all('meta')
+        for tag in meta_tags:
+            # Try to get 'name' or 'http-equiv' attribute (if they exist)
+            name = tag.get('name') or tag.get('http-equiv')
+            content = tag.get('content')
+            
+            # Only print if both name (or http-equiv) and content exist
+            if name and content:
+                print(f"{name}: {content}")
+
+        # Extract the title separately
         title = soup.find('title').get_text() if soup.find('title') else 'No title'
-
-        # Extract meta description
-        description = soup.find('meta', attrs={'name': 'description'})
-        description = description['content'] if description else 'No description'
-
-        # Extract Open Graph data (og:title, og:description, etc.)
-        og_title = soup.find('meta', property='og:title')
-        og_title = og_title['content'] if og_title else 'No Open Graph title'
-        
-        og_description = soup.find('meta', property='og:description')
-        og_description = og_description['content'] if og_description else 'No Open Graph description'
-
         print(f"Title: {title}")
-        print(f"Description: {description}")
-        print(f"Open Graph Title: {og_title}")
-        print(f"Open Graph Description: {og_description}")
+
     else:
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
