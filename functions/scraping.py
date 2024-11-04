@@ -1,4 +1,3 @@
-from pymongo import MongoClient
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -6,18 +5,6 @@ import pandas as pd
 from googlesearch import search
 import json
 import re
-
-def create_mongo_collection():
-    # Connexion au serveur MongoDB local
-    client = MongoClient('mongodb://localhost:27017/')
-    
-    # Créer une base de données (si elle n'existe pas déjà)
-    db = client["April"]
-    
-    # Créer une collection (si elle n'existe pas déjà)
-    collection = db["Documents"]
-    
-    print(f"La collection Documents dans la base de données April a été créée (ou existe déjà).")
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -76,13 +63,10 @@ def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
 
-def scrape_webpages_to_db(keywords_df):
+def scrape_webpages_to_db(keywords_df, collection):
     """
     Google search and scraping function
     """
-    client = MongoClient('mongodb://localhost:27017/')
-    db = client['April']  # Remplacez par le nom de votre base de données
-    collection = db['Documents']  # Remplacez par le nom de votre collection
     for index, row in keywords_df.iterrows():
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
         
