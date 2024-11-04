@@ -19,7 +19,7 @@ A brief description of your project, summarizing its purpose and main functional
 ### Steps
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/
+   git clone https://github.com/thibaut-dst/APRIL.git
    ```
 2. **Navigate to the project directory:**
    ```bash
@@ -51,7 +51,7 @@ We welcome contributions! Please follow these steps to contribute:
 1. **Fork the repository.**
 2. **Clone the forked repository:**
    ```bash
-   git clone https://github.com/
+   git clone https://github.com/thibaut-dst/APRIL.git
    ```
 3. **Create a branch:**
    ```bash
