@@ -62,7 +62,6 @@ def meta_scraping(url):
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
-
 def scrape_webpages_to_db(keywords_df, collection):
     """
     Google search and scraping function
