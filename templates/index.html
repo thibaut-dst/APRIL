@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Explorer</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <!-- Top Search Bar Section -->
+    <header class="search-section">
+        <input type="text" placeholder="Search documents..." id="search-bar">
+    </header>
+
+    <!-- Data Visualization Section -->
+    <section class="data-viz-section">
+        <div id="data-viz">
+            <!-- Chart will go here -->
+             data visualisation section
+        </div>
+    </section>
+
+    <!-- Scrollable Document Table Section -->
+    <section class="document-section">
+        <div class="document-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documents %}
+                    <tr>
+                        <td>{{ doc['keyword'] }}</td>
+                        <td>{{ doc['meta_data']['Author'] }}</td>
+                        <td>{{ doc['meta_data']['Date Published'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>
