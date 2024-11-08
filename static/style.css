@@ -98,3 +98,102 @@ body {
 .document-table tr:hover {
     background-color: #f9f9f9;
 }
+
+
+/* Document Page Specific Styles */
+.document-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 40px;
+}
+
+/* Header Styles */
+.document-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.document-header h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.document-info {
+    color: #666;
+    font-size: 14px;
+}
+
+.document-info span {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Content Styles */
+.document-content {
+    line-height: 1.7;
+    font-size: 16px;
+    color: #333;
+    padding: 20px 0;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Metadata Section */
+.document-metadata {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+}
+
+.document-metadata h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    border-bottom: 2px solid #f4f6f8;
+    padding-bottom: 4px;
+}
+
+.document-metadata ul {
+    list-style: none;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.document-metadata li {
+    margin: 8px 0;
+}
+
+.document-metadata a {
+    color: #0073e6;
+    text-decoration: none;
+}
+
+.document-metadata a:hover {
+    text-decoration: underline;
+}
+
+/* Return Button Styles */
+.return-button {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.return-button .button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #0073e6;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.return-button .button:hover {
+    background-color: #005bb5;
+}

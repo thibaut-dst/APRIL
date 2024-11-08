@@ -2,11 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ document['keyword'] }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Details</title>
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
-    <h1>{{ document['keyword'] }}</h1>
-    <p><strong>URL:</strong> <a href="{{ document['url'] }}">{{ document['url'] }}</a></p>
-    <p><strong>Content:</strong> {{ document['content'] }}</p>
+    <main class="document-container">
+        
+        <div class="return-button">
+            <a href="/" class="button">← Return to Main Page</a>
+        </div>
+        
+        <!-- Title Section -->
+        <header class="document-header">
+            <h1>{{ document['meta_data']['Title'] }}</h1>
+            <p class="document-info">
+                <span>Author: {{ document['meta_data']['Author'] or 'Unknown' }}</span> |
+                <span>Published: {{ document['meta_data']['Date Published'] or 'No Date Available' }}</span>
+            </p>
+        </header>
+
+         <!-- Additional Metadata Section -->
+         <aside class="document-metadata">
+            <h3>Additional Metadata</h3>
+            <ul>
+                <li><strong>Domain:</strong> {{ document['domain'] }}</li>
+                <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
+                <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
+                <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+            </ul>
+        </aside>
+
+        <!-- Document Content Section -->
+        <section class="document-content">
+            <p>{{ document['content'] }}</p>
+        </section>
+        
+       
+
+    </main>
 </body>
 </html>
