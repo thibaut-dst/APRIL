@@ -59,7 +59,6 @@ def meta_scraping(url):
         print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
         return None
 
-
 # Utility function to find date in text
 def find_date_in_text(text):
     date_pattern = r'(\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{4}|\d{1,2} [A-Za-z]+ \d{4})'
