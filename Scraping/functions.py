@@ -94,6 +94,7 @@ def scrape_webpages_to_db(keywords_df):
     client = MongoClient('mongodb://localhost:27017/')
     db = client['April']  # Remplacez par le nom de votre base de données
     collection = db['Documents']  # Remplacez par le nom de votre collection
+    
     for index, row in keywords_df.iterrows():
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
         
@@ -103,6 +104,11 @@ def scrape_webpages_to_db(keywords_df):
             # Google search avec le mot-clé
             for url in search(keyword, num_results=5):  # Limité à 5 résultats
                 try:
+                    # Vérifier si l'URL est déjà présente dans la base de données
+                    if collection.find_one({"url": url}):
+                        print(f"L'URL {url} existe déjà dans la base de données, passage au suivant.")
+                        continue  # Passer au prochain URL si celui-ci est déjà dans la base
+
                     response = requests.get(url)
                     response.raise_for_status()
 
@@ -126,7 +132,7 @@ def scrape_webpages_to_db(keywords_df):
                 except requests.exceptions.RequestException as e:
                     print(f"Erreur lors de l'accès à la page {url}: {e}")
 
-
+                    
 def load_keywords(file_path):
     """
     Charge les mots-clés à partir d'un fichier CSV.
