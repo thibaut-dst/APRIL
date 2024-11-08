@@ -3,9 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 from googlesearch import search
-import shutil
 import json
 import re
+from pymongo import MongoClient
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -17,25 +17,18 @@ def meta_scraping(url):
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        # Extract the title
+        # Extraction des métadonnées
         title = soup.find('title').get_text() if soup.find('title') else 'No title'
-
-        # Extract meta description
         description = soup.find('meta', attrs={'name': 'description'})
         description = description['content'] if description else 'No description'
-
-        # Extract Open Graph data
         og_title = soup.find('meta', property='og:title')
         og_title = og_title['content'] if og_title else 'No Open Graph title'
-        
         og_description = soup.find('meta', property='og:description')
         og_description = og_description['content'] if og_description else 'No Open Graph description'
-
-        # Extract canonical URL
         canonical = soup.find('link', rel='canonical')
         canonical = canonical['href'] if canonical else 'No canonical URL'
 
-        # Extract structured data (author and datePublished from JSON-LD)
+        # Données structurées (author et date)
         structured_data = soup.find('script', type='application/ld+json')
         author = 'No author'
         date_published = 'No datePublished'
@@ -46,36 +39,13 @@ def meta_scraping(url):
                 if isinstance(json_data, dict):
                     author_data = json_data.get('author')
                     
-                    # Handling author data based on its type
-                    if isinstance(author_data, list) and len(author_data) > 0:
-                        # Check if the first element is a dictionary
-                        if isinstance(author_data[0], dict):
-                            author = author_data[0].get('name', 'No author')
-                        else:
-                            author = 'No valid author found'
-                    elif isinstance(author_data, dict):
+                    if isinstance(author_data, dict):
                         author = author_data.get('name', 'No author')
-                    elif isinstance(author_data, str):
-                        author = author_data  # If it's a string, just use it directly
-                    else:
-                        author = 'No author'
-                        
                     date_published = json_data.get('datePublished', 'No datePublished')
-
             except json.JSONDecodeError as e:
-                print(f"Error decoding JSON-LD data: {e}")
+                print(f"Erreur lors du décodage du JSON-LD : {e}")
 
-        # Check for other date sources
-        date_tag = soup.find('small', class_='date')
-        page_date = date_tag.get_text().strip() if date_tag else 'No date'
-
-        # If no date found, look for dates in the text
-        if date_published == 'No datePublished' and page_date == 'No date':
-            page_text = soup.get_text()
-            fallback_date = find_date_in_text(page_text)
-            date_published = fallback_date if fallback_date else 'No date found'
-
-        # Return meta information as a dictionary
+        # Retourner les informations sous forme de dictionnaire
         return {
             "Title": title,
             "Description": description,
@@ -83,13 +53,11 @@ def meta_scraping(url):
             "Open Graph Description": og_description,
             "Canonical URL": canonical,
             "Author": author,
-            "Date Published": date_published,
-            "Page Date": page_date
+            "Date Published": date_published
         }
     else:
-        print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
+        print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
         return None
-
 
 # Utility function to find date in text
 def find_date_in_text(text):
@@ -121,53 +89,49 @@ def download_pdfs(soup, directory, index, keyword, url):
             print(f"Failed to download PDF from {pdf_url}: {e}")
 
 # Google search and scraping function
-def scrape_webpages(keywords_df):
+def scrape_webpages_to_db(keywords_df):
+    client = MongoClient('mongodb://localhost:27017/')
+    db = client['April']  # Remplacez par le nom de votre base de données
+    collection = db['Documents']  # Remplacez par le nom de votre collection
+    
     for index, row in keywords_df.iterrows():
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
         
         for keyword in keywords:
             print(f"Recherche Google effectuée avec : {keyword}")
 
-            # Google search with keyword
-            for url in search(keyword, num_results=5):  # Limit to 5 results
+            # Google search avec le mot-clé
+            for url in search(keyword, num_results=5):  # Limité à 5 résultats
                 try:
+                    # Vérifier si l'URL est déjà présente dans la base de données
+                    if collection.find_one({"url": url}):
+                        print(f"L'URL {url} existe déjà dans la base de données, passage au suivant.")
+                        continue  # Passer au prochain URL si celui-ci est déjà dans la base
+
                     response = requests.get(url)
                     response.raise_for_status()
 
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.get_text()  # Extract plain text
+                    content = soup.get_text()  # Extraire le texte brut
 
-                    # Check if the keyword is in the plain text content
+                    # Vérifier si le mot-clé est dans le contenu
                     if contains_keywords(content, keyword):
-                        # Save the plain text content
-                        file_name = f"text_files/text_{index}_{keyword.replace(' ', '_')}.txt"
-                        
-                        if not os.path.exists('text_files'):
-                            os.makedirs('text_files')
-                        
-                        with open(file_name, 'w', encoding='utf-8') as file:
-                            file.write(content)
-                        print(f"Plain text saved: {file_name}")
-                        
-                        # Optionally download PDFs
-                        pdf_directory = "pdf_documents"
-                        download_pdfs(soup, pdf_directory, index, keyword, url)
-                        
-                        # Call meta scraping function and save results
-                        meta_info = meta_scraping(url)
-                        if meta_info:
-                            meta_file_name = f"text_files/meta_{index}_{keyword.replace(' ', '_')}.json"
-                            with open(meta_file_name, 'w', encoding='utf-8') as meta_file:
-                                json.dump(meta_info, meta_file, ensure_ascii=False, indent=4)
-                            print(f"Meta info saved: {meta_file_name}")
-                    else:
-                        print(f"No keyword found in page {url}")
+                        # Collecter les données à insérer dans la base de données
+                        page_data = {
+                            "url": url,
+                            "keyword": keyword,
+                            "content": content,
+                            "meta_data": meta_scraping(url)  # Appel à la fonction meta_scraping pour ajouter des méta-données
+                        }
+
+                        # Insertion dans la base de données MongoDB
+                        collection.insert_one(page_data)
+                        print(f"Page {url} enregistrée dans la base de données.")
 
                 except requests.exceptions.RequestException as e:
-                    print(f"Error accessing page {url}: {e}")
+                    print(f"Erreur lors de l'accès à la page {url}: {e}")
 
-
-
+                    
 def load_keywords(file_path):
     """
     Charge les mots-clés à partir d'un fichier CSV.

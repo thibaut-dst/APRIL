@@ -1,4 +1,4 @@
 .april_project_venv
 html_pages/*.html
 pdf_documents/*.pdf
-
+*/__pycache__
