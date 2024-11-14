@@ -3,7 +3,7 @@ from db.functions import *
 
 create_mongo_collection()
 # Charger les mots-clés du CSV
-file_path = 'cleaned_keywords.csv'
+file_path = 'APRIL/cleaned_keywords.csv'
 keywords_df = pd.read_csv(file_path)
 
 # Créer un dossier pour sauvegarder les fichiers HTML

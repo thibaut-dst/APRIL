@@ -2,12 +2,12 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from googlesearch import search
+from pymongo import MongoClient
 import json
 import re
-from pymongo import MongoClient
-import fitz  # PyMuPDF for PDF to text conversion
 import shutil
+import fitz  # PyMuPDF for PDF to text conversion
+
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -57,11 +57,18 @@ def meta_scraping(url):
         print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
         return None
 
+def validate_url(url):
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url  # Add 'https://' by default if no scheme is provided
+    return url
+
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
-# Function to download PDFs and convert to text
-def download_pdfs(soup, collection, index, keyword, url):
+def download_pdfs(soup, directory, index, url):  
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
     pdf_links = [a['href'] for a in soup.find_all('a', href=True) if a['href'].lower().endswith('.pdf')]
     
     for i, link in enumerate(pdf_links):
@@ -69,83 +76,90 @@ def download_pdfs(soup, collection, index, keyword, url):
         try:
             pdf_response = requests.get(pdf_url, stream=True)
             pdf_response.raise_for_status()
-            pdf_name = f"temp_pdf_{index}_{i}.pdf"
+            pdf_name = f"{directory}/pdf_{index}_{i}.pdf"
             
-            # Save and convert the PDF to text
             with open(pdf_name, 'wb') as f:
                 shutil.copyfileobj(pdf_response.raw, f)
-            text_content = pdf_to_text(pdf_name)
-
-            # Store PDF text in MongoDB
-            pdf_data = {
-                "url": pdf_url,
-                "keyword": keyword,
-                "pdf_text_content": text_content,
-                "source_url": url
-            }
-            collection.insert_one(pdf_data)
-            print(f"PDF content from {pdf_url} saved to MongoDB.")
+            print(f"PDF downloaded: {pdf_name}")
             
-            # Clean up the PDF file after storing text
+            txt_name = pdf_name.replace('.pdf', '.txt')
+            pdf_to_text(pdf_name, txt_name)
+            print(f"Converted PDF to text: {txt_name}")
+
             os.remove(pdf_name)
+            print(f"Deleted PDF file: {pdf_name}")
         
         except Exception as e:
             print(f"Failed to download or convert PDF from {pdf_url}: {e}")
 
-# Function to convert PDF to text
-def pdf_to_text(pdf_path):
+def pdf_to_text(pdf_path, txt_path):
     text = ""
     with fitz.open(pdf_path) as pdf:
         for page_num in range(pdf.page_count):
             page = pdf[page_num]
             text += page.get_text("text")
-    return text
 
-# Google search and scraping function
-def scrape_webpages_to_db(keywords_df):
+    with open(txt_path, 'w', encoding='utf-8') as txt_file:
+        txt_file.write(text)
+
+
+# Function to scrape websites from "Source gouvernementale" URLs in Sources.csv
+def scrape_webpages_from_sources(file_path):
     client = MongoClient('mongodb://localhost:27017/')
-    db = client['April']
-    collection = db['Documents']
+    db = client['April']  # Remplacez par le nom de votre base de données
+    collection = db['Document2']  # Remplacez par le nom de votre collection
+
+    # Charger le fichier CSV avec le bon séparateur
+    sources_df = pd.read_csv(file_path, sep=';')
     
-    for index, row in keywords_df.iterrows():
-        keywords = [kw.strip() for kw in row['Keywords'].split(',')]
+    # Remove leading/trailing spaces from column names and values
+    sources_df.columns = sources_df.columns.str.strip()
+    sources_df = sources_df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    
+    # Print column names to check if they are correct now
+    print("Columns after stripping spaces:", sources_df.columns.tolist())
+
+    # Vérifier que la colonne 'Source gouvernementale' existe
+    if 'Source gouvernementale' not in sources_df.columns:
+        print("La colonne 'Source gouvernementale' est manquante dans le fichier CSV.")
+        return
+
+    for index, row in sources_df.iterrows():
+        url = row['Source gouvernementale']
         
-        for keyword in keywords:
-            print(f"Recherche Google effectuée avec : {keyword}")
+        # Vérifier et ajouter 'https://' si nécessaire
+        url = validate_url(url)
+        print(f"Processing URL: {url}")
 
-            # Google search with the keyword
-            for url in search(keyword, num_results=5):  # Limiting to 5 results
-                try:
-                    # Check if URL is already in the database
-                    if collection.find_one({"url": url}):
-                        print(f"L'URL {url} existe déjà dans la base de données, passage au suivant.")
-                        continue
+        try:
+            # Vérifier si l'URL est déjà dans la base de données
+            if collection.find_one({"url": url}):
+                print(f"URL {url} already exists in the database, skipping.")
+                continue  # Skip if URL already exists
 
-                    response = requests.get(url)
-                    response.raise_for_status()
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.get_text()  # Extract raw text from HTML
+            response = requests.get(url)
+            response.raise_for_status()
 
-                    # Check if keyword is in the content
-                    if contains_keywords(content, keyword):
-                        # Store HTML text and metadata in MongoDB
-                        page_data = {
-                            "url": url,
-                            "keyword": keyword,
-                            "html_text_content": content,
-                            "meta_data": meta_scraping(url)
-                        }
-                        collection.insert_one(page_data)
-                        print(f"Page content from {url} saved to MongoDB.")
+            soup = BeautifulSoup(response.text, 'html.parser')
+            content = soup.get_text()  # Extract plain text
 
-                        # Download and store PDFs linked from the page
-                        download_pdfs(soup, collection, index, keyword, url)
+            # Collect meta data
+            meta_data = meta_scraping(url)
 
-                except requests.exceptions.RequestException as e:
-                    print(f"Erreur lors de l'accès à la page {url}: {e}")
+            # Collect data to insert into the database
+            page_data = {
+                "url": url,
+                "content": content,
+                "meta_data": meta_data  # Include meta data in the document
+            }
 
-# Load keywords from CSV
-def load_keywords(file_path):
-    keywords_df = pd.read_csv(file_path)
-    print(f'Fichier {file_path} chargé avec succès.')
-    return keywords_df
+            # Insert data into MongoDB
+            collection.insert_one(page_data)
+            print(f"Page {url} saved to database.")
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error accessing page {url}: {e}")
+
+# Example of loading the CSV file and scraping webpages
+file_path = "APRIL/Imput_voc/Sources.csv"  # Modify this with your actual path
+scrape_webpages_from_sources(file_path)
