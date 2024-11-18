@@ -81,5 +81,6 @@ We welcome contributions! Please follow these steps to contribute:
 ## License
 
 MIT License, Copyright (c) 2024 APRIL-Project-Team's
+
 For a licence [visit the Wiki](https://github.com/thibaut-dst/APRIL/wiki/License).
 
