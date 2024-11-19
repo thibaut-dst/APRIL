@@ -6,46 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Explorer</title>
     <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/main.css">
 </head>
 <body>
-    <!-- Top Search Bar Section -->
-    <header class="search-section">
-        <input type="text" placeholder="Search documents..." id="search-bar">
+    
+    <!-- Sticky Top Header -->
+    <header class="sticky-header">
+        <div class="header-content">
+            <div class="header-left">
+                <img src="logo.png" alt="Logo" class="logo">
+                <span class="header-title">Coastal Risk Perception Analysis</span>
+            </div>
+            <div class="header-right">
+                <a href="/launch-pipeline" class="header-button">Launch Pipeline</a>
+                <a href="/" class="header-button">Explore Documents</a>
+            </div>
+        </div>
     </header>
+    <main>
+        <!-- Top Search Bar Section -->
+        <section class="search-bar-section">
+            <input type="text" placeholder="Search documents.." class="search-bar">
+            <button class="search-button">Search</button>
+        </section>
 
-    <!-- Data Visualization Section -->
-    <section class="data-viz-section">
-        <div id="data-viz">
-            <!-- Chart will go here -->
-             data visualisation section
-        </div>
-    </section>
+        <!-- Data Visualization Section -->
+        <section class="data-viz-section">
+            <div id="data-viz">
+                <!-- Chart will go here -->
+                data visualisation section
+            </div>
+        </section>
 
-    <!-- Scrollable Document Table Section -->
-    <section class="document-section">
-        <div class="document-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for doc in documents %}
-                    
-                    <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
+        <!-- Scrollable Document Table Section -->
+        <section class="document-section">
+            <div class="document-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        
+                        <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
 
-                        <td>{{ doc['keyword'] }}</td>
-                        <td>{{ doc['meta_data']['Author'] }}</td>
-                        <td>{{ doc['meta_data']['Date Published'] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </section>
+                            <td>{{ doc['keyword'] }}</td>
+                            <td>{{ doc['meta_data']['Author'] }}</td>
+                            <td>{{ doc['meta_data']['Date Published'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function() {

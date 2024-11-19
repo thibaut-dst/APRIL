@@ -1,0 +1,8 @@
+
+ERROR: Traceback (most recent call last):
+ERROR:   File "/Users/thibautdesauty/Documents/EPF/Cours_EPF/MDE/APRIL_semester_project/APRIL/main.py", line 3, in <module>
+ERROR:     import functions.text_processing as process
+ERROR:   File "/Users/thibautdesauty/Documents/EPF/Cours_EPF/MDE/APRIL_semester_project/APRIL/functions/text_processing.py", line 2, in <module>
+ERROR:     import db 
+ERROR:     ^^^^^^^^^
+ERROR: ModuleNotFoundError: No module named 'db'
