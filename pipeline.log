@@ -22,3 +22,48 @@ ERROR: ModuleNotFoundError: No module named 'db'
 2024-11-22 09:08:26,250 - INFO - Successfully fetched page: https://agence-cohesion-territoires.gouv.fr/lagence-21
 2024-11-22 09:24:48,402 - INFO - Pipeline initialization.
 2024-11-22 09:25:08,633 - ERROR - Database connection failed: Failed to connect to MongoDB: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 20.0s, Topology Description: <TopologyDescription id: 67403fd0418db8b90f3c7d7d, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>
+2024-11-22 09:28:00,279 - INFO - Pipeline initialization.
+2024-11-22 09:28:00,288 - INFO - Successfully connected to the database.
+2024-11-22 09:28:00,292 - INFO - Starting the scraping process...
+2024-11-22 09:28:00,293 - INFO - Starting Google search for: 'Aléas générés par le changement climatique'
+2024-11-22 09:28:06,439 - INFO - Starting Google search for: 'Spécificités des territoires littoraux'
+2024-11-22 09:28:11,156 - INFO - Starting Google search for: 'Méthodes traditionnelles de gestion des risques côtiers'
+2024-11-22 09:28:16,409 - ERROR - Error accessing page https://www.risques-cotiers.fr/wp-content/uploads/2021/02/guide-cocorisco-final-dec2014-risques-cotiers.pdf: HTTPSConnectionPool(host='www.risques-cotiers.fr', port=443): Max retries exceeded with url: /wp-content/uploads/2021/02/guide-cocorisco-final-dec2014-risques-cotiers.pdf (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')))
+2024-11-22 09:28:19,700 - INFO - Starting Google search for: 'Politiques de transition'
+2024-11-22 09:28:23,532 - ERROR - Error accessing page https://www.economie.gouv.fr/economie-verte/piloter-la-transition-ecologique-de-leconomie: 403 Client Error: Forbidden for url: https://www.economie.gouv.fr/economie-verte/piloter-la-transition-ecologique-de-leconomie
+2024-11-22 09:28:25,835 - ERROR - Failed to fetch page https://www.ilo.org/fr/resource/news/les-politiques-de-transition-juste-doivent-donner-la-priorit%C3%A9-aux-droits-du. Status code: 403
+2024-11-22 09:28:25,840 - INFO - Page stored in DB: https://www.ilo.org/fr/resource/news/les-politiques-de-transition-juste-doivent-donner-la-priorit%C3%A9-aux-droits-du
+2024-11-22 09:28:25,840 - INFO - Starting Google search for: 'Territoires concernés'
+2024-11-22 09:28:26,909 - INFO - Successfully fetched page: https://agence-cohesion-territoires.gouv.fr/lagence-21
+2024-11-22 09:28:26,911 - INFO - Page stored in DB: https://agence-cohesion-territoires.gouv.fr/lagence-21
+2024-11-22 09:28:27,476 - INFO - Successfully fetched page: https://www.observatoire-des-territoires.gouv.fr/zonage-de-politiques-publiques
+2024-11-22 09:28:27,480 - INFO - Page stored in DB: https://www.observatoire-des-territoires.gouv.fr/zonage-de-politiques-publiques
+2024-11-22 09:28:29,842 - INFO - Successfully fetched page: https://www.data.gouv.fr/fr/datasets/territoires-concernes-par-les-projets/
+2024-11-22 09:28:29,843 - INFO - Page stored in DB: https://www.data.gouv.fr/fr/datasets/territoires-concernes-par-les-projets/
+2024-11-22 09:28:30,875 - INFO - Successfully fetched page: https://www.ecologie.gouv.fr/politiques-publiques/territoires-decouvrez-politiques-publiques-deployees
+2024-11-22 09:28:30,878 - INFO - Page stored in DB: https://www.ecologie.gouv.fr/politiques-publiques/territoires-decouvrez-politiques-publiques-deployees
+2024-11-22 09:28:32,288 - INFO - Starting Google search for: 'Institutions et acteurs'
+2024-11-22 09:28:33,702 - INFO - Successfully fetched page: https://formation.cnam.fr/rechercher-par-discipline/institutions-et-acteurs-de-l-intervention-sociale-accueil-information-orientation-207702.kjsp
+2024-11-22 09:28:33,705 - INFO - Page stored in DB: https://formation.cnam.fr/rechercher-par-discipline/institutions-et-acteurs-de-l-intervention-sociale-accueil-information-orientation-207702.kjsp
+2024-11-22 09:28:35,861 - INFO - Successfully fetched page: https://www.cnam-entreprises.fr/catalogue-de-formations-en-journee/insertion-sociale-et-professionnelle/institutions-et-acteurs-de-l-intervention-sociale-accueil-information-orientation-861293.kjsp
+2024-11-22 09:28:35,863 - INFO - Page stored in DB: https://www.cnam-entreprises.fr/catalogue-de-formations-en-journee/insertion-sociale-et-professionnelle/institutions-et-acteurs-de-l-intervention-sociale-accueil-information-orientation-861293.kjsp
+2024-11-22 09:28:36,125 - ERROR - Error accessing page https://shs.cairn.info/institutions-acteurs-et-pratiques-dans-l-histoire--9782810901296?lang=fr: 403 Client Error: Forbidden for url: https://shs.cairn.info/institutions-acteurs-et-pratiques-dans-l-histoire--9782810901296?lang=fr
+2024-11-22 09:28:36,127 - INFO - Starting Google search for: 'Submersion marine'
+2024-11-22 09:28:38,125 - INFO - Successfully fetched page: https://www.georisques.gouv.fr/articles-risques/inondations/les-inondations-par-submersion-marine
+2024-11-22 09:28:38,129 - INFO - Page stored in DB: https://www.georisques.gouv.fr/articles-risques/inondations/les-inondations-par-submersion-marine
+2024-11-22 09:28:39,029 - INFO - Successfully fetched page: https://www.eaufrance.fr/les-inondations-et-les-submersions-marines
+2024-11-22 09:28:39,033 - INFO - Page stored in DB: https://www.eaufrance.fr/les-inondations-et-les-submersions-marines
+2024-11-22 09:28:39,866 - INFO - Successfully fetched page: https://www.adaptation-changement-climatique.gouv.fr/dossiers-thematiques/impacts/submersion-marine
+2024-11-22 09:28:39,874 - INFO - Page stored in DB: https://www.adaptation-changement-climatique.gouv.fr/dossiers-thematiques/impacts/submersion-marine
+2024-11-22 09:28:40,266 - INFO - Starting Google search for: 'Inondation côtière'
+2024-11-22 09:28:43,331 - INFO - Successfully fetched page: https://www.studysmarter.fr/resumes/geographie/geographie-des-cotes/inondation-cotiere/
+2024-11-22 09:28:43,336 - INFO - Page stored in DB: https://www.studysmarter.fr/resumes/geographie/geographie-des-cotes/inondation-cotiere/
+2024-11-22 09:28:43,746 - INFO - Successfully fetched page: https://www.irsn.fr/actualites/mieux-estimer-risque-dinondation-cotiere-pour-sites-nucleaires
+2024-11-22 09:28:43,750 - INFO - Page stored in DB: https://www.irsn.fr/actualites/mieux-estimer-risque-dinondation-cotiere-pour-sites-nucleaires
+2024-11-22 09:28:44,098 - INFO - Starting Google search for: 'Lagunes'
+2024-11-22 09:28:46,117 - INFO - Successfully fetched page: https://pole-lagunes.org/les-lagunes/
+2024-11-22 09:28:46,120 - INFO - Page stored in DB: https://pole-lagunes.org/les-lagunes/
+2024-11-22 09:28:48,276 - INFO - Successfully fetched page: https://www.parc-landes-de-gascogne.fr/Parc-Naturel-Regional-de-Gascogne/EXPLORER/Les-incontournables/Les-lagunes
+2024-11-22 09:28:48,282 - INFO - Page stored in DB: https://www.parc-landes-de-gascogne.fr/Parc-Naturel-Regional-de-Gascogne/EXPLORER/Les-incontournables/Les-lagunes
+2024-11-22 09:28:53,474 - INFO - Successfully fetched page: https://www.eaufrance.fr/glossaire/lagune
+2024-11-22 09:28:53,477 - INFO - Page stored in DB: https://www.eaufrance.fr/glossaire/lagune
