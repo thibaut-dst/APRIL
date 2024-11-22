@@ -1,5 +1,5 @@
 import re
-import db 
+import functions.db as db
 import spacy
 from typing import Optional
 from spacy.tokens import Doc

@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from bson import ObjectId
+from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError, ConfigurationError
 
 database = 'April'
 collection = 'Documents'
@@ -17,12 +18,22 @@ def get_collection(db_name = database, collection_name = collection, uri = uri):
         uri (str): The MongoDB URI string. Default is 'mongodb://localhost:27017'.
 
     Returns:
-        collection: A MongoDB collection object.
+        Collection: A MongoDB collection object.
+
+    Raises:
+        Exception: If the connection to MongoDB fails.
     """
-    client = MongoClient(uri)
-    db = client[db_name]
-    collection = db[collection_name]
-    return collection
+    try:
+        # Attempt to connect to MongoDB
+        client = MongoClient(uri, serverSelectionTimeoutMS=20000)  # Timeout set to 20 seconds
+        client.server_info()         # Force a connection to check the server's availability
+        db = client[db_name]
+        return db[collection_name]
+
+    except (ConnectionFailure, ServerSelectionTimeoutError, ConfigurationError) as e:
+        # Log and re-raise connection issues
+        raise Exception(f"Failed to connect to MongoDB: {e}")
+
 
 def store_processed_data(document_id: ObjectId, processed_data: dict, collection: Collection) -> None:
     """

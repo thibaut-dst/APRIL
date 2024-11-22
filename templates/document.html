@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Details</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+    <main class="document-container">
+        
+        <div class="return-button">
+            <a href="/" class="button">← Return to Main Page</a>
+        </div>
+
+        <!-- Title Section -->
+        <header class="document-header">
+            <h1>{{ document['meta_data']['Title'] }}</h1>
+            <p class="document-info">
+                <span>Author: {{ document['meta_data']['Author'] or 'Unknown' }}</span> |
+                <span>Published: {{ document['meta_data']['Date Published'] or 'No Date Available' }}</span>
+            </p>
+        </header>
+
+         <!-- Additional Metadata Section -->
+         <aside class="document-metadata">
+            <h3>Additional Metadata</h3>
+            <ul>
+                <li><strong>Domain:</strong> {{ document['domain'] }}</li>
+                <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
+                <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
+                <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+            </ul>
+        </aside>
+
+        <!-- Document Content Section -->
+        <section id="content" class="document-content">
+            <p>{{ document['cleaned_text'] }}</p>
+        </section>
+    
+        
+    </main>
+    <!-- Inject named entities data from Flask using a script tag with JSON -->
+    <script type="application/json" id="namedEntitiesData">
+        {{ document['named_entities'] | tojson }}
+    </script>
+    
+    <script>
+        // Retrieve named entities data from the JSON script element
+        const namedEntities = JSON.parse(document.getElementById('namedEntitiesData').textContent);
+
+        // Function to escape special characters in entities for use in regular expressions
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+        }
+
+        // Function to highlight named entities in text
+        function highlightEntities() {
+            const contentElement = document.getElementById('content');
+            let contentHTML = contentElement.innerHTML;
+
+            // Loop through each entity type and wrap matches with span elements
+            for (const [type, entities] of Object.entries(namedEntities)) {
+                entities.forEach(entity => {
+                    const escapedEntity = escapeRegExp(entity); // Escape special characters
+                    const entityRegex = new RegExp(`\\b(${escapedEntity})\\b`, 'gi');
+                    contentHTML = contentHTML.replace(entityRegex, `<span class="highlight ${type}">$1</span>`);
+                });
+            }
+
+            contentElement.innerHTML = contentHTML;
+        }
+
+        document.addEventListener('DOMContentLoaded', highlightEntities);
+    </script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-import functions.scraping as scrape
+""" import functions.scraping as scrape
 import functions.db as db
 import functions.text_processing as process
 import functions.nlp as NLP
@@ -10,4 +10,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main() """

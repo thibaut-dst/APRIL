@@ -5,6 +5,7 @@ import pandas as pd
 from googlesearch import search
 import json
 import re
+import logging
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -15,6 +16,7 @@ def meta_scraping(url):
     
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, 'html.parser')
+        logging.info(f"Successfully fetched page: {url}")
 
         # Extraction des métadonnées
         title = soup.find('title').get_text() if soup.find('title') else 'No title'
@@ -42,7 +44,8 @@ def meta_scraping(url):
                         author = author_data.get('name', 'No author')
                     date_published = json_data.get('datePublished', 'No datePublished')
             except json.JSONDecodeError as e:
-                print(f"Erreur lors du décodage du JSON-LD : {e}")
+                #print(f"Erreur lors du décodage du JSON-LD : {e}")
+                logging.warning(f"Error decoding JSON-LD on page {url}: {e}")
 
         # Retourner les informations sous forme de dictionnaire
         return {
@@ -55,7 +58,9 @@ def meta_scraping(url):
             "Date Published": date_published
         }
     else:
-        print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
+        #print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
+        logging.error(f"Failed to fetch page {url}. Status code: {response.status_code}")
+
         return None
 
 # Function to extract text from HTML content
@@ -70,7 +75,8 @@ def scrape_webpages_to_db(keywords_df, collection):
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
         
         for keyword in keywords:
-            print(f"Recherche Google effectuée avec : {keyword}")
+            #print(f"Recherche Google effectuée avec : {keyword}")
+            logging.info(f"Starting Google search for: '{keyword}'")
 
             # Google search avec le mot-clé
             for url in search(keyword, num_results=5):  # Limité à 5 résultats
@@ -79,7 +85,7 @@ def scrape_webpages_to_db(keywords_df, collection):
                     response.raise_for_status()
 
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.find('p').get_text()  # Extraire le texte brut
+                    content = soup.get_text()  # Extraire le texte brut
 
                     # Vérifier si le mot-clé est dans le contenu
                     if contains_keywords(content, keyword):
@@ -93,7 +99,10 @@ def scrape_webpages_to_db(keywords_df, collection):
 
                         # Insertion dans la base de données MongoDB
                         collection.insert_one(page_data)
-                        print(f"Page {url} enregistrée dans la base de données.")
+                        #print(f"Page {url} enregistrée dans la base de données.")
+                        logging.info(f"Page stored in DB: {url}")
+
 
                 except requests.exceptions.RequestException as e:
-                    print(f"Erreur lors de l'accès à la page {url}: {e}")
+                    #print(f"Erreur lors de l'accès à la page {url}: {e}")
+                    logging.error(f"Error accessing page {url}: {e}")
