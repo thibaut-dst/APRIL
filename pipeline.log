@@ -6,3 +6,19 @@ ERROR:   File "/Users/thibautdesauty/Documents/EPF/Cours_EPF/MDE/APRIL_semester_
 ERROR:     import db 
 ERROR:     ^^^^^^^^^
 ERROR: ModuleNotFoundError: No module named 'db'
+2024-11-22 08:55:34,406 - INFO - Pipeline started.
+2024-11-22 08:55:34,414 - INFO - Starting the scraping process...
+2024-11-22 08:55:34,415 - INFO - Starting Google search for: 'Aléas générés par le changement climatique'
+2024-11-22 09:08:03,895 - INFO - Pipeline started.
+2024-11-22 09:08:03,903 - INFO - Starting the scraping process...
+2024-11-22 09:08:03,904 - INFO - Starting Google search for: 'Aléas générés par le changement climatique'
+2024-11-22 09:08:10,329 - INFO - Starting Google search for: 'Spécificités des territoires littoraux'
+2024-11-22 09:08:10,879 - INFO - Starting Google search for: 'Méthodes traditionnelles de gestion des risques côtiers'
+2024-11-22 09:08:16,933 - ERROR - Error accessing page https://www.risques-cotiers.fr/wp-content/uploads/2021/02/guide-cocorisco-final-dec2014-risques-cotiers.pdf: HTTPSConnectionPool(host='www.risques-cotiers.fr', port=443): Max retries exceeded with url: /wp-content/uploads/2021/02/guide-cocorisco-final-dec2014-risques-cotiers.pdf (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1000)')))
+2024-11-22 09:08:21,270 - INFO - Starting Google search for: 'Politiques de transition'
+2024-11-22 09:08:24,657 - ERROR - Error accessing page https://www.economie.gouv.fr/economie-verte/piloter-la-transition-ecologique-de-leconomie: 403 Client Error: Forbidden for url: https://www.economie.gouv.fr/economie-verte/piloter-la-transition-ecologique-de-leconomie
+2024-11-22 09:08:24,954 - ERROR - Error accessing page https://www.umontpellier.fr/recherche/grands-programmes/key-initiative-politiques-publiques-de-transition-kippt: 403 Client Error: Forbidden for url: https://www.umontpellier.fr/recherche/grands-programmes/key-initiative-politiques-publiques-de-transition-kippt
+2024-11-22 09:08:24,955 - INFO - Starting Google search for: 'Territoires concernés'
+2024-11-22 09:08:26,250 - INFO - Successfully fetched page: https://agence-cohesion-territoires.gouv.fr/lagence-21
+2024-11-22 09:24:48,402 - INFO - Pipeline initialization.
+2024-11-22 09:25:08,633 - ERROR - Database connection failed: Failed to connect to MongoDB: localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms), Timeout: 20.0s, Topology Description: <TopologyDescription id: 67403fd0418db8b90f3c7d7d, topology_type: Unknown, servers: [<ServerDescription ('localhost', 27017) server_type: Unknown, rtt: None, error=AutoReconnect('localhost:27017: [Errno 61] Connection refused (configured timeouts: socketTimeoutMS: 20000.0ms, connectTimeoutMS: 20000.0ms)')>]>

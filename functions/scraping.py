@@ -86,7 +86,7 @@ def scrape_webpages_to_db(keywords_df, collection):
                     response.raise_for_status()
 
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.find('p').get_text()  # Extraire le texte brut
+                    content = soup.get_text()  # Extraire le texte brut
 
                     # Vérifier si le mot-clé est dans le contenu
                     if contains_keywords(content, keyword):
