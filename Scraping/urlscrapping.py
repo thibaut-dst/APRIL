@@ -103,7 +103,6 @@ def pdf_to_text(pdf_path, txt_path):
         txt_file.write(text)
 
 
-# Function to scrape websites from "Source gouvernementale" URLs in Sources.csv
 def scrape_webpages_from_sources(file_path):
     client = MongoClient('mongodb://localhost:27017/')
     db = client['April']  # Remplacez par le nom de votre base de données
@@ -137,7 +136,7 @@ def scrape_webpages_from_sources(file_path):
                 print(f"URL {url} already exists in the database, skipping.")
                 continue  # Skip if URL already exists
 
-            response = requests.get(url)
+            response = requests.get(url, timeout=10)  # Timeout pour éviter les blocages
             response.raise_for_status()
 
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -158,7 +157,15 @@ def scrape_webpages_from_sources(file_path):
             print(f"Page {url} saved to database.")
 
         except requests.exceptions.RequestException as e:
-            print(f"Error accessing page {url}: {e}")
+            # Gérer toutes les erreurs liées aux requêtes HTTP
+            print(f"HTTP error for URL {url}: {e}")
+            continue  # Continue to the next URL
+
+        except Exception as e:
+            # Gérer toutes les autres erreurs imprévues
+            print(f"Unexpected error for URL {url}: {e}")
+            continue  # Continue to the next URL
+
 
 # Example of loading the CSV file and scraping webpages
 file_path = "APRIL/Imput_voc/Sources.csv"  # Modify this with your actual path
