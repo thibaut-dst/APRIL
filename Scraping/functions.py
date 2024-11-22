@@ -102,48 +102,78 @@ def pdf_to_text(pdf_path):
     return text
 
 # Google search and scraping function
-def scrape_webpages_to_db(keywords_df):
+def scrape_webpages_to_db(keywords_df, max_links=50):
     client = MongoClient('mongodb://localhost:27017/')
     db = client['April']
     collection = db['Documents']
-    
+
+    total_links_count = 0  # Global link counter
+
     for index, row in keywords_df.iterrows():
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
-        
-        for keyword in keywords:
-            print(f"Recherche Google effectuée avec : {keyword}")
 
-            # Google search with the keyword
-            for url in search(keyword, num_results=5):  # Limiting to 5 results
+        for keyword in keywords:
+            print(f"Performing Google search with: {keyword}")
+
+            # Perform Google search
+            for url in search(keyword, num_results=5):  # Limiting to 5 results per search
+                if total_links_count >= max_links:
+                    print(f"Reached the maximum number of links ({max_links}), stopping script.")
+                    return
+
                 try:
                     # Check if URL is already in the database
                     if collection.find_one({"url": url}):
-                        print(f"L'URL {url} existe déjà dans la base de données, passage au suivant.")
+                        print(f"URL {url} already exists in the database, skipping.")
                         continue
 
                     response = requests.get(url)
                     response.raise_for_status()
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.get_text()  # Extract raw text from HTML
 
-                    # Check if keyword is in the content
-                    if contains_keywords(content, keyword):
-                        # Store HTML text and metadata in MongoDB
+                    # Determine file type
+                    file_type = "pdf" if url.lower().endswith(".pdf") else "html"
+
+                    if file_type == "pdf":  # Handle PDFs
+                        pdf_name = f"temp_pdf_{index}.pdf"
+                        with open(pdf_name, 'wb') as f:
+                            f.write(response.content)
+                        text_content = pdf_to_text(pdf_name)
+                        os.remove(pdf_name)
+
                         page_data = {
                             "url": url,
                             "keyword": keyword,
-                            "html_text_content": content,
-                            "meta_data": meta_scraping(url)
+                            "meta_data": {
+                                "file_type": file_type,
+                                "source_url": url,
+                            },
+                            "pdf_text_content": text_content
                         }
                         collection.insert_one(page_data)
-                        print(f"Page content from {url} saved to MongoDB.")
+                        print(f"PDF content from {url} saved to MongoDB.")
+                        total_links_count += 1
 
-                        # Download and store PDFs linked from the page
-                        download_pdfs(soup, collection, index, keyword, url)
+                    else:  # Handle HTML pages
+                        content = soup.get_text()
+
+                        if contains_keywords(content, keyword):
+                            page_data = {
+                                "url": url,
+                                "keyword": keyword,
+                                "html_text_content": content,
+                                "meta_data": {
+                                    "file_type": file_type,
+                                    **meta_scraping(url)
+                                }
+                            }
+                            collection.insert_one(page_data)
+                            print(f"HTML content from {url} saved to MongoDB.")
+                            total_links_count += 1
 
                 except requests.exceptions.RequestException as e:
-                    print(f"Erreur lors de l'accès à la page {url}: {e}")
-
+                    print(f"Error accessing page {url}: {e}")
+                    
 # Load keywords from CSV
 def load_keywords(file_path):
     keywords_df = pd.read_csv(file_path)
