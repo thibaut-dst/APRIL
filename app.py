@@ -23,42 +23,6 @@ def get_doc_count():
     count = mongo_collection.count_documents({})
     return jsonify({'count': count})
 
-""" 
-def log_pipeline_output(process):
-    with open('pipeline.log', 'a') as log_file:
-        for line in iter(process.stdout.readline, ''):
-            log_file.write(line)
-            log_file.flush()
-        for line in iter(process.stderr.readline, ''):
-            log_file.write(f"ERROR: {line}")
-            log_file.flush()
-            
-
-@app.route('/start-pipeline', methods=['POST'])
-def start_pipeline():
-    global pipeline_process
-    if pipeline_process and pipeline_process.poll() is None:
-        return "Pipeline is already running.", 400
-
-    try:
-        # Start the process and capture both stdout and stderr
-        pipeline_process = subprocess.Popen(
-            ['python3', 'main.py'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            bufsize=1,
-            universal_newlines=True
-        )
-
-        # Start a thread to handle logging in the background
-        threading.Thread(target=log_pipeline_output, args=(pipeline_process,), daemon=True).start()
-
-        return "Pipeline started."
-    except Exception as e:
-        with open('pipeline.log', 'a') as log_file:
-            log_file.write(f"Failed to start pipeline: {str(e)}\n")
-        return f"Failed to start pipeline: {str(e)}", 500
- """
 
 def log_pipeline_output(process):
     with open('pipeline.log', 'a') as log_file:
@@ -116,10 +80,18 @@ def stop_pipeline():
     if not pipeline_process or pipeline_process.poll() is not None:
         return "Pipeline is not running.", 400
 
+    # Log that the pipeline is being stopped
+    with open('pipeline.log', 'a') as log_file:
+        log_file.write("Pipeline is being stopped by user.\n")
+
     pipeline_process.terminate()
     pipeline_process = None
-    return "Pipeline stopped."
 
+    # Log after the pipeline is successfully stopped
+    with open('pipeline.log', 'a') as log_file:
+        log_file.write("Pipeline has been successfully stopped.\n")
+
+    return "Pipeline stopped."
 
 @app.route('/get-logs', methods=['GET'])
 def get_logs():

@@ -110,25 +110,15 @@
             const data = await response.json();
             document.getElementById('doc-count').innerText = data.count;
         }
-
-        // Start the pipeline
         function startPipeline() {
             fetch('/start-pipeline', { method: 'POST' })
                 .then(response => response.text())
-                .then(message => {
-                    appendLog(`Pipeline started: ${message}`);
-                })
-                .catch(error => appendLog(`Error starting pipeline: ${error}`));
+                .catch(error => console.error(`Error starting pipeline: ${error}`));
         }
-
-        // Stop the pipeline
         function stopPipeline() {
             fetch('/stop-pipeline', { method: 'POST' })
                 .then(response => response.text())
-                .then(message => {
-                    appendLog(`Pipeline stopped: ${message}`);
-                })
-                .catch(error => appendLog(`Error stopping pipeline: ${error}`));
+                .catch(error => console.error(`Error stopping pipeline: ${error}`));
         }
 
         const fetchLogs = () => {
