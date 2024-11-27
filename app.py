@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, jsonify, request, render_template, Response
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 import threading
@@ -8,78 +8,28 @@ import subprocess
 app = Flask(__name__)
 
 #===================== Database config =====================
-
 app.config["MONGO_URI"] = "mongodb://localhost:27017/April"
 mongo = PyMongo(app)
 mongo_collection = mongo.db.Documents
 
 #===================== Pipeline config =====================
-
-# Global variable to track the process
 pipeline_process = None
-
-@app.route('/get-doc-count', methods=['GET'])
-def get_doc_count():
-    count = mongo_collection.count_documents({})
-    return jsonify({'count': count})
-
-""" 
-def log_pipeline_output(process):
-    with open('pipeline.log', 'a') as log_file:
-        for line in iter(process.stdout.readline, ''):
-            log_file.write(line)
-            log_file.flush()
-        for line in iter(process.stderr.readline, ''):
-            log_file.write(f"ERROR: {line}")
-            log_file.flush()
-            
-
-@app.route('/start-pipeline', methods=['POST'])
-def start_pipeline():
-    global pipeline_process
-    if pipeline_process and pipeline_process.poll() is None:
-        return "Pipeline is already running.", 400
-
-    try:
-        # Start the process and capture both stdout and stderr
-        pipeline_process = subprocess.Popen(
-            ['python3', 'main.py'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            bufsize=1,
-            universal_newlines=True
-        )
-
-        # Start a thread to handle logging in the background
-        threading.Thread(target=log_pipeline_output, args=(pipeline_process,), daemon=True).start()
-
-        return "Pipeline started."
-    except Exception as e:
-        with open('pipeline.log', 'a') as log_file:
-            log_file.write(f"Failed to start pipeline: {str(e)}\n")
-        return f"Failed to start pipeline: {str(e)}", 500
- """
 
 def log_pipeline_output(process):
     with open('pipeline.log', 'a') as log_file:
         try:
-            # Continuously read from stdout and stderr
             while True:
-                # Read a line from stdout
                 line = process.stdout.readline()
-                if not line:  # Stop if the stream is closed
+                if not line:
                     break
-                log_file.write(line)  # Log the output
+                log_file.write(line)
                 log_file.flush()
 
-            # Handle stderr similarly
-            while True:
                 error_line = process.stderr.readline()
                 if not error_line:
                     break
                 log_file.write(f"ERROR: {error_line}")
                 log_file.flush()
-
         except Exception as e:
             log_file.write(f"Exception occurred in log_pipeline_output: {e}\n")
             log_file.flush()
@@ -91,7 +41,6 @@ def start_pipeline():
         return "Pipeline is already running.", 400
 
     try:
-        # Start the process and capture both stdout and stderr
         pipeline_process = subprocess.Popen(
             ['python3', 'main.py'],
             stdout=subprocess.PIPE,
@@ -99,11 +48,7 @@ def start_pipeline():
             bufsize=1,
             universal_newlines=True
         )
-
-        # Start a thread to handle logging in the background
-        log_thread = threading.Thread(target=log_pipeline_output, args=(pipeline_process,), daemon=True)
-        log_thread.start()
-
+        threading.Thread(target=log_pipeline_output, args=(pipeline_process,), daemon=True).start()
         return "Pipeline started."
     except Exception as e:
         with open('pipeline.log', 'a') as log_file:
@@ -120,20 +65,79 @@ def stop_pipeline():
     pipeline_process = None
     return "Pipeline stopped."
 
-
 @app.route('/get-logs', methods=['GET'])
 def get_logs():
     log_file = 'pipeline.log'
     if os.path.exists(log_file):
         with open(log_file, 'r') as f:
             logs = f.readlines()
-        return jsonify({'logs': logs[-20:]})  # Return the last 20 lines of logs
+        return jsonify({'logs': logs[-20:]})
     else:
         return jsonify({'logs': []})
 
+@app.route('/get-doc-count', methods=['GET'])
+def get_doc_count():
+    count = mongo_collection.count_documents({})
+    return jsonify({'count': count})
+
+#===================== Document API =====================
+def document_to_json(doc):
+    return {
+        "_id": str(doc["_id"]),
+        "url": doc.get("url"),
+        "keyword": doc.get("keyword"),
+        "content": doc.get("content"),
+        "meta_data": doc.get("meta_data")
+    }
+
+@app.route('/documents', methods=['GET'])
+def get_all_documents():
+    docs = mongo_collection.find()
+    result = [document_to_json(doc) for doc in docs]
+    return jsonify(result), 200
+
+@app.route('/documents/<string:id>', methods=['GET'])
+def get_document_by_id(id):
+    try:
+        doc = mongo_collection.find_one({"_id": ObjectId(id)})
+        if doc:
+            return jsonify(document_to_json(doc)), 200
+        else:
+            return jsonify({"error": "Document not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/documents/keyword', methods=['GET'])
+def get_documents_by_keyword():
+    keyword = request.args.get('keyword')
+    docs = mongo_collection.find({"keyword": keyword})
+    result = [document_to_json(doc) for doc in docs]
+    return jsonify(result), 200
+
+@app.route('/documents/url', methods=['GET'])
+def get_documents_by_url():
+    url = request.args.get('url')
+    doc = mongo_collection.find_one({"url": url})
+    if doc:
+        return jsonify(document_to_json(doc)), 200
+    else:
+        return jsonify({"error": "Document not found"}), 404
+
+@app.route('/documents/metadata', methods=['GET'])
+def get_documents_by_metadata():
+    title = request.args.get('title')
+    description = request.args.get('description')
+    query = {}
+    if title:
+        query["meta_data.Title"] = title
+    if description:
+        query["meta_data.Description"] = description
+    
+    docs = mongo_collection.find(query)
+    result = [document_to_json(doc) for doc in docs]
+    return jsonify(result), 200
 
 #===================== Frontend routing =====================
-
 @app.route('/')
 def index():
     documents = mongo_collection.find()
@@ -147,9 +151,6 @@ def launch_pipeline():
 def document(doc_id):
     document = mongo_collection.find_one({'_id': ObjectId(doc_id)})
     return render_template('document.html', document=document)
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
