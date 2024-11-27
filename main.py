@@ -27,7 +27,7 @@ def main():
     # Load keywords from the CSV
     file_path = 'cleaned_keywords.csv'
     try:
-        keywords_df = pd.read_csv(file_path)
+        keywords_df = pd.read_csv(file_path, encoding='utf-8')
     except FileNotFoundError:
         logging.error(f"CSV file not found: {file_path}")
         raise SystemExit(f"CSV file not found: {file_path}")

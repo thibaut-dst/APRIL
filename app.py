@@ -8,7 +8,11 @@ import subprocess
 app = Flask(__name__)
 
 #===================== Database config =====================
-app.config["MONGO_URI"] = "mongodb://localhost:27017/April"
+
+
+app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
+print(f"Mongo URI: {app.config['MONGO_URI']}")
+
 mongo = PyMongo(app)
 mongo_collection = mongo.db.Documents
 
@@ -69,11 +73,12 @@ def stop_pipeline():
 def get_logs():
     log_file = 'pipeline.log'
     if os.path.exists(log_file):
-        with open(log_file, 'r') as f:
+        with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             logs = f.readlines()
         return jsonify({'logs': logs[-20:]})
     else:
         return jsonify({'logs': []})
+
 
 @app.route('/get-doc-count', methods=['GET'])
 def get_doc_count():
@@ -153,4 +158,5 @@ def document(doc_id):
     return render_template('document.html', document=document)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
