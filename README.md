@@ -38,15 +38,13 @@ Ultimately, by combining web scraping, data analysis, and stakeholder engagement
    ```
 4. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   docker-compose up --build
    ```
 ## Usage
-To start the application, use the following command:
-   ```bash
-   python main.py
-   ```
+To start the application, go to the following link:
+   
+   http://127.0.0.1:5001/launch-pipeline
 
-For more usage options, you can refer to the project documentation.
 
 ## Features
 
