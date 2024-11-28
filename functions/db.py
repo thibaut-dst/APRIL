@@ -2,6 +2,14 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from bson import ObjectId
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError, ConfigurationError
+import logging
+
+logging.basicConfig(
+    filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
+    filemode='a',                  # Append to the log file
+    level=logging.INFO,            # Set the log level to INFO
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
+)
 
 database = 'April'
 collection = 'Documents'
@@ -55,13 +63,11 @@ def store_processed_data(document_id: ObjectId, processed_data: dict, collection
         
         # Log the outcome of the update operation
         if result.matched_count == 0:
-            #logging.warning(f"No document found with ID: {document_id}")
-            print(f"No document found with ID: {document_id}")
-        elif result.modified_count == 0:
-            print(f"Document with ID: {document_id} already up-to-date.")
+            logging.warning(f"Tried to update (post NLP) but document found with ID: {document_id}")
         else:
             print(f"Document with ID: {document_id} successfully updated.")
+            logging.info(f"Successfully processed (NLP): {document_id}")
 
     except Exception as e:
-        print(f"Error updating document with ID: {document_id}: {e}")
+        logging.error(f"Error updating (post NLP) document ID: {document_id}: {e}")
         raise

@@ -7,7 +7,6 @@ nlp = spacy.load("fr_core_news_lg")
 from bson import ObjectId
 import logging
 
-# Configure logging
 logging.basicConfig(
     filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
     filemode='a',                  # Append to the log file
