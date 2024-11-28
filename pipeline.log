@@ -114,3 +114,17 @@ ERROR: ModuleNotFoundError: No module named 'db'
 2024-11-22 09:50:57,895 - INFO - Page stored in DB: https://www.parc-landes-de-gascogne.fr/Parc-Naturel-Regional-de-Gascogne/EXPLORER/Les-incontournables/Les-lagunes
 2024-11-22 09:50:58,598 - INFO - Successfully fetched page: https://www.eaufrance.fr/glossaire/lagune
 2024-11-22 09:50:58,602 - INFO - Page stored in DB: https://www.eaufrance.fr/glossaire/lagune
+2024-11-22 11:09:40,069 - INFO - Pipeline initialization.
+2024-11-22 11:09:40,106 - INFO - Successfully connected to the database.
+2024-11-22 11:09:40,117 - INFO - Starting the scraping process...
+2024-11-22 11:09:40,119 - INFO - Starting Google search for: 'Aléas générés par le changement climatique'
+2024-11-22 11:09:47,919 - INFO - Starting Google search for: 'Spécificités des territoires littoraux'
+2024-11-22 11:09:51,841 - INFO - Starting Google search for: 'Méthodes traditionnelles de gestion des risques côtiers'
+2024-11-22 11:10:21,421 - INFO - Pipeline initialization.
+2024-11-22 11:10:21,434 - INFO - Successfully connected to the database.
+2024-11-22 11:10:21,442 - INFO - Starting the scraping process...
+2024-11-22 11:10:21,445 - INFO - Starting Google search for: 'Aléas générés par le changement climatique'
+2024-11-22 11:10:27,101 - INFO - Starting Google search for: 'Spécificités des territoires littoraux'
+2024-11-22 11:10:30,813 - INFO - Starting Google search for: 'Méthodes traditionnelles de gestion des risques côtiers'
+Pipeline is being stopped by user.
+Pipeline has been successfully stopped.

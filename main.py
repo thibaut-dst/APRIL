@@ -28,10 +28,16 @@ def main():
     file_path = 'cleaned_keywords.csv'
     try:
         keywords_df = pd.read_csv(file_path)
+        logging.info(f"Loaded keywords")
     except FileNotFoundError:
         logging.error(f"CSV file not found: {file_path}")
         raise SystemExit(f"CSV file not found: {file_path}")
+    except Exception as e:
+        logging.error(f"Error reading CSV file: {e}")
+        raise SystemExit(f"Error reading CSV file: {e}")
+
     
+
     logging.info("Starting the scraping process...")
     try:
         scrape.scrape_webpages_to_db(keywords_df, collection)

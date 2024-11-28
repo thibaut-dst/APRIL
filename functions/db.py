@@ -46,7 +46,22 @@ def store_processed_data(document_id: ObjectId, processed_data: dict, collection
         collection (Collection): The MongoDB collection in which the document resides.    
     """
 
-    collection.update_one(
-        {"_id": document_id},
-        {"$set": processed_data}
-    )
+    try:
+        # Attempt to update the document
+        result = collection.update_one(
+            {"_id": ObjectId(document_id)},
+            {"$set": processed_data}
+        )
+        
+        # Log the outcome of the update operation
+        if result.matched_count == 0:
+            #logging.warning(f"No document found with ID: {document_id}")
+            print(f"No document found with ID: {document_id}")
+        elif result.modified_count == 0:
+            print(f"Document with ID: {document_id} already up-to-date.")
+        else:
+            print(f"Document with ID: {document_id} successfully updated.")
+
+    except Exception as e:
+        print(f"Error updating document with ID: {document_id}: {e}")
+        raise
