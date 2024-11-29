@@ -46,6 +46,7 @@ def main():
         raise SystemExit(f"An error occurred during scraping: {e}")
 
     logging.info("Pipeline finished.")
+    
 if __name__ == "__main__":
     main()
 

@@ -130,7 +130,7 @@ def iterate_documents(collection_name):
         logging.info(f'Processing document #{index + 1} with ID: {document_id}')
         try:
             processed_data = process_document(document)
-            db.store_processed_data(document_id, processed_data, collection_name)
+            db.store_processed_data(document["_id"], processed_data, collection_name)
             logging.info(f'Processed and stored document #{index + 1} with ID: {document_id}')
         
         except Exception as e:
