@@ -75,12 +75,16 @@ def scrape_webpages_to_db(keywords_df, collection):
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
         
         for keyword in keywords:
-            #print(f"Recherche Google effectuée avec : {keyword}")
             logging.info(f"Starting Google search for: '{keyword}'")
 
-            # Google search avec le mot-clé
-            for url in search(keyword, num_results=5):  # Limité à 5 résultats
+            # Google search with keyword
+            for url in search(keyword, num_results=3):  # Limited to 3 results
                 try:
+                    # Check if document already exists in DB
+                    if collection.find_one({"url": url}):
+                        logging.info(f"Document already exists in DB, skipping: {url}")
+                        continue
+
                     response = requests.get(url)
                     response.raise_for_status()
 
@@ -89,20 +93,16 @@ def scrape_webpages_to_db(keywords_df, collection):
 
                     # Vérifier si le mot-clé est dans le contenu
                     if contains_keywords(content, keyword):
-                        # Collecter les données à insérer dans la base de données
                         page_data = {
                             "url": url,
                             "keyword": keyword,
                             "content": content,
-                            "meta_data": meta_scraping(url)  # Appel à la fonction meta_scraping pour ajouter des méta-données
+                            "meta_data": meta_scraping(url)  # call meta_scraping() to get metadata
                         }
 
-                        # Insertion dans la base de données MongoDB
+                        # Insertion in MongoDB
                         collection.insert_one(page_data)
-                        #print(f"Page {url} enregistrée dans la base de données.")
                         logging.info(f"Page stored in DB: {url}")
 
-
                 except requests.exceptions.RequestException as e:
-                    #print(f"Erreur lors de l'accès à la page {url}: {e}")
                     logging.error(f"Error accessing page {url}: {e}")
