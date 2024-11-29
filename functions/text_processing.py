@@ -1,11 +1,18 @@
 import re
-import functions.db as db
+import db as db
 import spacy
 from typing import Optional
 from spacy.tokens import Doc
 nlp = spacy.load("fr_core_news_lg")
 from bson import ObjectId
+import logging
 
+logging.basicConfig(
+    filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
+    filemode='a',                  # Append to the log file
+    level=logging.INFO,            # Set the log level to INFO
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
+)
 
 target_words_og = ['écologique', 'Océan', 'Occitanie']
 target_words = [element.lower() for element in target_words_og]
@@ -106,23 +113,37 @@ def process_document(MongoDB_document: dict) -> dict:
         'named_entities': ner(spacy_document),
         'vocabulary_of_interest': word_tracking(spacy_document, target_words)
     }
+    print("enriched data ready")
     return data
 
 def iterate_documents(collection_name):
     """
     Iterate over all documents in a collection, process each one and store the enriched data back
     """
-    for index, document in enumerate(collection_name.find()):
-        
-        document_id = str(document["_id"]) #extract id from each document
-        
 
-        print(f'Processing doc nb {index}')
-        processed_data = process_document(document)
-        db.store_processed_data(document_id, processed_data, collection_name)
-        print(f'processed doc nb {index} has stored')
+    # Define a query to select documents without the 'cleaned_text' field 
+    query = { "cleaned_text": { "$exists": False } }
+    # Iterate over the filtered documents
+    for index, document in enumerate(collection_name.find(query)):
+        document_id = str(document["_id"])  # Extract the document ID
 
+        logging.info(f'Processing document #{index + 1} with ID: {document_id}')
+        try:
+            processed_data = process_document(document)
+            db.store_processed_data(document["_id"], processed_data, collection_name)
+            logging.info(f'Processed and stored document #{index + 1} with ID: {document_id}')
+        
+        except Exception as e:
+            logging.error(f'Error processing document #{index + 1} with ID: {document_id}: {e}')
 
 if __name__ == "__main__":
-    collection = db.get_collection()
-    iterate_documents(collection)
+    try:
+        logging.info("Pipeline execution started.")
+        print("Pipeline execution started.")
+        collection = db.get_collection()
+        iterate_documents(collection)
+        logging.info("Text processing execution completed successfully.")
+        print("Text processing execution completed successfully.")
+    except Exception as e:
+        logging.critical(f"Critical error in the text processing execution: {e}")
+        print(f"Critical error in the text processing execution: {e}")
