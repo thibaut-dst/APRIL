@@ -23,9 +23,11 @@
 
         .stats {
             margin: 20px 0;
-            text-align: center;
             font-size: 1.2rem;
             font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
         }
 
         .logs {
@@ -41,7 +43,7 @@
 
         .buttons {
             display: flex;
-            justify-content: start;
+            justify-content: space-between;
             margin: 20px 1px;
             gap: 20px;
         }
@@ -70,6 +72,12 @@
         .stop-button:hover {
             background-color: #c82333;
         }
+        .run-nlp{
+            background-color: #17a2b8;
+        }
+        .run-nlp:hover{
+            background-color: #138496;
+        }
     </style>
 </head>
 <body>
@@ -92,7 +100,8 @@
                 <h1>Pipeline Launcher</h1>
             </div>
             <div class="stats">
-                Number of documents in the database: <span id="doc-count">Loading...</span>
+               <div>Number of documents in the database: <span id="doc-count">Loading...</span></div>
+               <div>Number of documents processed: <span id="doc-processed-count">Loading...</span></div>
             </div>
             <div class="logs" id="log-output">
                 <!-- Logs will appear here -->
@@ -100,6 +109,7 @@
             <div class="buttons">
                 <button class="start-button" onclick="startPipeline()">Start Pipeline</button>
                 <button class="stop-button" onclick="stopPipeline()">Stop Pipeline</button>
+                <button class="run-nlp" onclick="runNLP()">Run NLP</button>
             </div>
         </div>
     </main>
@@ -110,27 +120,35 @@
             const data = await response.json();
             document.getElementById('doc-count').innerText = data.count;
         }
-
-        // Start the pipeline
+        async function fetchDocumentProcessedCount() {
+            const response = await fetch('/get-doc-processed-count');
+            const data = await response.json();
+            document.getElementById('doc-processed-count').innerText = data.count;
+        }
         function startPipeline() {
             fetch('/start-pipeline', { method: 'POST' })
                 .then(response => response.text())
-                .then(message => {
-                    appendLog(`Pipeline started: ${message}`);
-                })
-                .catch(error => appendLog(`Error starting pipeline: ${error}`));
+                .catch(error => console.error(`Error starting pipeline: ${error}`));
         }
-
-        // Stop the pipeline
         function stopPipeline() {
             fetch('/stop-pipeline', { method: 'POST' })
                 .then(response => response.text())
-                .then(message => {
-                    appendLog(`Pipeline stopped: ${message}`);
-                })
-                .catch(error => appendLog(`Error stopping pipeline: ${error}`));
+                .catch(error => console.error(`Error stopping pipeline: ${error}`));
         }
-
+        function runNLP() {
+            fetch('/run-nlp', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.error("NLP processing started.");
+                } else {
+                    console.error("NLP is already running or there was an error.");
+                }
+            })
+            .catch(error => {
+                console.error('Error starting NLP:', error);
+                console.error("Failed to start NLP.");
+            });
+        }
         const fetchLogs = () => {
             fetch('/get-logs')
                 .then(response => response.json())
@@ -139,7 +157,7 @@
                     logContainer.innerHTML = ''; // Clear the existing logs
                     data.logs.forEach(log => {
                         const logElement = document.createElement('div');
-                        if (log.startsWith("ERROR:")) {
+                        if (log.includes("ERROR")) {
                             logElement.style.color = "red"; // Highlight error messages in red
                         }
                         logElement.textContent = log.trim();
@@ -162,7 +180,7 @@
 
     // Fetch document count on page load
     fetchDocumentCount();
-
+    fetchDocumentProcessedCount();
     // Start fetching logs every 2 seconds
     setInterval(fetchLogs, 2000);
     </script>
