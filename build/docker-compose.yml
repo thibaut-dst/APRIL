@@ -1,4 +1,4 @@
-version: "3.8"
+name: april
 services:
   web:
     image: registry.mde.epf.fr/april-web:0.2

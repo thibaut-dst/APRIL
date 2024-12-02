@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 #===================== Database config =====================
 
-app.config["MONGO_URI"] = "mongodb://localhost:27017/April"
+app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
 mongo = PyMongo(app)
 mongo_collection = mongo.db.Documents
 
@@ -162,4 +162,4 @@ def document(doc_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
