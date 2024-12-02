@@ -1,12 +1,9 @@
 version: "3.8"
 services:
   web:
-  image: april-web:0.2
-    build: ..
+    image: registry.mde.epf.fr/april-web:0.2
     ports:
-      - "5000:5000"
-    volumes:
-      - ./pipeline.log:/app/pipeline.log
+      - "80:5000"
     depends_on:
       - mongo
     networks:

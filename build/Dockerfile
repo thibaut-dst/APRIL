@@ -5,15 +5,15 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copier les fichiers dans l'image
-COPY ../requirements.txt requirements.txt
-COPY ../main.py main.py
-COPY ../app.py app.py
-COPY ../functions/ functions/
-COPY ../templates/ templates/
-Copy ../static/ static/
-Copy ../text.py text.py
-Copy ../main_temp.py main_temp.py
-COPY ../cleaned_keywords.csv cleaned_keywords.csv
+COPY requirements.txt requirements.txt
+COPY main.py main.py
+COPY app.py app.py
+COPY functions/ functions/
+COPY templates/ templates/
+Copy static/ static/
+Copy text.py text.py
+Copy main_temp.py main_temp.py
+COPY cleaned_keywords.csv cleaned_keywords.csv
 
 
 
