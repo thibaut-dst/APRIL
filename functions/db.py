@@ -13,7 +13,7 @@ logging.basicConfig(
 
 database = 'April'
 collection = 'Documents'
-uri="mongodb://localhost:27017"
+uri="mongodb://mongo:27017"
 
 def get_collection(db_name = database, collection_name = collection, uri = uri):
     """

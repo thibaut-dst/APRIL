@@ -23,6 +23,12 @@ Ultimately, by combining web scraping, data analysis, and stakeholder engagement
 
 ## Installation
 
+### Create Docker image from source
+
+``` docker build -t april-web:0.2 -f build/Dockerfile .```
+
+
+
 ### Prerequisites
 - Python 3.12+
 - pip (Python package installer)
