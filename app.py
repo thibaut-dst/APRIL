@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 #===================== Database config =====================
 
-app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/April"
 mongo = PyMongo(app)
 mongo_collection = mongo.db.Documents
 
@@ -64,7 +64,7 @@ def start_pipeline():
     try:
         # Start the process and capture both stdout and stderr
         pipeline_process = subprocess.Popen(
-            ['python3', 'main.py'],
+            ['python3', 'functions/launch_pipeline1.py'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             bufsize=1,
@@ -108,7 +108,7 @@ def run_nlp():
 
     try:
         nlp_process = subprocess.Popen(
-            ['python3', 'functions/text_processing.py'],  # Ensure this runs the NLP processing script
+            ['python3', 'functions/launch_pipeline2.py'],  # Ensure this runs the NLP processing script
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             bufsize=1,
@@ -117,10 +117,6 @@ def run_nlp():
 
         log_thread = threading.Thread(target=log_pipeline_output, args=(nlp_process,), daemon=True)
         log_thread.start()
-
-        # If you want to execute NLP directly instead of via subprocess, 
-        # you can call a function in `text_processing` directly:
-        # text_processing.iterate_documents(db.get_collection())
 
         return "NLP processing started."
 

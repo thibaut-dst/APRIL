@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copier les fichiers dans l'image
 COPY requirements.txt requirements.txt
-COPY main.py main.py
+#COPY main.py main.py no longer necessary
 COPY app.py app.py
 COPY functions/ functions/
 COPY templates/ templates/
