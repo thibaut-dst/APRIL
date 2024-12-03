@@ -1,8 +1,10 @@
-import functions.scraping as scrape
-import functions.db as db
+import scraping as scrape
+import db as db
+import text_processing as process
 import pandas as pd
 import logging
 
+# Configure logging
 logging.basicConfig(
     filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
     filemode='a',                  # Append to the log file
