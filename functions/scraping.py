@@ -89,7 +89,13 @@ def scrape_webpages_to_db(keywords_df, collection):
                     response.raise_for_status()
 
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.get_text()  # Extraire le texte brut
+                    #content = soup.get_text()  # v0 du get_text
+
+                    paragraphs = soup.find_all('p')
+                    content = ""
+                    for p in paragraphs:
+                        content += p.get_text() + " <br> "
+                    content = content.strip()
 
                     # Vérifier si le mot-clé est dans le contenu
                     if contains_keywords(content, keyword):
@@ -100,7 +106,6 @@ def scrape_webpages_to_db(keywords_df, collection):
                             "meta_data": meta_scraping(url)  # call meta_scraping() to get metadata
                         }
 
-                        # Insertion in MongoDB
                         collection.insert_one(page_data)
                         logging.info(f"Page stored in DB: {url}")
 
