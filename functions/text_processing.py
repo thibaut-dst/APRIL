@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 import db as db
 import spacy
 from typing import Optional
@@ -92,6 +93,32 @@ def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
                 word_count[token.lemma_.lower()] += 1
     return word_count
 
+def get_pdf_title_from_url(source_url):
+    """
+    Extract the file name from the source_url to use as the Title for PDF documents.
+
+    Parameters:
+        source_url (str): The URL of the PDF document.
+
+    Returns:
+        str: The extracted file name or None if the extraction fails.
+    """
+    try:
+        # Parse the URL and extract the path
+        parsed_url = urlparse(source_url)
+        file_name = parsed_url.path.split("/")[-1]  # Get the last part of the URL path
+
+        # Ensure it's a valid PDF file name
+        if file_name.lower().endswith(".pdf"):
+            return file_name
+
+        logging.warning(f"URL does not contain a valid PDF file name: {source_url}")
+        return None
+    except Exception as e:
+        logging.error(f"Error extracting PDF title from URL ({source_url}): {e}")
+        return None
+
+
 def process_document(MongoDB_document: dict) -> dict:
     """
     Centralization of the processing logic:
@@ -108,8 +135,15 @@ def process_document(MongoDB_document: dict) -> dict:
     raw_text = MongoDB_document["content"]
     cleaned_text = clean_text(raw_text)
     spacy_document = nlp(cleaned_text)
+    
+    if MongoDB_document["meta_data"]["file_type"] == "pdf" and "source_url" in MongoDB_document["meta_data"]:
+        updated_title = get_pdf_title_from_url(MongoDB_document["meta_data"]["source_url"])
+    else:
+        updated_title = MongoDB_document["meta_data"].get("Title", None)
+
 
     data = {
+        'Title_updated': updated_title,
         'domain': get_domain_name(MongoDB_document["url"]),
         'cleaned_text': cleaned_text,
         'named_entities': ner(spacy_document),
