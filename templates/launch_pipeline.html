@@ -158,7 +158,10 @@
                     data.logs.forEach(log => {
                         const logElement = document.createElement('div');
                         if (log.includes("ERROR")) {
-                            logElement.style.color = "red"; // Highlight error messages in red
+                            logElement.style.color = "#c64a4a"; // Highlight error messages in red
+                        }
+                        else if(log.includes("stored in DB")){
+                            logElement.style.color = "#5959dc"; // Highlight error messages in blue
                         }
                         logElement.textContent = log.trim();
                         logContainer.appendChild(logElement);

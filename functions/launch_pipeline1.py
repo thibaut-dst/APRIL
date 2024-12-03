@@ -12,6 +12,28 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
 
+def read_and_shuffle_csv(file_path):
+    try:
+        # Attempt to read the CSV file
+        df = pd.read_csv(file_path, sep=";")
+
+        # Extract the first two columns into lists
+        vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
+        localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
+
+        # Generate all pairwise combinations (cross product)
+        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(vocabulaire_recherche, localisation_recherche)]
+
+        # Shuffle the pairs randomly
+        random.shuffle(pair_list)
+
+        logging.info(f"Number of pairs generated: {len(pair_list)}")
+        logging.info(f" pairs generated: {pair_list}")
+        return pair_list
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def main():
     logging.info("Pipeline initialization.")
 
@@ -27,7 +49,7 @@ def main():
     # Load keywords from the CSV
     file_path = 'cleaned_keywords.csv'
     try:
-        keywords_df = pd.read_csv(file_path)
+        keywords_list = read_and_shuffle_csv(file_path)
         logging.info(f"Loaded keywords")
     except FileNotFoundError:
         logging.error(f"CSV file not found: {file_path}")
@@ -40,7 +62,7 @@ def main():
 
     logging.info("Starting the scraping process...")
     try:
-        scrape.scrape_webpages_to_db(keywords_df, collection)
+        scrape.scrape_webpages_to_db(keywords_list, collection)
     except Exception as e:
         logging.error(f"An error occurred during scraping: {e}")
         raise SystemExit(f"An error occurred during scraping: {e}")
