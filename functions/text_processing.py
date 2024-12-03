@@ -1,23 +1,49 @@
 import re
 import db as db
+import pandas as pd
 import spacy
 from typing import Optional
 from spacy.tokens import Doc
 nlp = spacy.load("fr_core_news_lg")
-from bson import ObjectId
 import logging
 
 
-""" 
+
 logging.basicConfig(
     filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
     filemode='a',                  # Append to the log file
     level=logging.INFO,            # Set the log level to INFO
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
-) """
+) 
 
-target_words_og = ['écologique', 'Océan', 'Occitanie']
-target_words = [element.lower() for element in target_words_og]
+file_path = 'Vocabulaire_Expert_CSV.csv'
+
+def extract_columns_to_list(file_path):
+    try:
+        # Attempt to read the CSV file
+        df = pd.read_csv(file_path, sep=";")
+        
+        # Extract the values from 'Vocabulaire de recherche' and 'Vocabulaire d'analyse' columns, excluding NaN values
+        vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # Exclude NaN in the first column
+        vocabulaire_analyse = df["Vocabulaire d'analyse"].dropna().tolist()  # Exclude NaN in the third column
+
+        
+        # Combine both columns' values into one list
+        combined_list = vocabulaire_recherche + vocabulaire_analyse
+        print(len(vocabulaire_recherche), len(vocabulaire_analyse), len(combined_list))
+
+        # Log the number of elements in the final list
+        logging.info(f"Number of elements in the combined list: {len(combined_list)}")
+
+        return combined_list
+    except Exception as e:
+        #print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
+        raise SystemExit(f"An error occurred: {e}")
+
+target_words = extract_columns_to_list(file_path)
+
+#print(target_words)
 
 
 def get_domain_name(url: str) -> Optional[str]:
@@ -30,14 +56,21 @@ def get_domain_name(url: str) -> Optional[str]:
     Returns:
         Optional[str]: The domain name if found; otherwise, None if extraction fails.
     """
-    pattern = r'https?://([^/]+)'
-    match = re.search(pattern, url)
-    if match:
-        domain = match.group(1)
-        return domain
-    else:
-        print(f"Error on domain name extraction for {url}")
-        return url
+    try:
+        pattern = r'https?://([^/]+)'
+        match = re.search(pattern, url)
+        if match:
+            domain = match.group(1)
+            logging.info(f"Domain name: {domain} for {url}")
+            return domain
+        else:
+            #print(f"Error on domain name extraction for {url}")
+            #logging.info(f"Error on domain name extraction for {url}")
+            return url
+    except Exception as e:
+        logging.error(f"Error on domain name extraction: {e}")
+        raise SystemExit(f"Error on domain name extraction: {e}")        
+
     
 def clean_text(text: str) -> str:
     """
@@ -50,9 +83,13 @@ def clean_text(text: str) -> str:
     Returns:
         str: The cleaned text.
     """
-    text = re.sub(r'[\n\t\r]+', ' ', text) # Replace sequences of newline, tab, or carriage return characters with a single space
-    text = re.sub(r'\s{2,}', ' ', text).strip() # Replace multiple spaces with a single space
-    return text
+    try:
+        text = re.sub(r'[\n\t\r]+', ' ', text) # Replace sequences of newline, tab, or carriage return characters with a single space
+        text = re.sub(r'\s{2,}', ' ', text).strip() # Replace multiple spaces with a single space
+        return text
+    except Exception as e:
+        logging.error(f"Error on text cleaning: {e}")
+        raise SystemExit(f"Error on text cleaning: {e}")
 
 def ner(spacy_doc: Doc) -> dict:
     """
@@ -64,13 +101,17 @@ def ner(spacy_doc: Doc) -> dict:
     Returns:
         dict: A dictionary with entity labels as keys and lists of entity texts as values.
     """
-    entities = {}
+    try:
+        entities = {}
 
-    for ent in spacy_doc.ents:  
-        if ent.label_ not in entities:
-            entities[f'{ent.label_}'] = []
-        entities[f'{ent.label_}'].append(ent.text)
-    return entities
+        for ent in spacy_doc.ents:  
+            if ent.label_ not in entities:
+                entities[f'{ent.label_}'] = []
+            entities[f'{ent.label_}'].append(ent.text)
+        return entities
+    except Exception as e:
+        logging.error(f"Error on named entity recognition: {e}")
+        raise SystemExit(f"Error on named entity recognition: {e}")
 
 def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
     """
@@ -83,14 +124,18 @@ def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
     Returns:
         dict: Dictionary with target words as keys and their respective occurrence counts as values.
     """
-    word_count = {word: 0 for word in target_words}
-   
-    # Tokenize the text and check for specific words
-    for token in spacy_doc:
-        if not token.is_punct:  # Exclude punctuation
-            if token.lemma_.lower() in word_count:  # Check if the word is in our list
-                word_count[token.lemma_.lower()] += 1
-    return word_count
+    try:
+        word_count = {word: 0 for word in target_words}
+    
+        # Tokenize the text and check for specific words
+        for token in spacy_doc:
+            if not token.is_punct:  # Exclude punctuation
+                if token.lemma_.lower() in word_count:  # Check if the word is in our list
+                    word_count[token.lemma_.lower()] += 1
+        return word_count
+    except Exception as e:
+        logging.error(f"Error on word tracking: {e}")
+        raise SystemExit(f"Error on word tracking: {e}")
 
 def process_document(MongoDB_document: dict) -> dict:
     """
@@ -105,18 +150,23 @@ def process_document(MongoDB_document: dict) -> dict:
         dict: A dictionary containing the processed data with keys for 'cleaned_text',
               'domain', 'named_entities', and 'vocabular_of_interest'.
     """
-    raw_text = MongoDB_document["content"]
-    cleaned_text = clean_text(raw_text)
-    spacy_document = nlp(cleaned_text)
+    try:
+        raw_text = MongoDB_document["content"]
+        cleaned_text = clean_text(raw_text)
+        spacy_document = nlp(cleaned_text)
 
-    data = {
-        'domain': get_domain_name(MongoDB_document["url"]),
-        'cleaned_text': cleaned_text,
-        'named_entities': ner(spacy_document),
-        'vocabulary_of_interest': word_tracking(spacy_document, target_words)
-    }
-    print("enriched data ready")
-    return data
+        data = {
+            'domain': get_domain_name(MongoDB_document["url"]),
+            'cleaned_text': cleaned_text,
+            'named_entities': ner(spacy_document),
+            'vocabulary_of_interest': word_tracking(spacy_document, target_words)
+        }
+        #print("enriched data ready")
+        logging.info("Enriched data ready")
+        return data
+    except Exception as e:
+        logging.error(f"Error processing document: {e}")
+        raise SystemExit(f"Error processing document: {e}")
 
 
 """ if __name__ == "__main__":

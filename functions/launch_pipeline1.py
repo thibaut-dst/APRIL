@@ -20,15 +20,12 @@ def read_and_shuffle_csv(file_path):
         # Attempt to read the CSV file
         df = pd.read_csv(file_path, sep=";")
 
-        # Drop rows with NaN values in either the first or second column
-        df_cleaned = df.dropna(subset=[df.columns[0], df.columns[1]])
-        
         # Extract the first two columns into lists
-        Word = df_cleaned.iloc[:, 0].tolist()  # First column values
-        Place = df_cleaned.iloc[:, 1].tolist()  # Second column values
+        vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
+        localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
 
         # Generate all pairwise combinations (cross product)
-        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(Word, Place)]
+        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(vocabulaire_recherche, localisation_recherche)]
 
         # Shuffle the pairs randomly
         random.shuffle(pair_list)
@@ -38,8 +35,8 @@ def read_and_shuffle_csv(file_path):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        
-#print(read_and_shuffle_csv('Vocabulaire_Expert_CSV.csv'))
+      
+#print(len(read_and_shuffle_csv('Vocabulaire_Expert_CSV.csv')))
 
 
 def main():
@@ -81,4 +78,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-    
+
