@@ -3,6 +3,8 @@ import db as db
 import text_processing as process
 import pandas as pd
 import logging
+import itertools
+import random
 
 # Configure logging
 logging.basicConfig(
@@ -11,6 +13,31 @@ logging.basicConfig(
     level=logging.INFO,            # Set the log level to INFO
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
+
+# read csv 
+def read_and_shuffle_csv(file_path):
+    try:
+        # Attempt to read the CSV file
+        df = pd.read_csv(file_path, sep=";")
+
+        # Extract the first two columns into lists
+        vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
+        localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
+
+        # Generate all pairwise combinations (cross product)
+        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(vocabulaire_recherche, localisation_recherche)]
+
+        # Shuffle the pairs randomly
+        random.shuffle(pair_list)
+
+        logging.info(f"Number of pairs generated: {len(pair_list)}")
+        return pair_list
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+      
+#print(len(read_and_shuffle_csv('Vocabulaire_Expert_CSV.csv')))
+
 
 def main():
     logging.info("Pipeline initialization.")
@@ -25,9 +52,10 @@ def main():
         raise SystemExit(f"Database connection failed: {e}")
 
     # Load keywords from the CSV
-    file_path = 'cleaned_keywords.csv'
+    file_path = 'Vocabulaire_Expert_CSV.csv'
+
     try:
-        keywords_df = pd.read_csv(file_path)
+        keywords_df = read_and_shuffle_csv(file_path)
         logging.info(f"Loaded keywords")
     except FileNotFoundError:
         logging.error(f"CSV file not found: {file_path}")
@@ -49,3 +77,5 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+
