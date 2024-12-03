@@ -6,14 +6,15 @@ WORKDIR /app
 
 # Copier les fichiers dans l'image
 COPY requirements.txt requirements.txt
-#COPY main.py main.py no longer necessary
+#COPY main.py main.py #! no longer necessary
 COPY app.py app.py
 COPY functions/ functions/
 COPY templates/ templates/
 Copy static/ static/
 Copy text.py text.py
 Copy main_temp.py main_temp.py
-COPY cleaned_keywords.csv cleaned_keywords.csv
+#COPY cleaned_keywords.csv cleaned_keywords.csv #! no longer necessary
+COPY Vocabulaire_Expert_CSV.csv Vocabulaire_Expert_CSV.csv
 
 
 

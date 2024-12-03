@@ -3,6 +3,8 @@ import db as db
 import text_processing as process
 import pandas as pd
 import logging
+import itertools
+import random
 
 # Configure logging
 logging.basicConfig(
@@ -28,11 +30,11 @@ def read_and_shuffle_csv(file_path):
         random.shuffle(pair_list)
 
         logging.info(f"Number of pairs generated: {len(pair_list)}")
-        logging.info(f" pairs generated: {pair_list}")
         return pair_list
 
     except Exception as e:
         print(f"An error occurred: {e}")
+      
 
 def main():
     logging.info("Pipeline initialization.")
@@ -47,7 +49,8 @@ def main():
         raise SystemExit(f"Database connection failed: {e}")
 
     # Load keywords from the CSV
-    file_path = 'cleaned_keywords.csv'
+    file_path = 'Vocabulaire_Expert_CSV.csv'
+
     try:
         keywords_list = read_and_shuffle_csv(file_path)
         logging.info(f"Loaded keywords")
