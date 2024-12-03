@@ -1,6 +1,6 @@
-#import scraping as scrape
-#import db as db
-#import text_processing as process
+import scraping as scrape
+import db as db
+import text_processing as process
 import pandas as pd
 import logging
 import itertools
@@ -41,7 +41,7 @@ def read_and_shuffle_csv(file_path):
         
 #print(read_and_shuffle_csv('Vocabulaire_Expert_CSV.csv'))
 
-"""
+
 def main():
     logging.info("Pipeline initialization.")
 
@@ -81,4 +81,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-"""
+    
