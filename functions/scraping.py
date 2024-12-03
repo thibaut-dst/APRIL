@@ -94,7 +94,7 @@ def scrape_webpages_to_db(keywords_df, collection):
                     paragraphs = soup.find_all('p')
                     content = ""
                     for p in paragraphs:
-                        content += p.get_text() + " "
+                        content += p.get_text() + " <br> "
                     content = content.strip()
 
                     # Vérifier si le mot-clé est dans le contenu
