@@ -6,6 +6,7 @@ from googlesearch import search
 import json
 import re
 import logging
+import fitz
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -67,9 +68,31 @@ def meta_scraping(url):
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
+def pdf_to_text(pdf_path):
+    text = ""
+    with fitz.open(pdf_path) as pdf:
+        for page_num in range(pdf.page_count):
+            page = pdf[page_num]
+            text += page.get_text("text")
+    return text
+
+def pdf_meta_scraping(pdf_path):
+    with fitz.open(pdf_path) as doc:
+        metadata = doc.metadata  
+        title = metadata.get('title', 'No title')
+        author = metadata.get('author', 'No author')
+        created = metadata.get('creationDate', 'No creation date')
+
+    return {
+        "Title": title,
+        "Author": author,
+        "Creation Date": created
+    }
+
 def scrape_webpages_to_db(keywords_df, collection):
     """
     Google search and scraping function
+    Supports both HTML and PDF files and stores data in MongoDB.
     """
     for index, row in keywords_df.iterrows():
         keywords = [kw.strip() for kw in row['Keywords'].split(',')]
@@ -87,27 +110,55 @@ def scrape_webpages_to_db(keywords_df, collection):
 
                     response = requests.get(url)
                     response.raise_for_status()
+                    file_type = "pdf" if url.lower().endswith(".pdf") else "html"
 
-                    soup = BeautifulSoup(response.text, 'html.parser')
-                    #content = soup.get_text()  # v0 du get_text
+                    if file_type == "pdf":
+                        pdf_name = f"temp_pdf_{index}.pdf"
+                        with open(pdf_name, 'wb') as f:
+                            f.write(response.content)
+                        text_content = pdf_to_text(pdf_name)
+                        pdf_metadata = pdf_meta_scraping(pdf_name)
 
-                    paragraphs = soup.find_all('p')
-                    content = ""
-                    for p in paragraphs:
-                        content += p.get_text() + " <br> "
-                    content = content.strip()
-
-                    # Vérifier si le mot-clé est dans le contenu
-                    if contains_keywords(content, keyword):
+                        os.remove(pdf_name)
                         page_data = {
                             "url": url,
                             "keyword": keyword,
-                            "content": content,
-                            "meta_data": meta_scraping(url)  # call meta_scraping() to get metadata
+                            "content": text_content,
+                            "meta_data": {
+                                "file_type": file_type,
+                                "source_url": url,
+                                **pdf_metadata
+                            }
                         }
-
                         collection.insert_one(page_data)
-                        logging.info(f"Page stored in DB: {url}")
+                        logging.info(f"PDF content stored in DB from {url}.")
+
+
+                    else:  # Handle HTML pages
+                        soup = BeautifulSoup(response.text, 'html.parser')
+                        #content = soup.get_text()  # v0 du get_text
+
+                        paragraphs = soup.find_all('p')
+                        content = ""
+                        for p in paragraphs:
+                            content += p.get_text() + " <br> "
+                        content = content.strip()
+
+                        # Check if the keyword is present in the content
+                        if contains_keywords(content, keyword):
+                            page_data = {
+                                "url": url,
+                                "keyword": keyword,
+                                "content": content,
+                                "meta_data": {
+                                    "file_type": file_type,
+                                    **meta_scraping(url)
+                                }
+                            }
+                            collection.insert_one(page_data)
+                            logging.info(f"Page HTML stored in DB: {url}")
 
                 except requests.exceptions.RequestException as e:
                     logging.error(f"Error accessing page {url}: {e}")
+                except Exception as e:
+                    logging.error(f"Unexpected error processing {url}: {e}")
