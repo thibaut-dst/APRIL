@@ -94,6 +94,9 @@ def scrape_webpages_to_db(keywords_list, collection):
     Google search and scraping function
     Supports both HTML and PDF files and stores data in MongoDB.
     """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }    
     for index, keyword in enumerate(keywords_list):
         
         logging.info(f"Starting Google search for: '{keyword}'")
@@ -104,7 +107,7 @@ def scrape_webpages_to_db(keywords_list, collection):
                     logging.info(f"Document already exists in DB, skipping: {url}")
                     continue
 
-                response = requests.get(url)
+                response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 file_type = "pdf" if url.lower().endswith(".pdf") else "html"
 
