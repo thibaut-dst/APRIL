@@ -7,6 +7,7 @@ import json
 import re
 import logging
 import fitz
+from datetime import datetime  # Importing datetime module
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -48,6 +49,9 @@ def meta_scraping(url):
                 #print(f"Erreur lors du décodage du JSON-LD : {e}")
                 logging.warning(f"Error decoding JSON-LD on page {url}: {e}")
 
+        # Get the current date and time of scraping
+        date_scraped = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         # Retourner les informations sous forme de dictionnaire
         return {
             "Title": title,
@@ -56,7 +60,8 @@ def meta_scraping(url):
             "Open Graph Description": og_description,
             "Canonical URL": canonical,
             "Author": author,
-            "Date Published": date_published
+            "Date Published": date_published,
+            "Date Scraped": date_scraped 
         }
     else:
         #print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
@@ -64,10 +69,11 @@ def meta_scraping(url):
 
         return None
 
-# Function to extract text from HTML content
+# Function to extract Text from HTML content
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
+# Function to transform PDF into Text 
 def pdf_to_text(pdf_path):
     text = ""
     with fitz.open(pdf_path) as pdf:
@@ -76,6 +82,7 @@ def pdf_to_text(pdf_path):
             text += page.get_text("text")
     return text
 
+# Function for meta scraping for the PDF file
 def pdf_meta_scraping(pdf_path):
     with fitz.open(pdf_path) as doc:
         metadata = doc.metadata  
@@ -89,6 +96,7 @@ def pdf_meta_scraping(pdf_path):
         "Creation Date": created
     }
 
+# Function for scraping into the Database
 def scrape_webpages_to_db(keywords_list, collection):
     """
     Google search and scraping function
