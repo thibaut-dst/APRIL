@@ -15,8 +15,8 @@ data_viz_bp = Blueprint('data_viz', __name__)
 
 # MongoDB setup
 client = MongoClient("mongodb://localhost:27017/")
-db = client["April"]  # Replace with your database name
-collection = db["Documents"]  # Replace with your collection name
+db = client["April"]  
+collection = db["Documents"]  
 
 # ====== Pie Chart Endpoint ======
 @data_viz_bp.route('/piechart', methods=['GET'])
@@ -45,18 +45,29 @@ def get_pie_chart():
 
         # Generate the pie chart
         fig, ax = plt.subplots(figsize=(10, 10))  # Optional: Adjust figure size
-        ax.pie(
+        wedges, texts, autotexts = ax.pie(
             sizes, 
-            labels=labels, 
-            autopct=absolute_value, #autopct='%1.1f%%', 
+            #labels=labels, 
+            autopct=absolute_value, #autopct='%1.1f%%'
             startangle=90, 
-            textprops={'fontsize': 15}  # Optional: Adjust text size
+            textprops={'fontsize': 15},
+            wedgeprops={'edgecolor': 'black'}
         )
         ax.axis('equal')  # Equal aspect ratio ensures a circular pie chart.
 
+        # Add a legend using plt.legend
+        plt.legend(
+            wedges, 
+            labels,  # Use URLs as legend labels
+            title="Sources", 
+            loc="center left", 
+            bbox_to_anchor=(1, 0.5),  # Position legend outside the chart
+            fontsize=12  # Adjust legend text size
+        )
+
         # Save the chart to a buffer
         buf = BytesIO()
-        plt.savefig(buf, format="png")
+        plt.savefig(buf, format="png", bbox_inches="tight")
         plt.close(fig)
         buf.seek(0)
 
