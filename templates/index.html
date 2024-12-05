@@ -54,8 +54,8 @@
                     <thead>
                         <tr>
                             <th>Title</th>
-                            <th>Author</th>
-                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Research keyword</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,9 +63,9 @@
                         
                         <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
 
+                            <td>{{ doc['Title_updated'] }}</td>
+                            <td>{{ doc['domain'] }}</td>
                             <td>{{ doc['keyword'] }}</td>
-                            <td>{{ doc['meta_data']['Author'] }}</td>
-                            <td>{{ doc['meta_data']['Date Published'] }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
