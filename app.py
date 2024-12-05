@@ -5,6 +5,9 @@ import threading
 import os
 import subprocess
 import logging
+
+from functions.data_viz import data_viz_bp  # Import the blueprint
+
 app = Flask(__name__)
 
 #===================== Database config =====================
@@ -155,6 +158,8 @@ def document(doc_id):
     return render_template('document.html', document=document)
 
 
+# Register the data visualization blueprint
+app.register_blueprint(data_viz_bp, url_prefix='/api')
 
 
 if __name__ == '__main__':

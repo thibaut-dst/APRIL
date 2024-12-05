@@ -94,25 +94,30 @@ def clean_text(text: str) -> str:
 
 def ner(spacy_doc: Doc) -> dict:
     """
-    Perform named entity recognition on a given spaCy Doc object.
+    Perform named entity recognition on a given spaCy Doc object, ensuring no duplicate entity texts.
     
     Parameters:
         spacy_doc (Doc): A spaCy Doc object with processed text.
 
     Returns:
-        dict: A dictionary with entity labels as keys and lists of entity texts as values.
+        dict: A dictionary with entity labels as keys and lists of unique entity texts as values.
     """
     try:
         entities = {}
 
-        for ent in spacy_doc.ents:  
+        for ent in spacy_doc.ents:
             if ent.label_ not in entities:
-                entities[f'{ent.label_}'] = []
-            entities[f'{ent.label_}'].append(ent.text)
+                entities[f'{ent.label_}'] = set()  # Use a set to avoid duplicates
+            entities[f'{ent.label_}'].add(ent.text)  # Add entity text to the set
+        
+        # Convert sets to lists for the final output
+        entities = {label: list(texts) for label, texts in entities.items()}
+        
         return entities
     except Exception as e:
         logging.error(f"Error on named entity recognition: {e}")
         raise SystemExit(f"Error on named entity recognition: {e}")
+
 
 def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
     """
