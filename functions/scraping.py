@@ -117,9 +117,10 @@ def scrape_webpages_to_db(keywords_list, collection):
 
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
-                file_type = "pdf" if url.lower().endswith(".pdf") else "html"
-
-                if file_type == "pdf":
+                content_type = response.headers.get('Content-Type', '').lower()
+                
+                if 'application/pdf' in content_type:
+                    file_type = "pdf"
                     pdf_name = f"temp_pdf_{index}.pdf"
                     with open(pdf_name, 'wb') as f:
                         f.write(response.content)
@@ -139,8 +140,9 @@ def scrape_webpages_to_db(keywords_list, collection):
                     }
                     collection.insert_one(page_data)
                     logging.info(f"PDF content stored in DB from {url}.")
-
-                else:  # Handle HTML pages
+                    
+                elif 'text/html' in content_type: # Handle HTML pages
+                    file_type = "html" 
                     soup = BeautifulSoup(response.text, 'html.parser')
                     #content = soup.get_text()  # v0 du get_text
 
