@@ -16,9 +16,8 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 ) 
 
-vocabulary_path = 'Vocabulaire_Expert_CSV.csv'
 
-def extract_columns_to_list(file_path, column_name):
+def extract_columns_to_list(file_path: str, column_name: str) -> list:
     try:
         # Attempt to read the CSV file
         df = pd.read_csv(file_path, sep=";")
@@ -87,7 +86,7 @@ def get_top_5_words(words_of_research: dict, words_of_analysis: dict) -> list:
         raise SystemExit(f"An error occurred: {e}")
 
 
-def calculate_relevance(spacy_doc, words_of_research_and_analysis: dict) -> float:
+def calculate_relevance(spacy_doc: Doc, words_of_research_and_analysis: dict) -> float:
     """
     Calculate the relevance of a text based on the occurrence of words from 'words_of_research_and_analysis'.
     The relevance is calculated as the proportion of target word occurrences relative to the total number of words in the text.
@@ -231,7 +230,7 @@ def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
         raise SystemExit(f"Error on word tracking: {e}")
 
 
-def get_pdf_title_from_url(source_url):
+def get_pdf_title_from_url(source_url: str) -> str:
     """
     Extract the file name from the source_url to use as the Title for PDF documents.
 
@@ -260,7 +259,7 @@ def get_pdf_title_from_url(source_url):
         return None
 
 
-def process_document(MongoDB_document: dict) -> dict:
+def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
     """
     Centralization of the processing logic:
     Processes a single document to extract the cleaned text, domain name, named entities,
