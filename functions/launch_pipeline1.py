@@ -14,7 +14,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
 
-def read_and_shuffle_csv(file_path):
+def read_and_shuffle_csv(file_path: str):
     try:
         # Attempt to read the CSV file
         df = pd.read_csv(file_path, sep=";")
@@ -50,14 +50,14 @@ def main():
         raise SystemExit(f"Database connection failed: {e}")
 
     # Load keywords from the CSV
-    file_path = 'Vocabulaire_Expert_CSV.csv'
+    vocabulary_path = 'Vocabulaire_Expert_CSV.csv'
 
     try:
-        keywords_list = read_and_shuffle_csv(file_path)
+        keywords_list = read_and_shuffle_csv(vocabulary_path)
         logging.info(f"Loaded keywords")
     except FileNotFoundError:
-        logging.error(f"CSV file not found: {file_path}")
-        raise SystemExit(f"CSV file not found: {file_path}")
+        logging.error(f"CSV file not found: {vocabulary_path}")
+        raise SystemExit(f"CSV file not found: {vocabulary_path}")
     except Exception as e:
         logging.error(f"Error reading CSV file: {e}")
         raise SystemExit(f"Error reading CSV file: {e}")
