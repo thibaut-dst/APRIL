@@ -117,14 +117,26 @@
     <script>
         // Fetch the document count
         async function fetchDocumentCount() {
+            try {
             const response = await fetch('/get-doc-count');
             const data = await response.json();
-            document.getElementById('doc-count').innerText = data.count;
+            document.getElementById('doc-count').innerText = data.count || 0;
+            } catch (error) {
+                console.error('Error fetching document count:', error);
+                document.getElementById('doc-count').innerText = 'Error';
+            }            
         }
+
+        // Fetch the number of processed documents
         async function fetchDocumentProcessedCount() {
-            const response = await fetch('/get-doc-processed-count');
-            const data = await response.json();
-            document.getElementById('doc-processed-count').innerText = data.count;
+            try {
+                const response = await fetch('/get-doc-processed-count');
+                const data = await response.json();
+                document.getElementById('doc-processed-count').innerText = data.count || 0;
+            } catch (error) {
+                console.error('Error fetching processed document count:', error);
+                document.getElementById('doc-processed-count').innerText = 'Error';
+            }
         }
         function startPipeline() {
             fetch('/start-pipeline', { method: 'POST' })
@@ -182,11 +194,14 @@
         logContainer.scrollTop = logContainer.scrollHeight;  // Auto-scroll to the bottom
     }
 
-    // Fetch document count on page load
-    fetchDocumentCount();
-    fetchDocumentProcessedCount();
+    // Periodically update document counts every 5 seconds
+    setInterval(fetchDocumentCount, 5000);
+    setInterval(fetchDocumentProcessedCount, 5000);    
     // Start fetching logs every 2 seconds
     setInterval(fetchLogs, 2000);
+    // Fetch document counts immediately when the page loads
+    fetchDocumentCount();
+    fetchDocumentProcessedCount();
     </script>
 
 </body>
