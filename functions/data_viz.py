@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, Response
+from flask import Blueprint, render_template
 from pymongo import MongoClient
 from io import BytesIO
 import base64
@@ -19,62 +20,92 @@ db = client["April"]
 collection = db["Documents"]  
 
 # ====== Pie Chart Endpoint ======
+#@data_viz_bp.route('/piechart', methods=['GET'])
+# def get_pie_chart():
+#     try:
+#         # Fetch all documents and count occurrences of each "Canonical URL"
+#         documents = collection.find({}, {"url": 1, "_id": 0})
+#         URL_counts = {}
+
+#         for doc in documents:
+#             URL = doc.get("url", "Unknown")  # Default to "Unknown" if missing
+#             URL_counts[URL] = URL_counts.get(URL, 0) + 1
+
+#         # Prepare data for the pie chart
+#         labels = list(URL_counts.keys())
+#         sizes = list(URL_counts.values())
+
+#         if not sizes:
+#             return jsonify({"error": "No data available for url"}), 404
+
+#         # Custom function to display raw counts on the pie chart
+#         def absolute_value(val):
+#             total = sum(sizes)
+#             count = int(round(val * total / 100))
+#             return f"{count}"  # Display only the raw count
+
+#         # Generate the pie chart
+#         fig, ax = plt.subplots(figsize=(10, 10))  # Optional: Adjust figure size
+#         wedges, texts, autotexts = ax.pie(
+#             sizes, 
+#             #labels=labels, 
+#             autopct=absolute_value, #autopct='%1.1f%%'
+#             startangle=90, 
+#             textprops={'fontsize': 15},
+#             wedgeprops={'edgecolor': 'black'}
+#         )
+#         ax.axis('equal')  # Equal aspect ratio ensures a circular pie chart.
+
+#         # Add a legend using plt.legend
+#         plt.legend(
+#             wedges, 
+#             labels,  # Use URLs as legend labels
+#             title="Sources", 
+#             loc="center left", 
+#             bbox_to_anchor=(1, 0.5),  # Position legend outside the chart
+#             fontsize=12  # Adjust legend text size
+#         )
+
+#         # Save the chart to a buffer
+#         buf = BytesIO()
+#         plt.savefig(buf, format="png", bbox_inches="tight")
+#         plt.close(fig)
+#         buf.seek(0)
+
+#         # Encode the pie chart as Base64
+#         encoded_image = base64.b64encode(buf.read()).decode("utf-8")
+#         return jsonify({"image": encoded_image})
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+## def pie_chart():
+##    # Serve the HTML page that includes the pie chart rendering logic
+##    return render_template('piechart.html') 
+
 @data_viz_bp.route('/piechart', methods=['GET'])
-def get_pie_chart():
+def get_pie_chart_data():
     try:
         # Fetch all documents and count occurrences of each "Canonical URL"
-        documents = collection.find({}, {"url": 1, "_id": 0})
+        documents = collection.find({}, {"url": 1, "_id": 0})  # Replace `collection` with your actual MongoDB collection
         URL_counts = {}
 
+        # Count occurrences of each URL
         for doc in documents:
-            URL = doc.get("url", "Unknown")  # Default to "Unknown" if missing
+            URL = doc.get("url", "Unknown")  # Default to "Unknown" if URL is missing
             URL_counts[URL] = URL_counts.get(URL, 0) + 1
 
         # Prepare data for the pie chart
         labels = list(URL_counts.keys())
         sizes = list(URL_counts.values())
 
+        # If there is no data, return an error response
         if not sizes:
-            return jsonify({"error": "No data available for url"}), 404
+            return jsonify({"error": "No data available for URL"}), 404
 
-        # Custom function to display raw counts on the pie chart
-        def absolute_value(val):
-            total = sum(sizes)
-            count = int(round(val * total / 100))
-            return f"{count}"  # Display only the raw count
+        # Return labels and sizes in JSON format
+        return jsonify({"labels": labels, "sizes": sizes})
 
-        # Generate the pie chart
-        fig, ax = plt.subplots(figsize=(10, 10))  # Optional: Adjust figure size
-        wedges, texts, autotexts = ax.pie(
-            sizes, 
-            #labels=labels, 
-            autopct=absolute_value, #autopct='%1.1f%%'
-            startangle=90, 
-            textprops={'fontsize': 15},
-            wedgeprops={'edgecolor': 'black'}
-        )
-        ax.axis('equal')  # Equal aspect ratio ensures a circular pie chart.
-
-        # Add a legend using plt.legend
-        plt.legend(
-            wedges, 
-            labels,  # Use URLs as legend labels
-            title="Sources", 
-            loc="center left", 
-            bbox_to_anchor=(1, 0.5),  # Position legend outside the chart
-            fontsize=12  # Adjust legend text size
-        )
-
-        # Save the chart to a buffer
-        buf = BytesIO()
-        plt.savefig(buf, format="png", bbox_inches="tight")
-        plt.close(fig)
-        buf.seek(0)
-
-        # Encode the pie chart as Base64
-        encoded_image = base64.b64encode(buf.read()).decode("utf-8")
-        return jsonify({"image": encoded_image})
     except Exception as e:
+        # Catch and return any error that occurs during processing
         return jsonify({"error": str(e)}), 500
 
 
