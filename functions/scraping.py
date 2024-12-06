@@ -105,10 +105,12 @@ def scrape_webpages_to_db(keywords_list, collection):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }    
-    for index, keyword in enumerate(keywords_list):
+    #for index, keyword in enumerate(keywords_list):
+    for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
+
         
-        logging.info(f"Starting Google search for: '{keyword}'")
-        for url in search(keyword, num_results=3):  # Limited to 3 results
+        logging.info(f"Starting Google search for: '{combined}'")
+        for url in search(combined, num_results=3):  # Limited to 3 results
             try:
                 # Check if document already exists in DB
                 if collection.find_one({"url": url}):
@@ -130,7 +132,8 @@ def scrape_webpages_to_db(keywords_list, collection):
                     os.remove(pdf_name)
                     page_data = {
                         "url": url,
-                        "keyword": keyword,
+                        "keyword of scraping": vocabulaire,
+                        "localisation of scraping": localisation,
                         "content": text_content,
                         "meta_data": {
                             "file_type": file_type,
@@ -153,10 +156,11 @@ def scrape_webpages_to_db(keywords_list, collection):
                     content = content.strip()
 
                     # Check if the keyword is present in the content
-                    if contains_keywords(content, keyword):
+                    if contains_keywords(content, vocabulaire):
                         page_data = {
                             "url": url,
-                            "keyword": keyword,
+                            "keyword of scraping": vocabulaire,
+                            "localisation of scraping": localisation,
                             "content": content,
                             "meta_data": {
                                 "file_type": file_type,

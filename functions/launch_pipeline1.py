@@ -23,17 +23,18 @@ def read_and_shuffle_csv(file_path):
         vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
         localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
 
-        # Generate all pairwise combinations (cross product)
-        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(vocabulaire_recherche, localisation_recherche)]
+        # Generate triples: [vocabulaire + localisation, vocabulaire, localisation]
+        triple_list = [[f"{vocab} {loc.strip()}", vocab, loc.strip()] for vocab, loc in itertools.product(vocabulaire_recherche, localisation_recherche)]
 
-        # Shuffle the pairs randomly
-        random.shuffle(pair_list)
+        # Shuffle the triples randomly
+        random.shuffle(triple_list)
 
-        logging.info(f"Number of pairs generated: {len(pair_list)}")
-        return pair_list
+        logging.info(f"Number of triples generated: {len(triple_list)}")
+        return triple_list
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
       
 
 def main():
@@ -74,3 +75,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+
