@@ -112,11 +112,22 @@ table tr.clickable-row:hover {
     width: 100%;
     max-width: 1100px;
     margin: 40px auto;
-    background-color: #ffffff;
+    background-color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    padding: 40px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
+/*
+.document-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    color: #333;
+}
+*/
 
 /* Header Styles */
 .document-header {
@@ -212,15 +223,6 @@ table tr.clickable-row:hover {
 
 .return-button .button:hover {
     background-color: #005bb5;
-}
-
-/* General Document Styling */
-.document-container {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
-    background-color: white;
-    color: #333;
 }
 
 /* Highlight Styles */
