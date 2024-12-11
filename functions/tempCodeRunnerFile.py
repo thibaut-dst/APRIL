@@ -174,33 +174,3 @@ def scrape_webpages_to_db(keywords_list, collection):
                 logging.error(f"Error accessing page {url}: {e}")
             except Exception as e:
                 logging.error(f"Unexpected error processing {url}: {e}")
-if __name__ == "__main__":
-    from pymongo import MongoClient
-
-    # MongoDB Configuration
-    client = MongoClient("mongodb://localhost:27017")
-    db = client['April']
-    collection = db['Documents']
-
-    # Read CSV file to generate keywords_list
-    input_file = "Vocabulaire_Expert_CSV.csv"
-    try:
-        df = pd.read_csv(input_file, delimiter=';', encoding='utf-8')
-    except UnicodeDecodeError:
-        df = pd.read_csv(input_file, delimiter=';', encoding='latin1')
-
-    # Ensure required columns exist
-    required_columns = ['Vocabulaire de recherche', 'Localisation de recherche', 'Vocabulaire d\'analyse']
-    if not all(col in df.columns for col in required_columns):
-        raise ValueError("The CSV file must contain the columns: " + ", ".join(required_columns))
-
-    # Generate keywords_list from CSV data
-    keywords_list = [
-        (f"{row['Vocabulaire de recherche']} {row['Localisation de recherche']}", 
-         row['Vocabulaire de recherche'], 
-         row['Localisation de recherche'])
-        for _, row in df.iterrows()
-    ]
-
-    # Execute the scraping function
-    scrape_webpages_to_db(keywords_list, collection)

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +40,18 @@
         <!-- Scrollable Document Table Section -->
         <section class="document-section">
             <div class="document-table">
+                <div class="sort-options">
+                    <label for="sort-selector">Sort by:</label>
+                    <select id="sort-selector" onchange="sortTable()">
+                        <option value="score">Score</option>
+                        <option value="date">Date Published</option>
+                    </select>
+                    <label for="sort-order">Order:</label>
+                    <select id="sort-order" onchange="sortTable()">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -51,12 +62,13 @@
                     </thead>
                     <tbody>
                         {% for doc in documents %}
-                        
-                        <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
-
-                            <td>{{ doc['Title_updated'] }}</td>
-                            <td>{{ doc['domain'] }}</td>
-                            <td>{{ doc['keyword'] }}</td>
+                        <tr class="clickable-row" 
+                            data-url="{{ url_for('document', doc_id=doc['_id']) }}" 
+                            data-score="{{ doc.get('score', 0) }}" 
+                            data-date="{{ doc['meta_data'].get('Date Published', '1970-01-01') }}">
+                            <td>{{ doc['meta_data'].get('Title', 'No Title') }}</td>
+                            <td>{{ doc['meta_data'].get('Author', 'Unknown Author') }}</td>
+                            <td>{{ doc.get('keyword of scraping', 'No Keyword') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -66,6 +78,33 @@
     </main>
 </body>
 <script>
+    function sortTable() {
+        const sortKey = document.getElementById('sort-selector').value; // Get selected sorting key
+        const sortOrder = document.getElementById('sort-order').value; // Get sorting order
+        const rows = Array.from(document.querySelectorAll('.document-table tbody tr')); // Get all rows
+
+        rows.sort((a, b) => {
+            const aValue = sortKey === 'score' 
+                ? parseFloat(a.getAttribute('data-score')) || 0 
+                : new Date(a.getAttribute('data-date')) || new Date(0);
+            const bValue = sortKey === 'score' 
+                ? parseFloat(b.getAttribute('data-score')) || 0 
+                : new Date(b.getAttribute('data-date')) || new Date(0);
+
+            // Compare based on sort order
+            if (sortOrder === 'asc') {
+                return aValue - bValue;
+            } else {
+                return bValue - aValue;
+            }
+        });
+
+        // Clear and rebuild the table with sorted rows
+        const tbody = document.querySelector('.document-table tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+        rows.forEach(row => tbody.appendChild(row)); // Append sorted rows
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         const rows = document.querySelectorAll('.clickable-row');
         rows.forEach(row => {
@@ -76,4 +115,5 @@
         });
     });
 </script>
+
 </html>

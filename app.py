@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 #===================== Database config =====================
 
-app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/April"
 mongo = PyMongo(app)
 mongo_collection = mongo.db.Documents
 
