@@ -77,6 +77,10 @@
     width: 100%;
     border-collapse: collapse;
 }
+.document-table thead{
+    position: sticky;
+    top: 0px;
+}
 
 .document-table th, .document-table td {
     padding: 12px;
@@ -148,6 +152,9 @@ table tr.clickable-row:hover {
 
 /* Metadata Section */
 .document-metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 20px;
     font-size: 14px;
     color: #555;
@@ -178,6 +185,12 @@ table tr.clickable-row:hover {
 
 .document-metadata a:hover {
     text-decoration: underline;
+}
+
+.legend{
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
 }
 
 /* Return Button Styles */
@@ -211,8 +224,14 @@ table tr.clickable-row:hover {
 }
 
 /* Highlight Styles */
+.highlight{
+    padding: 2px 5px;
+    border-radius: 8px;
+    width: max-content;
+}
+
 .highlight.LOC { background-color: #ffeb3b; color: #000; }
-.highlight.ORG { background-color: #8bc34a; color: #000; }
+.highlight.ORG { background-color: #30d045; color: #000; }
 .highlight.DATE { background-color: #03a9f4; color: #fff; }
 .highlight.PER { background-color: #e91e63; color: #fff; }
 .highlight.MISC { background-color: #9e9e9e; color: #fff; }

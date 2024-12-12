@@ -23,6 +23,12 @@ Ultimately, by combining web scraping, data analysis, and stakeholder engagement
 
 ## Installation
 
+### Create Docker image from source
+
+``` docker build -t april-web:0.2 -f build/Dockerfile .```
+
+
+
 ### Prerequisites
 - Python 3.12+
 - pip (Python package installer)
@@ -38,12 +44,12 @@ Ultimately, by combining web scraping, data analysis, and stakeholder engagement
    ```
 4. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   docker-compose up --build
    ```
 ## Usage
-To start the application, use the following command:
+To start the application, go to the following link:
    ```bash
-   python main.py
+   http://127.0.0.1:5001/
    ```
 
 For more usage options, you can refer to the project documentation.

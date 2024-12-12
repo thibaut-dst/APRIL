@@ -6,6 +6,8 @@ from googlesearch import search
 import json
 import re
 import logging
+import fitz
+from datetime import datetime  # Importing datetime module
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -47,6 +49,9 @@ def meta_scraping(url):
                 #print(f"Erreur lors du décodage du JSON-LD : {e}")
                 logging.warning(f"Error decoding JSON-LD on page {url}: {e}")
 
+        # Get the current date and time of scraping
+        date_scraped = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         # Retourner les informations sous forme de dictionnaire
         return {
             "Title": title,
@@ -55,7 +60,8 @@ def meta_scraping(url):
             "Open Graph Description": og_description,
             "Canonical URL": canonical,
             "Author": author,
-            "Date Published": date_published
+            "Date Published": date_published,
+            "Date Scraped": date_scraped 
         }
     else:
         #print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
@@ -63,46 +69,104 @@ def meta_scraping(url):
 
         return None
 
-# Function to extract text from HTML content
+# Function to extract Text from HTML content
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
-def scrape_webpages_to_db(keywords_df, collection):
+# Function to transform PDF into Text 
+def pdf_to_text(pdf_path):
+    text = ""
+    with fitz.open(pdf_path) as pdf:
+        for page_num in range(pdf.page_count):
+            page = pdf[page_num]
+            text += page.get_text("text")
+    return text
+
+# Function for meta scraping for the PDF file
+def pdf_meta_scraping(pdf_path):
+    with fitz.open(pdf_path) as doc:
+        metadata = doc.metadata  
+        title = metadata.get('title', 'No title')
+        author = metadata.get('author', 'No author')
+        created = metadata.get('creationDate', 'No creation date')
+
+    return {
+        "Title": title,
+        "Author": author,
+        "Creation Date": created
+    }
+
+# Function for scraping into the Database
+def scrape_webpages_to_db(keywords_list, collection):
     """
     Google search and scraping function
+    Supports both HTML and PDF files and stores data in MongoDB.
     """
-    for index, row in keywords_df.iterrows():
-        keywords = [kw.strip() for kw in row['Keywords'].split(',')]
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }    
+    for index, keyword in enumerate(keywords_list):
         
-        for keyword in keywords:
-            #print(f"Recherche Google effectuée avec : {keyword}")
-            logging.info(f"Starting Google search for: '{keyword}'")
+        logging.info(f"Starting Google search for: '{keyword}'")
+        for url in search(keyword, num_results=3):  # Limited to 3 results
+            try:
+                # Check if document already exists in DB
+                if collection.find_one({"url": url}):
+                    logging.info(f"Document already exists in DB, skipping: {url}")
+                    continue
 
-            # Google search avec le mot-clé
-            for url in search(keyword, num_results=5):  # Limité à 5 résultats
-                try:
-                    response = requests.get(url)
-                    response.raise_for_status()
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                content_type = response.headers.get('Content-Type', '').lower()
+                
+                if 'application/pdf' in content_type:
+                    file_type = "pdf"
+                    pdf_name = f"temp_pdf_{index}.pdf"
+                    with open(pdf_name, 'wb') as f:
+                        f.write(response.content)
+                    text_content = pdf_to_text(pdf_name)
+                    pdf_metadata = pdf_meta_scraping(pdf_name)
 
+                    os.remove(pdf_name)
+                    page_data = {
+                        "url": url,
+                        "keyword": keyword,
+                        "content": text_content,
+                        "meta_data": {
+                            "file_type": file_type,
+                            "source_url": url,
+                            **pdf_metadata
+                        }
+                    }
+                    collection.insert_one(page_data)
+                    logging.info(f"PDF content stored in DB from {url}.")
+                    
+                elif 'text/html' in content_type: # Handle HTML pages
+                    file_type = "html" 
                     soup = BeautifulSoup(response.text, 'html.parser')
-                    content = soup.get_text()  # Extraire le texte brut
+                    #content = soup.get_text()  # v0 du get_text
 
-                    # Vérifier si le mot-clé est dans le contenu
+                    paragraphs = soup.find_all('p')
+                    content = ""
+                    for p in paragraphs:
+                        content += p.get_text() + " <br> "
+                    content = content.strip()
+
+                    # Check if the keyword is present in the content
                     if contains_keywords(content, keyword):
-                        # Collecter les données à insérer dans la base de données
                         page_data = {
                             "url": url,
                             "keyword": keyword,
                             "content": content,
-                            "meta_data": meta_scraping(url)  # Appel à la fonction meta_scraping pour ajouter des méta-données
+                            "meta_data": {
+                                "file_type": file_type,
+                                **meta_scraping(url)
+                            }
                         }
-
-                        # Insertion dans la base de données MongoDB
                         collection.insert_one(page_data)
-                        #print(f"Page {url} enregistrée dans la base de données.")
-                        logging.info(f"Page stored in DB: {url}")
+                        logging.info(f"Page HTML stored in DB: {url}")
 
-
-                except requests.exceptions.RequestException as e:
-                    #print(f"Erreur lors de l'accès à la page {url}: {e}")
-                    logging.error(f"Error accessing page {url}: {e}")
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Error accessing page {url}: {e}")
+            except Exception as e:
+                logging.error(f"Unexpected error processing {url}: {e}")

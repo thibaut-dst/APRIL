@@ -24,19 +24,43 @@
 
          <!-- Additional Metadata Section -->
          <aside class="document-metadata">
-            <h3>Additional Metadata</h3>
-            <ul>
-                <li><strong>Domain:</strong> {{ document['domain'] }}</li>
-                <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
-                <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
-                <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
-                <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
-            </ul>
+             <div>
+                 <h3>Additional Metadata</h3>
+                 <ul>
+                     <li><strong>Domain:</strong> {{ document['domain'] }}</li>
+                     <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                     <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
+                     <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
+                     <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+                    </ul>
+                </div>
+                <div class="legend">
+                    <span>
+                        Légende: 
+                    </span>
+                    <span class="highlight DATE">
+                        Date
+                    </span>
+                    <span class="highlight PER">
+                        Person
+                    </span>
+                    
+                    <span class="highlight LOC">
+                        Location
+                    </span>
+                    <span class="highlight ORG">
+                        Organization
+                    </span>
+                    <span class="highlight MISC">
+                        Miscellaneous
+                    </span>
+                </div>
         </aside>
+    
 
         <!-- Document Content Section -->
         <section id="content" class="document-content">
-            <p>{{ document['cleaned_text'] }}</p>
+            <p>{{ document['cleaned_text'] | safe }}</p>
         </section>
     
         
