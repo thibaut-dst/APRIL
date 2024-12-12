@@ -18,7 +18,7 @@
                 <span class="header-title">Coastal Risk Perception Analysis</span>
             </div>
             <div class="header-right">
-                <a href="/launch-pipeline" class="header-button">Launch Pipeline</a>
+                <a href="/launch-pipeline" class="header-button">Get new documents</a>
                 <a href="/" class="header-button">Explore Documents</a>
             </div>
         </div>
@@ -190,9 +190,9 @@
                         
                         <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
 
-                            <td>{{ doc['Title_updated'] }}</td>
-                            <td>{{ doc['domain'] }}</td>
-                            <td>{{ doc['keyword'] }}</td>
+                            <td>{{ doc.get('Title_updated', 'This document has not been processed yet') }}</td>
+                            <td>{{ doc.get('domain', '__') }}</td>
+                            <td>{{ doc.get('keyword', '__') }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

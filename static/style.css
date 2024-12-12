@@ -115,7 +115,28 @@ header.sticky-header {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+
+/* Document Page Specific Styles */
+.document-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
+/* OLD
+.document-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    color: #333;
+}
+*/
 
 .search-bar {
     padding: 10px;
@@ -206,7 +227,6 @@ tbody td {
     padding: 0 20px; /* Ajoute un peu d'espace sur les côtés */
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -225,6 +245,13 @@ tbody td {
     .document-section {
         margin: 10px;
     }}
+  
+   /* Highlight Styles */
+.highlight{
+    padding: 2px 5px;
+    border-radius: 8px;
+    width: max-content;
+}
 
 /* Data Visualization Section */
 .data-viz-section {

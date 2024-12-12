@@ -7,6 +7,7 @@ import json
 import re
 import logging
 import fitz
+from datetime import datetime  # Importing datetime module
 
 # Function for meta scraping
 def meta_scraping(url):
@@ -48,6 +49,9 @@ def meta_scraping(url):
                 #print(f"Erreur lors du décodage du JSON-LD : {e}")
                 logging.warning(f"Error decoding JSON-LD on page {url}: {e}")
 
+        # Get the current date and time of scraping
+        date_scraped = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
         # Retourner les informations sous forme de dictionnaire
         return {
             "Title": title,
@@ -56,7 +60,8 @@ def meta_scraping(url):
             "Open Graph Description": og_description,
             "Canonical URL": canonical,
             "Author": author,
-            "Date Published": date_published
+            "Date Published": date_published,
+            "Date Scraped": date_scraped 
         }
     else:
         #print(f"Échec de la récupération de la page. Code de statut : {response.status_code}")
@@ -64,10 +69,11 @@ def meta_scraping(url):
 
         return None
 
-# Function to extract text from HTML content
+# Function to extract Text from HTML content
 def contains_keywords(content, keyword):
     return keyword.lower() in content.lower()
 
+# Function to transform PDF into Text 
 def pdf_to_text(pdf_path):
     text = ""
     with fitz.open(pdf_path) as pdf:
@@ -76,6 +82,7 @@ def pdf_to_text(pdf_path):
             text += page.get_text("text")
     return text
 
+# Function for meta scraping for the PDF file
 def pdf_meta_scraping(pdf_path):
     with fitz.open(pdf_path) as doc:
         metadata = doc.metadata  
@@ -89,26 +96,33 @@ def pdf_meta_scraping(pdf_path):
         "Creation Date": created
     }
 
+# Function for scraping into the Database
 def scrape_webpages_to_db(keywords_list, collection):
     """
     Google search and scraping function
     Supports both HTML and PDF files and stores data in MongoDB.
     """
-    for index, keyword in enumerate(keywords_list):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }    
+    #for index, keyword in enumerate(keywords_list):
+    for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
+
         
-        logging.info(f"Starting Google search for: '{keyword}'")
-        for url in search(keyword, num_results=3):  # Limited to 3 results
+        logging.info(f"Starting Google search for: '{combined}'")
+        for url in search(combined, num_results=3):  # Limited to 3 results
             try:
                 # Check if document already exists in DB
                 if collection.find_one({"url": url}):
                     logging.info(f"Document already exists in DB, skipping: {url}")
                     continue
 
-                response = requests.get(url)
+                response = requests.get(url, headers=headers)
                 response.raise_for_status()
-                file_type = "pdf" if url.lower().endswith(".pdf") else "html"
-
-                if file_type == "pdf":
+                content_type = response.headers.get('Content-Type', '').lower()
+                
+                if 'application/pdf' in content_type:
+                    file_type = "pdf"
                     pdf_name = f"temp_pdf_{index}.pdf"
                     with open(pdf_name, 'wb') as f:
                         f.write(response.content)
@@ -118,7 +132,8 @@ def scrape_webpages_to_db(keywords_list, collection):
                     os.remove(pdf_name)
                     page_data = {
                         "url": url,
-                        "keyword": keyword,
+                        "keyword of scraping": vocabulaire,
+                        "localisation of scraping": localisation,
                         "content": text_content,
                         "meta_data": {
                             "file_type": file_type,
@@ -128,8 +143,9 @@ def scrape_webpages_to_db(keywords_list, collection):
                     }
                     collection.insert_one(page_data)
                     logging.info(f"PDF content stored in DB from {url}.")
-
-                else:  # Handle HTML pages
+                    
+                elif 'text/html' in content_type: # Handle HTML pages
+                    file_type = "html" 
                     soup = BeautifulSoup(response.text, 'html.parser')
                     #content = soup.get_text()  # v0 du get_text
 
@@ -140,10 +156,11 @@ def scrape_webpages_to_db(keywords_list, collection):
                     content = content.strip()
 
                     # Check if the keyword is present in the content
-                    if contains_keywords(content, keyword):
+                    if contains_keywords(content, vocabulaire):
                         page_data = {
                             "url": url,
-                            "keyword": keyword,
+                            "keyword of scraping": vocabulaire,
+                            "localisation of scraping": localisation,
                             "content": content,
                             "meta_data": {
                                 "file_type": file_type,

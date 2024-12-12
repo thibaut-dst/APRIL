@@ -14,7 +14,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
 
-def read_and_shuffle_csv(file_path):
+def read_and_shuffle_csv(file_path: str):
     try:
         # Attempt to read the CSV file
         df = pd.read_csv(file_path, sep=";")
@@ -23,21 +23,22 @@ def read_and_shuffle_csv(file_path):
         vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
         localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
 
-        # Generate all pairwise combinations (cross product)
-        pair_list = [f"{w} {p.strip()}" for w, p in itertools.product(vocabulaire_recherche, localisation_recherche)]
+        # Generate triples: [vocabulaire + localisation, vocabulaire, localisation]
+        triple_list = [[f"{vocab} {loc.strip()}", vocab, loc.strip()] for vocab, loc in itertools.product(vocabulaire_recherche, localisation_recherche)]
 
-        # Shuffle the pairs randomly
-        random.shuffle(pair_list)
+        # Shuffle the triples randomly
+        random.shuffle(triple_list)
 
-        logging.info(f"Number of pairs generated: {len(pair_list)}")
-        return pair_list
+        logging.info(f"Number of triples generated: {len(triple_list)}")
+        return triple_list
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
       
 
 def main():
-    logging.info("Pipeline initialization.")
+    logging.info("Document collection - Pipeline initialization")
 
     try:
         # Attempt to connect to the database
@@ -49,14 +50,14 @@ def main():
         raise SystemExit(f"Database connection failed: {e}")
 
     # Load keywords from the CSV
-    file_path = 'Vocabulaire_Expert_CSV.csv'
+    vocabulary_path = 'Vocabulaire_Expert_CSV.csv'
 
     try:
-        keywords_list = read_and_shuffle_csv(file_path)
+        keywords_list = read_and_shuffle_csv(vocabulary_path)
         logging.info(f"Loaded keywords")
     except FileNotFoundError:
-        logging.error(f"CSV file not found: {file_path}")
-        raise SystemExit(f"CSV file not found: {file_path}")
+        logging.error(f"CSV file not found: {vocabulary_path}")
+        raise SystemExit(f"CSV file not found: {vocabulary_path}")
     except Exception as e:
         logging.error(f"Error reading CSV file: {e}")
         raise SystemExit(f"Error reading CSV file: {e}")
@@ -74,3 +75,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+
