@@ -1,64 +1,140 @@
-/* Search Bar Section */
-.search-bar-section {
-    gap: 20px;
-    width: 100%;
-    max-width: 800px;
-    padding: 20px;
-    margin-bottom: 20px;
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-.search-bar {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    outline: none;
 }
 
+/* Search Button */
 .search-button {
-    padding: 10px 16px;
-    background-color: #007bff;
+    padding: 10px 20px;
+    background-color: #0077b6; /* Bleu clair */
     color: white;
+    font-size: 16px;
+    font-weight: bold;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    transition: background-color 0.3s ease;
+    display: block;
+    margin: 0 auto; /* Centre le bouton */
 }
 
 .search-button:hover {
-    background-color: #0056b3;
+    background-color: #005f8a; /* Bleu plus foncé au survol */
 }
 
+header.sticky-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: #003366; /* Couleur de fond */
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.header-content {
+    width: 100%;
+    max-width: 1200px; /* Largeur maximale pour centrer le contenu */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px; /* Marges latérales */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espace entre le logo et le texte */
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+}
+
+.header-right {
+    display: flex;
+    gap: 10px; /* Espace entre les boutons */
+}
+
+.header-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.header-button:hover {
+    background-color: #005f8a;
+    color: #fff;
+}
+
+/* Search Bar Section */
+.search-bar-section {
+    padding: 20px;
+    background-color: #e8f1f2;
+    border-bottom: 1px solid #ccc;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.search-bar {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    flex: 1;
+}
+
+.search-bar.small {
+    flex: 1;
+}
+
+.search-bar.large {
+    flex: 2;
+}
 
 /* Data Visualization Section */
 .data-viz-section {
-    width: 100%;
-    max-width: 1200px;
-    margin-bottom: 20px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
     padding: 20px;
-    height: 300px;
+    background-color: #fff;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
 #data-viz {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-    font-size: 18px;
+    padding: 50px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #888;
 }
 
-/* Document Section */
+/* Document Table Section */
 .document-section {
     width: 100%;
     max-width: 1200px;
@@ -69,185 +145,95 @@
 }
 
 .document-table {
-    overflow-y: auto;
-    max-height: 400px;
+    overflow-x: auto;
 }
 
-.document-table table {
+table {
     width: 100%;
     border-collapse: collapse;
 }
-.document-table thead{
-    position: sticky;
-    top: 0px;
+
+thead {
+    background-color: #0077b6;
+    color: #fff;
 }
 
-.document-table th, .document-table td {
+thead th {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    font-size: 14px;
 }
 
-.document-table th {
-    background-color: #f4f6f8;
-    color: #333;
-    font-weight: 600;
+tbody tr {
+    border-bottom: 1px solid #ccc;
+    transition: background-color 0.3s;
 }
 
-.document-table td {
-    color: #555;
+tbody tr:hover {
+    background-color: #f1f1f1;
 }
-table tr.clickable-row td{cursor: pointer;}
-table tr.clickable-row {
+
+tbody tr.clickable-row {
     cursor: pointer;
-    transition: background-color 0.2s;
 }
 
-table tr.clickable-row:hover {
-    background-color: #f0f0f0; /* Change background on hover */
-}
-
-/* Document Page Specific Styles */
-.document-container {
-    width: 100%;
-    max-width: 1100px;
-    margin: 40px auto;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 40px;
-}
-
-/* Header Styles */
-.document-header {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.document-header h1 {
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.document-info {
-    color: #666;
+tbody td {
+    padding: 10px;
     font-size: 14px;
 }
 
-.document-info span {
-    display: inline-block;
-    margin-right: 8px;
+/* Container for centering */
+.container {
+    max-width: 1200px; /* Largeur maximale */
+    margin: 0 auto; /* Centre le conteneur horizontalement */
+    padding: 0 20px; /* Ajoute un peu d'espace sur les côtés */
 }
 
-/* Content Styles */
-.document-content {
-    line-height: 1.7;
-    font-size: 16px;
-    color: #333;
-    padding: 20px 0;
-    border-top: 1px solid #e5e5e5;
-    border-bottom: 1px solid #e5e5e5;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-/* Metadata Section */
-.document-metadata {
+    .row {
+        flex-direction: column;
+    }
+
+    .search-bar {
+        flex: none;
+        width: 100%;
+    }
+
+    .document-section {
+        margin: 10px;
+    }}
+
+/* Data Visualization Section */
+.data-viz-section {
+    width: 100%; /* Utilise toute la largeur disponible */
+    max-width: 1200px; /* Limite la largeur maximale */
+    margin: 20px auto; /* Centre la section horizontalement */
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 40px; /* Augmente l'espace interne */
+    height: 500px; /* Hauteur plus grande */
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: #555;
+    box-sizing: border-box; /* Inclus padding dans les dimensions */
 }
 
-.document-metadata h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
-    border-bottom: 2px solid #f4f6f8;
-    padding-bottom: 4px;
-}
-
-.document-metadata ul {
-    list-style: none;
-    padding: 0;
-    line-height: 1.6;
-}
-
-.document-metadata li {
-    margin: 8px 0;
-}
-
-.document-metadata a {
-    color: #0073e6;
-    text-decoration: none;
-}
-
-.document-metadata a:hover {
-    text-decoration: underline;
-}
-
-.legend{
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-/* Return Button Styles */
-.return-button {
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.return-button .button {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #0073e6;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.return-button .button:hover {
-    background-color: #005bb5;
-}
-
-/* General Document Styling */
-.document-container {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
-    background-color: white;
-    color: #333;
-}
-
-/* Highlight Styles */
-.highlight{
-    padding: 2px 5px;
+#data-viz {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #ccc; /* Bordure visible pour identifier la section */
     border-radius: 8px;
-    width: max-content;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
 }
 
-.highlight.LOC { background-color: #ffeb3b; color: #000; }
-.highlight.ORG { background-color: #30d045; color: #000; }
-.highlight.DATE { background-color: #03a9f4; color: #fff; }
-.highlight.PER { background-color: #e91e63; color: #fff; }
-.highlight.MISC { background-color: #9e9e9e; color: #fff; }
-
-/* Return Button */
-.return-button .button {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: #0073e6;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.return-button .button:hover {
-    background-color: #005bb5;
-}

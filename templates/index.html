@@ -24,10 +24,57 @@
         </div>
     </header>
     <main>
-        <!-- Top Search Bar Section -->
         <section class="search-bar-section">
-            <input type="text" placeholder="Search documents.." class="search-bar">
-            <button class="search-button">Search</button>
+            <!-- Première ligne -->
+            <div class="row">
+                <input type="text" placeholder="Mot de recherche" class="search-bar small">
+                <input type="text" placeholder="Mot d'analyse" class="search-bar small">
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choisir une localisation</option>
+                    <option value="Le Grau du Roi">Le Grau du Roi</option>
+                    <option value="La Grande Motte">La Grande Motte</option>
+                    <option value="Mauguio-Carnon">Mauguio-Carnon</option>
+                    <option value="Palavas-les-Flots">Palavas-les-Flots</option>
+                    <option value="Villeneuve-lès-Maguelone">Villeneuve-lès-Maguelone</option>
+                    <option value="Frontignan">Frontignan</option>
+                    <option value="Sète">Sète</option>
+                    <option value="Marseillan">Marseillan</option>
+                    <option value="Agde">Agde</option>
+                    <option value="Vias">Vias</option>
+                    <option value="Portiragnes">Portiragnes</option>
+                    <option value="Sérignan">Sérignan</option>
+                    <option value="Valras">Valras</option>
+                    <option value="Vendres">Vendres</option>
+                    <option value="Fleury">Fleury</option>
+                    <option value="Narbonne">Narbonne</option>
+                    <option value="Gruissan">Gruissan</option>
+                    <option value="Port-la-Nouvelle">Port-la-Nouvelle</option>
+                    <option value="Leucate">Leucate</option>
+                    <option value="Le Barcarès">Le Barcarès</option>
+                    <option value="Torreilles">Torreilles</option>
+                    <option value="Sainte-Marie-la-Mer">Sainte-Marie-la-Mer</option>
+                    <option value="Canet-en-Roussillon">Canet-en-Roussillon</option>
+                    <option value="Saint-Cyprien">Saint-Cyprien</option>
+                    <option value="Elne">Elne</option>
+                    <option value="Argelès-sur-Mer">Argelès-sur-Mer</option>
+                    <option value="Collioure">Collioure</option>
+                    <option value="Port-Vendre">Port-Vendre</option>
+                    <option value="Banyuls-sur-Mer">Banyuls-sur-Mer</option>
+                    <option value="Cerbère">Cerbère</option>
+                </select>
+            </div>
+            <!-- Deuxième ligne -->
+            <div class="row">
+                <input type="text" placeholder="Mot de recherche" class="search-bar small">
+                <input type="text" placeholder="Mot d'analyse" class="search-bar small">
+            </div>
+            <!-- Troisième ligne -->
+            <div class="row">
+                <input type="text" placeholder="Recherche par titre" class="search-bar large">
+            </div>
+            <div class="row search-button-row">
+                <button class="search-button">Rechercher</button>
+            </div>
         </section>
 
         <!-- Data Visualization Section -->
