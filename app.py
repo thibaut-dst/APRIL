@@ -7,6 +7,8 @@ import subprocess
 import logging
 app = Flask(__name__)
 
+from functions.data_viz import data_viz_bp  # Import the blueprint
+
 #===================== Database config =====================
 
 app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
