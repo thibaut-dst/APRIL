@@ -38,7 +38,7 @@ def read_and_shuffle_csv(file_path: str):
       
 
 def main():
-    logging.info("Pipeline initialization.")
+    logging.info("Document collection - Pipeline initialization")
 
     try:
         # Attempt to connect to the database

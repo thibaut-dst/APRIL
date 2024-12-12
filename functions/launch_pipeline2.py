@@ -33,12 +33,16 @@ def iterate_documents(collection_name: str, vocabulary_path: str):
             logging.error(f'Error processing document ID: {document_id}: {e}')
 
 
-if __name__ == "__main__":
+def main():
+    logging.info("Document processing (NLP) - Pipeline initialization")
     try:
-        logging.info("Pipeline execution started.")
         collection = db.get_collection()
         vocabulary_path = 'Vocabulaire_Expert_CSV.csv'
         iterate_documents(collection, vocabulary_path)
         logging.info("Text processing execution completed successfully.")
     except Exception as e:
         logging.critical(f"Critical error in the text processing execution: {e}")
+
+
+if __name__ == "__main__":
+    main()
