@@ -31,7 +31,11 @@
                      <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
                      <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
                      <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
-                     <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+                     <li><strong>Open Graph Description:</strong> 
+                        <div class="desc">
+                            {{ document['meta_data']['Open Graph Description'] or 'N/A' }}
+                        </div>
+                    </li>
                     </ul>
                 </div>
                 <div class="legend">

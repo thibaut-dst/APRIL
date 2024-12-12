@@ -63,14 +63,15 @@ body {
 .document-metadata {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: self-start;
     background-color: #f9f9f9;
-    padding: 15px;
+    padding: 25px 15px 15px 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
     margin-bottom: 20px;
     font-size: 14px;
     color: #555;
+    gap: 20px;
 }
 
 .document-metadata h3 {
@@ -79,6 +80,7 @@ body {
     color: #333;
     border-bottom: 2px solid #f4f6f8;
     padding-bottom: 4px;
+    margin-top: 0;
 }
 
 .document-metadata ul {
@@ -89,6 +91,14 @@ body {
 
 .document-metadata li {
     margin: 8px 0;
+}
+.document-metadata li .desc{
+    overflow-y: scroll;
+    max-height: 150px;
+    border-left: solid 1px gray;
+    padding-left: 10px;
+    margin-left: 10px;
+    margin-top: 5px;
 }
 
 .document-metadata a {
