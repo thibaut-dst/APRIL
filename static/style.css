@@ -1,4 +1,3 @@
-/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
@@ -12,7 +11,7 @@ body {
 /* Search Button */
 .search-button {
     padding: 10px 20px;
-    background-color: #0077b6; /* Bleu clair */
+    background-color: #007bff;
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -21,35 +20,35 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease;
     display: block;
-    margin: 0 auto; /* Centre le bouton */
+    margin: 0 auto;
 }
 
 .search-button:hover {
-    background-color: #005f8a; /* Bleu plus foncé au survol */
+    background-color: #0056b3;
 }
 
 .reset-button {
     padding: 10px 20px;
-    background-color: #e0e0e0; /* Couleur grise claire */
-    color: #333; /* Couleur du texte */
+    background-color: #e0e0e0;
+    color: #333;
     font-size: 16px;
     font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: 10px; /* Espace entre le bouton "Rechercher" et "Réinitialiser" */
+    margin-left: 10px;
 }
 
 .reset-button:hover {
-    background-color: #c0c0c0; /* Couleur grise un peu plus foncée au survol */
+    background-color: #c0c0c0;
 }
 
 header.sticky-header {
     position: sticky;
     top: 0;
     width: 100%;
-    background-color: #003366; /* Couleur de fond */
+    background-color: #003366;
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -59,17 +58,16 @@ header.sticky-header {
 
 .header-content {
     width: 100%;
-    max-width: 1200px; /* Largeur maximale pour centrer le contenu */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px; /* Marges latérales */
+    padding: 0 20px;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espace entre le logo et le texte */
+    gap: 10px;
 }
 
 .logo {
@@ -86,7 +84,7 @@ header.sticky-header {
 
 .header-right {
     display: flex;
-    gap: 10px; /* Espace entre les boutons */
+    gap: 10px;
 }
 
 .header-button {
@@ -115,28 +113,7 @@ header.sticky-header {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
-
-/* Document Page Specific Styles */
-.document-container {
-    width: 100%;
-    max-width: 1100px;
-    margin: 40px auto;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    color: #333;
 }
-/* OLD
-.document-container {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 20px;
-    background-color: white;
-    color: #333;
-}
-*/
 
 .search-bar {
     padding: 10px;
@@ -162,14 +139,22 @@ header.sticky-header {
     border-radius: 8px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 100%;
+    height: auto;
+    min-height: 100px;
 }
 
 #data-viz {
     padding: 50px;
-    border: 2px dashed #ccc;
+    border: 1px dashed #ccc;
     border-radius: 8px;
     font-size: 16px;
     color: #888;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Document Table Section */
@@ -182,50 +167,47 @@ header.sticky-header {
     padding: 20px;
 }
 
-.document-table {
-    overflow-x: auto;
+.document-table thead{
+    position: sticky;
+    top: 0px;
 }
 
-table {
+.document-table {
+    overflow-y: auto;
+    overflow-x: auto;
+    max-height: 700px;
+}
+
+.document-table table {
     width: 100%;
     border-collapse: collapse;
 }
 
-thead {
-    background-color: #0077b6;
-    color: #fff;
-}
-
-thead th {
+.document-table th, .document-table td {
     padding: 12px;
     text-align: left;
-    font-size: 14px;
+    border-bottom: 1px solid #ddd;
+}
+.document-table th {
+    background-color: #f4f6f8;
+    color: #333;
+    font-weight: 600;
+}
+.document-table td {
+    color: #555;
 }
 
-tbody tr {
-    border-bottom: 1px solid #ccc;
-    transition: background-color 0.3s;
-}
+table tr.clickable-row td{cursor: pointer;}
 
-tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-tbody tr.clickable-row {
+table tr.clickable-row {
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-tbody td {
-    padding: 10px;
-    font-size: 14px;
+table tr.clickable-row:hover {
+    background-color: #f0f0f0; /* Change background on hover */
 }
 
-/* Container for centering */
-.container {
-    max-width: 1200px; /* Largeur maximale */
-    margin: 0 auto; /* Centre le conteneur horizontalement */
-    padding: 0 20px; /* Ajoute un peu d'espace sur les côtés */
-}
 
 @media (max-width: 768px) {
     .header-content {
@@ -246,38 +228,3 @@ tbody td {
         margin: 10px;
     }}
   
-   /* Highlight Styles */
-.highlight{
-    padding: 2px 5px;
-    border-radius: 8px;
-    width: max-content;
-}
-
-/* Data Visualization Section */
-.data-viz-section {
-    width: 100%; /* Utilise toute la largeur disponible */
-    max-width: 1200px; /* Limite la largeur maximale */
-    margin: 20px auto; /* Centre la section horizontalement */
-    background-color: #fff;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 40px; /* Augmente l'espace interne */
-    height: 500px; /* Hauteur plus grande */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box; /* Inclus padding dans les dimensions */
-}
-
-#data-viz {
-    width: 100%;
-    height: 100%;
-    border: 2px dashed #ccc; /* Bordure visible pour identifier la section */
-    border-radius: 8px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #999;
-}
-

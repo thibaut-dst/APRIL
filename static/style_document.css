@@ -30,7 +30,6 @@ body {
     border-radius: 5px;
     font-size: 14px;
     transition: background-color 0.3s ease;
-    margin-bottom: 20px;
 }
 
 .return-button .button:hover {
@@ -64,7 +63,7 @@ body {
 .document-metadata {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     background-color: #f9f9f9;
     padding: 15px;
     border: 1px solid #ddd;
@@ -106,7 +105,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 7px;
-    margin-top: 20px;
 }
 
 .legend span {
@@ -166,5 +164,8 @@ body {
     .document-metadata {
         flex-direction: column;
         gap: 10px;
+    }
+    .legend {
+        flex-direction: row;
     }
 }
