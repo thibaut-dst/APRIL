@@ -155,7 +155,8 @@ def document(doc_id):
     return render_template('document.html', document=document)
 
 
-
+# Register the data visualization blueprint
+app.register_blueprint(data_viz_bp, url_prefix='/api')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
