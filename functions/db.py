@@ -63,10 +63,11 @@ def store_processed_data(document_id: ObjectId, processed_data: dict, collection
         
         # Log the outcome of the update operation
         if result.matched_count == 0:
-            logging.warning(f"Tried to update (post NLP) but document found with ID: {document_id}")
+            logging.warning(f"Tried to process (NLP) but document found with ID: {document_id}")
         else:
-            print(f"Document with ID: {document_id} successfully updated.")
-            logging.info(f"Successfully processed (NLP): {document_id}")
+            #print(f"Document with ID: {document_id} successfully updated in DB.")
+            logging.info(f'Processed (NLP) and stored document ID: {document_id}')
+
 
     except Exception as e:
         logging.error(f"Error updating (post NLP) document ID: {document_id}: {e}")

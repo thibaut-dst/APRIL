@@ -152,6 +152,8 @@ def launch_pipeline():
 @app.route('/document/<doc_id>')
 def document(doc_id):
     document = mongo_collection.find_one({'_id': ObjectId(doc_id)})
+    if not document.get('cleaned_text'):
+        return render_template('not_processed.html', document=document)
     return render_template('document.html', document=document)
 
 

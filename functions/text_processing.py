@@ -200,7 +200,6 @@ def process_document(MongoDB_document: dict) -> dict:
             'vocabulary_of_interest': word_tracking(spacy_document, target_words)
         }
 
-        logging.info("Enriched data ready")
         return data
     except Exception as e:
         logging.error(f"Error processing document: {e}")
