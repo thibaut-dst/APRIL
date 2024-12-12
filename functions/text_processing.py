@@ -299,24 +299,8 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
                 }
         }
 
-
-        logging.info("Enriched data ready")
         return data
     except Exception as e:
         logging.error(f"Error processing document: {e}")
         raise SystemExit(f"Error processing document: {e}")
-
-
-""" if __name__ == "__main__":
-    try:
-        logging.info("Pipeline execution started.")
-        collection = db.get_collection()
-        iterate_documents(collection)
-        logging.info("Text processing execution completed successfully.")
-    except Exception as e:
-        logging.critical(f"Critical error in the text processing execution: {e}")
- """
-
-
-
 
