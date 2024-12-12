@@ -28,7 +28,51 @@
             <!-- Première ligne -->
             <div class="row">
                 <input type="text" placeholder="Mot de recherche" class="search-bar small">
-                <input type="text" placeholder="Mot d'analyse" class="search-bar small">
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                    <option value="sable">sable</option>
+                    <option value="plage">plage</option>
+                    <option value="dune">dune</option>
+                    <option value="mer">mer</option>
+                    <option value="vulnérabilité">vulnérabilité</option>
+                    <option value="lagune">lagune</option>
+                    <option value="cordon dunaire">cordon dunaire</option>
+                    <option value="falaise">falaise</option>
+                    <option value="stock sédimentaire">stock sédimentaire</option>
+                    <option value="zone humide">zone humide</option>
+                    <option value="bassin versant">bassin versant</option>
+                    <option value="algue">algue</option>
+                    <option value="marais salant">marais salant</option>
+                    <option value="saline">saline</option>
+                    <option value="vasière">vasière</option>
+                    <option value="étang côtier">étang côtier</option>
+                    <option value="étang littoral">étang littoral</option>
+                    <option value="lido">lido</option>
+                    <option value="tombolo">tombolo</option>
+                    <option value="estran">estran</option>
+                    <option value="rivage">rivage</option>
+                    <option value="réserve de sable">réserve de sable</option>
+                    <option value="escarpement">escarpement</option>
+                    <option value="éboulis">éboulis</option>
+                    <option value="marias">marias</option>
+                    <option value="marécage">marécage</option>
+                    <option value="estuaire">estuaire</option>
+                    <option value="delta">delta</option>
+                    <option value="jetée">jetée</option>
+                    <option value="digue">digue</option>
+                    <option value="salinisation">salinisation</option>
+                    <option value="acidification">acidification</option>
+                    <option value="forêt de Varech">forêt de Varech</option>
+                    <option value="barrage">barrage</option>
+                    <option value="rewilding">rewilding</option>
+                    <option value="GEMAPI">GEMAPI</option>
+                    <option value="Plan Littoral 21">Plan Littoral 21</option>
+                    <option value="mission racine">mission racine</option>
+                    <option value="Natura 2000">Natura 2000</option>
+                    <option value="GIZC">GIZC</option>
+                    <option value="restructuration">restructuration</option>
+                    <option value="résilience">résilience</option>
+                </select>
                 <select class="search-bar small">
                     <option value="" disabled selected>Choisir une localisation</option>
                     <option value="Le Grau du Roi">Le Grau du Roi</option>
@@ -66,7 +110,51 @@
             <!-- Deuxième ligne -->
             <div class="row">
                 <input type="text" placeholder="Mot de recherche" class="search-bar small">
-                <input type="text" placeholder="Mot d'analyse" class="search-bar small">
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                    <option value="sable">sable</option>
+                    <option value="plage">plage</option>
+                    <option value="dune">dune</option>
+                    <option value="mer">mer</option>
+                    <option value="vulnérabilité">vulnérabilité</option>
+                    <option value="lagune">lagune</option>
+                    <option value="cordon dunaire">cordon dunaire</option>
+                    <option value="falaise">falaise</option>
+                    <option value="stock sédimentaire">stock sédimentaire</option>
+                    <option value="zone humide">zone humide</option>
+                    <option value="bassin versant">bassin versant</option>
+                    <option value="algue">algue</option>
+                    <option value="marais salant">marais salant</option>
+                    <option value="saline">saline</option>
+                    <option value="vasière">vasière</option>
+                    <option value="étang côtier">étang côtier</option>
+                    <option value="étang littoral">étang littoral</option>
+                    <option value="lido">lido</option>
+                    <option value="tombolo">tombolo</option>
+                    <option value="estran">estran</option>
+                    <option value="rivage">rivage</option>
+                    <option value="réserve de sable">réserve de sable</option>
+                    <option value="escarpement">escarpement</option>
+                    <option value="éboulis">éboulis</option>
+                    <option value="marias">marias</option>
+                    <option value="marécage">marécage</option>
+                    <option value="estuaire">estuaire</option>
+                    <option value="delta">delta</option>
+                    <option value="jetée">jetée</option>
+                    <option value="digue">digue</option>
+                    <option value="salinisation">salinisation</option>
+                    <option value="acidification">acidification</option>
+                    <option value="forêt de Varech">forêt de Varech</option>
+                    <option value="barrage">barrage</option>
+                    <option value="rewilding">rewilding</option>
+                    <option value="GEMAPI">GEMAPI</option>
+                    <option value="Plan Littoral 21">Plan Littoral 21</option>
+                    <option value="mission racine">mission racine</option>
+                    <option value="Natura 2000">Natura 2000</option>
+                    <option value="GIZC">GIZC</option>
+                    <option value="restructuration">restructuration</option>
+                    <option value="résilience">résilience</option>
+                </select>
             </div>
             <!-- Troisième ligne -->
             <div class="row">
@@ -74,6 +162,7 @@
             </div>
             <div class="row search-button-row">
                 <button class="search-button">Rechercher</button>
+                <button class="reset-button">Réinitialiser</button>
             </div>
         </section>
 
@@ -121,6 +210,49 @@
                 window.location = url;
             });
         });
+    });
+
+    document.querySelector('.reset-button').addEventListener('click', function () {
+        // Réinitialiser tous les champs de recherche
+        document.querySelectorAll('.search-bar').forEach(field => {
+            if (field.tagName === 'SELECT') {
+                field.selectedIndex = 0; // Réinitialiser les listes déroulantes
+            } else {
+                field.value = ''; // Réinitialiser les champs de texte
+            }
+        });
+    });
+
+    document.querySelector('.search-button').addEventListener('click', async function () {
+        // Collecter les données du formulaire
+        const keyword = document.querySelector('.row input[type="text"]').value;
+        const analysis = document.querySelector('.row select:nth-of-type(1)').value;
+        const location = document.querySelector('.row select:nth-of-type(2)').value;
+
+        // Construire la requête
+        const response = await fetch('/search-documents', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ keyword, analysis, location })
+        });
+
+        // Obtenir les résultats et les afficher
+        const documents = await response.json();
+        const tbody = document.querySelector('.document-table tbody');
+        tbody.innerHTML = ''; // Effacer le contenu précédent
+
+        if (documents.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3">Aucun document trouvé</td></tr>';
+        } else {
+            documents.forEach(doc => {
+                const row = `<tr>
+                                <td>${doc.Title_updated}</td>
+                                <td>${doc.domain}</td>
+                                <td>${doc.keyword}</td>
+                             </tr>`;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+        }
     });
 </script>
 </html>
