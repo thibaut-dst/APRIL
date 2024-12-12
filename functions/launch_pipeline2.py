@@ -24,15 +24,14 @@ def iterate_documents(collection_name):
     # Iterate over the filtered documents
     for index, document in enumerate(collection_name.find(query)):
         document_id = str(document["_id"])  # Extract the document ID
-        logging.info(f'Processing document #{index + 1} with ID: {document_id}')
+        logging.info(f'Starting nlp for document ID: {document_id}')
 
         try:
             processed_data = process.process_document(document)
             db.store_processed_data(document["_id"], processed_data, collection_name)
-            logging.info(f'Processed and stored document #{index + 1} with ID: {document_id}')
         
         except Exception as e:
-            logging.error(f'Error processing document #{index + 1} with ID: {document_id}: {e}')
+            logging.error(f'Error processing document ID: {document_id}: {e}')
 
 
 if __name__ == "__main__":
