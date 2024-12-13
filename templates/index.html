@@ -190,8 +190,7 @@
                     <tbody>
                         {% for doc in documents %}
                         
-                        <tr class="clickable-row" data-url="{{ url_for('document', doc_id=doc['_id']) }}">
-                            
+                        <tr class="clickable-row" data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
                             <td>
                                 {% set pertinence = doc["vocabulary_of_interest"].get('Pertinence', None) %}
                                 {% if pertinence is not none and pertinence is not string %}
