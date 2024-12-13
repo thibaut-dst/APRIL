@@ -23,7 +23,7 @@ def get_collection(db_name = database, collection_name = collection, uri = uri):
     Parameters:
         db_name (str): The name of the database.
         collection_name (str): The name of the collection.
-        uri (str): The MongoDB URI string. Default is 'mongodb://localhost:27017'.
+        uri (str): The MongoDB URI string. Default is 'mongodb://<host_name>:27017'.
 
     Returns:
         Collection: A MongoDB collection object.
