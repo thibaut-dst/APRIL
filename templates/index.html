@@ -184,7 +184,7 @@
                             <th>Frequent words</th>
                             <th>Location</th>
                             <th>Keyword</th>
-                            <th>Source</th>
+                            <th>Source & Title</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -213,7 +213,7 @@
 
                              <td>{{ doc.get('localisation of scraping', '__') }}</td>
                              <td>{{ doc.get('keyword of scraping', '__') }}</td>
-                            <td>{{ doc.get('domain', '__') }}</td>
+                            <td class="source_title"><span style="color:#027bff">{{ doc.get('domain', '__') }} </span><br><b>{{ doc['Title_updated'] }}</b></td>
                         </tr>
                         {% endfor %}
                     </tbody>

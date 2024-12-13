@@ -43,14 +43,17 @@ main{
 }
 
 .logo {
-    height: 60px;
+    height: 55px;
     width: auto;
     transform: translateY(4px);
+    border-right: solid;
 }
 
 .header-title {
-    font-size: 1.5rem;
+    font-size: 22px;
     font-weight: bold;
+    margin-left: 5px;
+    font-style: italic;
 }
 
 .header-right {
