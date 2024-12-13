@@ -27,3 +27,19 @@ def document(doc_id):
     if not document.get('cleaned_text'):
         return render_template('not_processed.html', document=document)
     return render_template('document.html', document=document)
+
+@front.route('/update-vu/<doc_id>', methods=['GET'])
+def update_vu(doc_id):
+    mongo = current_app.mongo
+    mongo_collection = mongo.db.Documents
+
+    document = mongo_collection.find_one({'_id': ObjectId(doc_id)})
+    if not document:
+        return jsonify({"error": "Document not found."}), 404
+
+    current_vu = document.get('vu', 0)  
+    if current_vu == 1:
+        return jsonify({"message": "Document already marked as viewed.", "vu": current_vu}), 200
+
+    mongo_collection.update_one({'_id': ObjectId(doc_id)}, {'$set': {'vu': 1}})
+    return jsonify({"message": "Document marked as viewed.", "vu": 1})

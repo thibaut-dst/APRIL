@@ -173,7 +173,21 @@
                 data visualisation section
             </div>
         </section>
-
+        <section class="sort-section">
+            <label for="sort-selector">Sort by:</label>
+            <select id="sort-selector" onchange="sortTable()">
+                <option value="title">Title</option>
+                <option value="datepublished">Date Published</option>
+                <option value="pertinence">Pertinence</option>
+            </select>
+        
+            <label for="sort-order">Order:</label>
+            <select id="sort-order" onchange="sortTable()">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </section>
+        
         <!-- Scrollable Document Table Section -->
         <section class="document-section">
             <div class="document-table">
@@ -232,6 +246,25 @@
                         </tr>
                         {% endfor %}
                     </tbody>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr class="clickable-row {% if doc.get('vu', 0) == 1 %} viewed {% endif %}" 
+                            data-id="{{ doc['_id'] }}" 
+                            data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
+                            
+                            <td class="tagged-status" style="text-align: center;">
+                                {% if doc.get('vu', 0) == 1 %}
+                                    ✅
+                                {% else %}
+                                    __
+                                {% endif %}
+                            </td>
+                            <td>{{ doc.get('localisation of scraping', '__') }}</td>
+                            <td>{{ doc.get('keyword of scraping', '__') }}</td>
+                            <td class="source_title"><span style="color:#027bff">{{ doc.get('domain', '__') }} </span><br><b>{{ doc.get('meta_data', {}).get('Title', '__') }}</b></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -271,6 +304,32 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ keyword, analysis, location })
         });
+        document.addEventListener("DOMContentLoaded", function () {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function () {
+            const docId = row.getAttribute('data-id');
+            const url = row.getAttribute('data-url');
+
+            fetch(`/update-vu/${docId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ vu: 1 }) 
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Document ${docId} marked as viewed.`);
+                        row.classList.add('viewed'); 
+                    } else {
+                        console.error(`Failed to update document ${docId}.`);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+            window.location = url;
+        });
+    });
+});
 
         // Obtenir les résultats et les afficher
         const documents = await response.json();
@@ -291,4 +350,49 @@
         }
     });
 </script>
+<script>
+    function sortTable() {
+        const sortKey = document.getElementById('sort-selector').value; 
+        const sortOrder = document.getElementById('sort-order').value; 
+        const rows = Array.from(document.querySelectorAll('.document-table tbody tr')); 
+
+        rows.sort((a, b) => {
+            let aValue, bValue;
+
+            if (sortKey === 'pertinence') {
+                aValue = parseFloat(a.getAttribute('data-pertinence')) || 0;
+                bValue = parseFloat(b.getAttribute('data-pertinence')) || 0;
+            } else if (sortKey === 'datepublished') {
+                aValue = new Date(a.getAttribute('data-datepublished')) || new Date(0);
+                bValue = new Date(b.getAttribute('data-datepublished')) || new Date(0);
+            } else {
+                aValue = a.getAttribute('data-title') || '';
+                bValue = b.getAttribute('data-title') || '';
+            }
+
+            if (sortOrder === 'asc') {
+                return aValue > bValue ? 1 : -1;
+            } else {
+                return aValue < bValue ? 1 : -1;
+            }
+        });
+
+        
+        const tbody = document.querySelector('.document-table tbody');
+        tbody.innerHTML = ''; 
+        rows.forEach(row => tbody.appendChild(row)); 
+    }
+
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll('.clickable-row');
+        rows.forEach(row => {
+            row.addEventListener('click', function() {
+                const url = row.getAttribute('data-url');
+                window.location = url;
+            });
+        });
+    });
+</script>
+
 </html>
