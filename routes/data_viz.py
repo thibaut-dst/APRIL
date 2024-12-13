@@ -19,22 +19,22 @@ client = MongoClient("mongodb://mongo:27017/")
 db = client["April"]  
 collection = db["Documents"]
 
-# ====== Pie Chart Endpoint ======
-@data_viz_bp.route('/piechart', methods=['GET'])
+# ====== Pie Chart domain Endpoint ======
+@data_viz_bp.route('/piechart_domain', methods=['GET'])
 def get_pie_chart_data():
     try:
         # Fetch all documents and count occurrences of each "Canonical URL"
         documents = collection.find({}, {"domain": 1, "_id": 0})  # Replace `collection` with your actual MongoDB collection
-        URL_counts = {}
+        domain_counts = {}
 
         # Count occurrences of each URL
         for doc in documents:
             URL = doc.get("domain", "Unknown")  # Default to "Unknown" if URL is missing
-            URL_counts[URL] = URL_counts.get(URL, 0) + 1
+            domain_counts[URL] = domain_counts.get(URL, 0) + 1
 
         # Prepare data for the pie chart
-        labels = list(URL_counts.keys())
-        sizes = list(URL_counts.values())
+        labels = list(domain_counts.keys())
+        sizes = list(domain_counts.values())
 
         # If there is no data, return an error response
         if not sizes:
@@ -47,6 +47,33 @@ def get_pie_chart_data():
         # Catch and return any error that occurs during processing
         return jsonify({"error": str(e)}), 500
 
+# ====== Pie Chart location Endpoint ======
+@data_viz_bp.route('/piechart_location', methods=['GET'])
+def get_pie_chart_data_loc():
+    try:
+        # Fetch all documents and count occurrences of each "Canonical location"
+        documents = collection.find({}, {"localisation of scraping": 1, "_id": 0})  # Replace `collection` with your actual MongoDB collection
+        loc_counts = {}
+
+        # Count occurrences of each location
+        for doc in documents:
+            var_location = doc.get("localisation of scraping", "Unknown")  # Default to "Unknown" if URL is missing
+            loc_counts[var_location] = loc_counts.get(var_location, 0) + 1
+
+        # Prepare data for the pie chart
+        labels = list(loc_counts.keys())
+        sizes = list(loc_counts.values())
+
+        # If there is no data, return an error response
+        if not sizes:
+            return jsonify({"error": "No data available for location"}), 404
+
+        # Return labels and sizes in JSON format
+        return jsonify({"labels": labels, "sizes": sizes})
+
+    except Exception as e:
+        # Catch and return any error that occurs during processing
+        return jsonify({"error": str(e)}), 500
 
 # ====== Map Endpoint ======
 # @data_viz_bp.route('/map', methods=['GET'])

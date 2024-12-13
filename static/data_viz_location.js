@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
     try {
         // Fetch data from the backend endpoint
-        const response = await fetch('/api/piechart_domain');
+        const response = await fetch('/api/piechart_location');
         if (!response.ok) throw new Error('Failed to fetch data');
 
         const data = await response.json();
@@ -35,11 +35,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 modifiedSizes.push(otherSize);
             }
 
-            // Calculate the total count of documents (sum of sizes)
-            const totalDocuments = modifiedSizes.reduce((sum, value) => sum + value, 0);
-
-            // Set the dynamic title with the total count
-            const titleText = `Le filtre affiche ${totalDocuments} documents`;
+            // Set the dynamic title with the number of layers
+            const numberOfLayers = modifiedLabels.length;  // Count the number of unique layers
+            const titleText = `Le filtre affiche ${numberOfLayers} lieux différents`;
 
             // Prepare the Plotly data
             const pieData = [{
@@ -66,10 +64,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             // Render the pie chart inside the #pie-chart div
-            Plotly.newPlot('pie-chart', pieData, layout).then(() => {
+            Plotly.newPlot('pie-chart-location', pieData, layout).then(() => {
 
             // Event listener for clicking on the pie chart
-            const pieChart = document.getElementById('pie-chart');
+            const pieChart = document.getElementById('pie-chart-location');
             pieChart.on('plotly_click', function(eventData) {
                     const clickedLabel = eventData.points[0].label;
                     if (clickedLabel === 'Other') {
@@ -80,12 +78,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
         } else {
             // Display an error message if no data is available
-            document.getElementById('pie-chart-container').innerHTML += '<p>Pie chart could not be loaded.</p>';
+            document.getElementById('pie-chart-container').innerHTML += '<p>Pie chart location could not be loaded.</p>';
         }
     } catch (error) {
         // Log any errors that occur
         console.error('Error rendering pie chart:', error);
-        document.getElementById('pie-chart-container').innerHTML += '<p>Error loading pie chart.</p>';
+        document.getElementById('pie-chart-container').innerHTML += '<p>Error loading pie chart location.</p>';
     }
 });
 
