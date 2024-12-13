@@ -116,6 +116,10 @@ body {
     flex-direction: column;
     gap: 7px;
 }
+.legend label{
+    display: flex;
+    gap: 5px;
+}
 
 .legend span {
     display: flex;
@@ -158,6 +162,29 @@ body {
     color: #fff;
 }
 
+.highlight.RESEARCH {
+    background-color: #6a1b9a;
+    color: #fff;
+}
+
+.highlight.ANALYSIS {
+    background-color: #1de9b6;
+    color: #000;
+}
+.hide-RESEARCH .document-content .highlight.RESEARCH,
+.hide-ANALYSIS .document-content .highlight.ANALYSIS,
+.hide-PER .document-content .highlight.PER,
+.hide-LOC .document-content .highlight.LOC,
+.hide-DATE .document-content .highlight.DATE,
+.hide-ORG .document-content .highlight.ORG,
+.hide-MISC .document-content .highlight.MISC {
+    background: transparent;
+    color: inherit;
+    font-weight: unset;
+    font-size: unset;
+    padding: inherit;
+}
+
 /* Document Content Section */
 .document-content {
     line-height: 1.7;
@@ -177,5 +204,10 @@ body {
     }
     .legend {
         flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .legend h3{
+        margin-bottom: 0;
+        padding: 0;
     }
 }

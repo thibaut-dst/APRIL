@@ -15,7 +15,7 @@
 
         <!-- Title Section -->
         <header class="document-header">
-            <h1>{{ document['meta_data']['Title'] }}</h1>
+            <h1>{{ document['Title_updated'] }}</h1>
             <p class="document-info">
                 <span>Author: {{ document['meta_data']['Author'] or 'Unknown' }}</span> |
                 <span>Published: {{ document['meta_data']['Date Published'] or 'No Date Available' }}</span>
@@ -40,25 +40,36 @@
                     </ul>
                 </div>
                 <div class="legend">
-                    <span>
-                        Légende: 
-                    </span>
-                    <span class="highlight DATE">
-                        Date
-                    </span>
-                    <span class="highlight PER">
-                        Person
-                    </span>
-                    
-                    <span class="highlight LOC">
-                        Location
-                    </span>
-                    <span class="highlight ORG">
-                        Organization
-                    </span>
-                    <span class="highlight MISC">
-                        Miscellaneous
-                    </span>
+                    <h3>Legend:</h3>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="RESEARCH" checked>
+                        <span class="highlight RESEARCH">Words of Research</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="ANALYSIS" checked>
+                        <span class="highlight ANALYSIS">Words of Analysis</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="PER" checked>
+                        <span class="highlight PER">Person</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="LOC" checked>
+                        <span class="highlight LOC">Location</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="DATE" checked>
+                        <span class="highlight DATE">Date</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="ORG" checked>
+                        <span class="highlight ORG">Organization</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="MISC" checked>
+                        <span class="highlight MISC">Miscellaneous</span>
+                    </label>
                 </div>
         </aside>
     
@@ -70,38 +81,69 @@
     
         
     </main>
-    <!-- Inject named entities data from Flask using a script tag with JSON -->
-    <script type="application/json" id="namedEntitiesData">
-        {{ document['named_entities'] | tojson }}
-    </script>
+
+        <!-- Inject named entities and vocabulary data from Flask using script tags with JSON -->
+        <script type="application/json" id="namedEntitiesData">
+            {{ document['named_entities'] | tojson }}
+        </script>
+        <script type="application/json" id="vocabularyData">
+            {{ document['vocabulary_of_interest'] | tojson }}
+        </script>
     
     <script>
         // Retrieve named entities data from the JSON script element
         const namedEntities = JSON.parse(document.getElementById('namedEntitiesData').textContent);
+        const vocabulary = JSON.parse(document.getElementById('vocabularyData').textContent);
 
-        // Function to escape special characters in entities for use in regular expressions
         function escapeRegExp(string) {
+            // Function to escape special characters in entities for use in regular expressions
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
         }
 
-        // Function to highlight named entities in text
-        function highlightEntities() {
+        // Function to highlight entities and vocabulary in text
+        function highlightEntitiesAndVocabulary() {
             const contentElement = document.getElementById('content');
             let contentHTML = contentElement.innerHTML;
 
-            // Loop through each entity type and wrap matches with span elements
+            // Highlight named entities
             for (const [type, entities] of Object.entries(namedEntities)) {
                 entities.forEach(entity => {
-                    const escapedEntity = escapeRegExp(entity); // Escape special characters
+                    const escapedEntity = escapeRegExp(entity);
                     const entityRegex = new RegExp(`\\b(${escapedEntity})\\b`, 'gi');
                     contentHTML = contentHTML.replace(entityRegex, `<span class="highlight ${type}">$1</span>`);
                 });
             }
 
+            // Highlight vocabulary categories
+            for (const [type, words] of Object.entries(vocabulary)) {
+                if (type === 'words_of_research' || type === 'words_of_analysis') {
+                    const classType = type === 'words_of_research' ? 'RESEARCH' : 'ANALYSIS';
+                    for (const word of Object.keys(words)) {
+                        const escapedWord = escapeRegExp(word);
+                        const wordRegex = new RegExp(`\\b(${escapedWord})\\b`, 'gi');
+                        contentHTML = contentHTML.replace(wordRegex, `<span class="highlight ${classType}">$1</span>`);
+                    }
+                }
+            }
+            
+
             contentElement.innerHTML = contentHTML;
         }
 
-        document.addEventListener('DOMContentLoaded', highlightEntities);
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            highlightEntitiesAndVocabulary();
+
+            const checkboxes = document.querySelectorAll('.toggle-highlights');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (event) => {
+                    const category = event.target.getAttribute('data-category');
+                    document.body.classList.toggle(`hide-${category}`, !event.target.checked);
+                });
+            });
+        });
+    
     </script>
 
 </body>
