@@ -180,6 +180,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Tag</th>
                             <th>Pertinence</th>
                             <th>Frequent words</th>
                             <th>Location</th>
@@ -189,12 +190,25 @@
                     </thead>
                     <tbody>
                         {% for doc in documents %}
-                        
-                        <tr class="clickable-row" data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
+                        {% set tagged = doc.get('tagged', None) %}
+
+                        <tr class="clickable-row {% if tagged == 1 %} tagged-green {% elif tagged == 2 %} tagged-red {% endif %}" 
+                            data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
+                            
+                            <td class="tagged-status" style="text-align: center;">
+                                {% if tagged is none %}
+                                    __
+                                {% elif tagged == 1 %}
+                                    ✅
+                                {% elif tagged == 2 %}
+                                    ❌
+                                {% else %}
+                                    x
+                                {% endif %}
+                            </td>
                             <td>
-                                {% set pertinence = doc["vocabulary_of_interest"].get('Pertinence', None) %}
-                                {% if pertinence is not none and pertinence is not string %}
-                                    {{ (pertinence * 1000) | round(1) }}
+                                {% if doc.get("vocabulary_of_interest") and doc["vocabulary_of_interest"].get('Pertinence') is not none %}
+                                    {{ (doc["vocabulary_of_interest"]['Pertinence'] * 1000) | round(1) }}
                                 {% else %}
                                     __
                                 {% endif %}
@@ -209,6 +223,7 @@
                                 {% else %}
                                     No words available
                                 {% endif %}
+                                
                             </td>
 
                              <td>{{ doc.get('localisation of scraping', '__') }}</td>

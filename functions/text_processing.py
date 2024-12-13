@@ -287,6 +287,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
             updated_title = MongoDB_document["meta_data"].get("Title", None)
 
         data = {
+            'tagged': 0,
             'Title_updated': updated_title,
             'domain': get_domain_name(MongoDB_document["url"]),
             'cleaned_text': cleaned_text,

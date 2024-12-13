@@ -235,15 +235,11 @@ table tr.clickable-row:hover {
     background-color: #f0f0f0; /* Change background on hover */
 }
 
-.main-line {
-    font-weight: bold;
-}
 
-.sub-line {
-    font-size: 0.85em;
-    color: gray;
-    margin-top: 4px;
-}
+.tagged-green{background-color: #e8fbe8;}
+.tagged-red{background-color: #fde8e8;}
+
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
