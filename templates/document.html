@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Details</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/style_document.css">
 </head>
 <body>
     <main class="document-container">
@@ -28,10 +28,15 @@
                  <h3>Additional Metadata</h3>
                  <ul>
                      <li><strong>Domain:</strong> {{ document['domain'] }}</li>
-                     <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                     <li><strong>Search keyword:</strong> {{ document.get('keyword of scraping', '__')}}</li>
+                     <li><strong>Search location:</strong> {{ document.get('localisation of scraping', '__')}}</li>
                      <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
                      <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
-                     <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+                     <li><strong>Open Graph Description:</strong> 
+                        <div class="desc">
+                            {{ document['meta_data']['Open Graph Description'] or 'N/A' }}
+                        </div>
+                    </li>
                     </ul>
                 </div>
                 <div class="legend">
