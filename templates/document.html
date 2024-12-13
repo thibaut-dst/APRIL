@@ -28,7 +28,8 @@
                  <h3>Additional Metadata</h3>
                  <ul>
                      <li><strong>Domain:</strong> {{ document['domain'] }}</li>
-                     <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                     <li><strong>Search keyword:</strong> {{ document.get('keyword of scraping', '__')}}</li>
+                     <li><strong>Search location:</strong> {{ document.get('localisation of scraping', '__')}}</li>
                      <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
                      <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
                      <li><strong>Open Graph Description:</strong> 

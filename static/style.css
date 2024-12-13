@@ -184,7 +184,7 @@ header.sticky-header {
 }
 
 .document-table th, .document-table td {
-    padding: 12px;
+    padding: 15px 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -195,6 +195,9 @@ header.sticky-header {
 }
 .document-table td {
     color: #555;
+}
+td.freq_words{
+    max-width: 300px;
 }
 
 table tr.clickable-row td{cursor: pointer;}
@@ -208,7 +211,15 @@ table tr.clickable-row:hover {
     background-color: #f0f0f0; /* Change background on hover */
 }
 
+.main-line {
+    font-weight: bold;
+}
 
+.sub-line {
+    font-size: 0.85em;
+    color: gray;
+    margin-top: 4px;
+}
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
