@@ -1,6 +1,6 @@
 import re
 from urllib.parse import urlparse
-import db as db
+#import db as db
 import pandas as pd
 import spacy
 from typing import Optional
@@ -96,27 +96,34 @@ def calculate_relevance(spacy_doc: Doc, words_of_research_and_analysis: dict) ->
         words_of_research_and_analysis (dict): Dictionary with word counts from both research-related and analysis-related words.
 
     Returns:
-        float: A relevance score based on the relative frequency of target word occurrences.
+        float: A relevance score normalized between 0 and 1 based on the relative frequency of target word occurrences.
     """
     try:
+        # Filter out stop words and punctuation from the text
+        content_words = [token.text.lower() for token in spacy_doc if not token.is_punct and not token.is_stop]
 
-        # Total number of target word occurrences (sum of values in the dictionary)
-        total_target_occurrences = sum(words_of_research_and_analysis.values())
+        # Create a dictionary of word frequencies for the text
+        word_frequencies = {}
+        for word in content_words:
+            word_frequencies[word] = word_frequencies.get(word, 0) + 1
 
-        if total_target_occurrences == 0:
+        # Calculate the overlap of words between the text and the target dictionary
+        target_word_occurrences = sum(word_frequencies.get(word, 0) for word in words_of_research_and_analysis.keys())
+
+        if target_word_occurrences == 0:
             logging.warning("No target words found in the document.")
-            return 0
+            return 0.0
 
-        # Total number of words in the document (excluding punctuation)
-        total_words_in_text = sum(1 for token in spacy_doc if not token.is_punct)
+        # Total number of content words (excluding stop words and punctuation)
+        total_content_words = len(content_words)
 
-        # Calculate relevance as the proportion of target word occurrences to the total number of words in the text
-        relevance_score = total_target_occurrences / total_words_in_text if total_words_in_text > 0 else 0
+        # Calculate and normalize the relevance score
+        relevance_score = target_word_occurrences / total_content_words if total_content_words > 0 else 0.0
 
         return relevance_score
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-        raise SystemExit(f"An error occurred: {e}")     
+        raise SystemExit(f"An error occurred: {e}")  
 
 
 def get_domain_name(url: str) -> Optional[str]:
@@ -130,6 +137,10 @@ def get_domain_name(url: str) -> Optional[str]:
         Optional[str]: The domain name if found; otherwise, None if extraction fails.
     """
     try:
+        # If the URL doesn't contain 'http://' or 'https://', prepend 'http://'
+        if not url.startswith('http://') and not url.startswith('https://'):
+            url = 'http://' + url
+            
         pattern = r'https?://([^/]+)'
         match = re.search(pattern, url)
         if match:
@@ -280,6 +291,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
         target_words_analysis = extract_columns_to_list(vocabulary_path, "Vocabulaire d'analyse")
         words_of_research = word_tracking(spacy_document, target_words_research)
         words_of_analysis = word_tracking(spacy_document, target_words_analysis)
+
 
         if MongoDB_document["meta_data"]["file_type"] == "pdf" and "source_url" in MongoDB_document["meta_data"]:
             updated_title = get_pdf_title_from_url(MongoDB_document["meta_data"]["source_url"])
