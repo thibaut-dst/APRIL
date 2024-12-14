@@ -1,6 +1,9 @@
 name: april
 services:
   web:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile
     image: registry.mde.epf.fr/april-web:0.2
     ports:
       - "80:5000"
@@ -13,7 +16,7 @@ services:
     image: mongo:5.0
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo_data:/data/db
     networks:
