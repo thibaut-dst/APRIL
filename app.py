@@ -10,12 +10,13 @@ import logging
 from routes.front import front
 from routes.filters import filters
 from routes.api_mongo import api_mongo
-
+from routes.data_viz import data_viz_bp
 
 app = Flask(__name__)
 app.register_blueprint(front)
 app.register_blueprint(filters)
 app.register_blueprint(api_mongo)
+app.register_blueprint(data_viz_bp, url_prefix='/api')
 
 #===================== Database config =====================
 
