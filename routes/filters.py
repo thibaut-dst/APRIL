@@ -21,12 +21,16 @@ def search_documents():
     if 'keyword' in data and data['keyword']:
         words = data['keyword'].split()  # Divise par mot clé si nécessaire
         for word in words:
-            and_conditions.append({"keyword": {"$regex": word, "$options": "i"}})
+            and_conditions.append({"keyword of scraping": {"$regex": word, "$options": "i"}})
 
     if 'location' in data and data['location']:
         words = data['location'].split()  # Divise par mot clé si nécessaire
         for word in words:
-            and_conditions.append({"keyword": {"$regex": word, "$options": "i"}})
+            and_conditions.append({"localisation of scraping": {"$regex": word, "$options": "i"}})
+    
+    if 'analysis' in data and data['analysis']:
+        word_of_analysis = data['analysis']
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{word_of_analysis}": {"$gt": 0}})
 
     # Ajoutez la condition combinée dans la requête principale
     if and_conditions:
@@ -41,10 +45,15 @@ def search_documents():
 
     # Chercher les documents correspondants
     try:
-        documents = list(mongo_collection.find(query, {'_id': 0, 'Title_updated': 1, 'domain': 1, 'keyword': 1}))
+        documents = list(mongo_collection.find(query))
+
+        # Conversion des ObjectId en chaînes pour la sérialisation JSON
+        for doc in documents:
+            if '_id' in doc:
+                doc['_id'] = str(doc['_id'])  # Convertir ObjectId en chaîne
+
         print(f"Documents trouvés: {len(documents)}", flush=True)
-        return jsonify(documents)
+        return jsonify(documents), 200
     except Exception as e:
         print(f"Erreur lors de la recherche : {e}", flush=True)
         return jsonify({"error": str(e)}), 500
-

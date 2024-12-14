@@ -9,6 +9,7 @@ COPY requirements.txt requirements.txt
 COPY app.py app.py
 COPY functions/ functions/
 COPY templates/ templates/
+COPY routes/ routes/
 COPY static/ static/
 COPY Vocabulaire_Expert_CSV.csv Vocabulaire_Expert_CSV.csv
 
