@@ -9,18 +9,19 @@ body {
 }
 
 /* Search Button */
+.search-button-row{
+    display: flex;
+    justify-content: end;
+}
+
 .search-button {
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
-    font-size: 16px;
-    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    display: block;
-    margin: 0 auto;
 }
 
 .search-button:hover {
@@ -31,24 +32,27 @@ body {
     padding: 10px 20px;
     background-color: #e0e0e0;
     color: #333;
-    font-size: 16px;
-    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .reset-button:hover {
     background-color: #c0c0c0;
 }
 
-/* Search Bar Section */
-.search-bar-section {
+section {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 100px;
+    background-color: #ffffff;
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
     padding: 20px;
-    background-color: #e8f1f2;
-    border-bottom: 1px solid #ccc;
+    margin-bottom: 40px;
 }
 
 .row {
@@ -73,20 +77,6 @@ body {
     flex: 2;
 }
 
-/* Data Visualization Section */
-.data-viz-section {
-    padding: 20px;
-    background-color: #fff;
-    margin: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 1200px;
-    height: auto;
-    min-height: 100px;
-}
-
 #data-viz {
     border: 1px dashed #ccc;
     border-radius: 8px;
@@ -100,14 +90,6 @@ body {
 }
 
 /* Document Table Section */
-.document-section {
-    width: 100%;
-    max-width: 1200px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    padding: 20px;
-}
 
 .document-table thead{
     position: sticky;
