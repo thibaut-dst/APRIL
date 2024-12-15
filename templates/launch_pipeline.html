@@ -5,22 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Launch Pipeline</title>
     <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/header.css">
 </head>
 <body>
-    <!-- Sticky Top Header -->
-    <header class="sticky-header">
-        <div class="header-content">
-            <div class="header-left">
-                <img src="logo.png" alt="Logo" class="logo">
-                <span class="header-title">Coastal Risk Perception Analysis</span>
-            </div>
-            <div class="header-right">
-                <a href="/launch-pipeline" class="header-button">Get new documents</a>
-                <a href="/" class="header-button">Explore Documents</a>
-            </div>
-        </div>
-    </header>
-        <main>
+    {% include "includes/header.html" %}
+    <main>
         <div class="container">
             <div class="header">
                 <h1>Pipeline Launcher</h1>

@@ -7,25 +7,13 @@
     <title>Document Explorer</title>
     <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/header.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
     <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script> <!-- Link to data_viz.js -->
     <script src="{{ url_for('static', filename='data_viz_location.js') }}" defer></script>
 </head>
 <body>
-    
-    <!-- Sticky Top Header -->
-    <header class="sticky-header">
-        <div class="header-content">
-            <div class="header-left">
-                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo">
-                <span class="header-title">Coastal Risk Perception Analysis</span>
-            </div>
-            <div class="header-right">
-                <a href="/launch-pipeline" class="header-button">Get new documents</a>
-                <a href="/" class="header-button">Explore Documents</a>
-            </div>
-        </div>
-    </header>
+    {% include "includes/header.html" %}
     <main>
         <section class="search-bar-section">
             <!-- Première ligne -->
@@ -179,17 +167,16 @@
             <!-- Pie Charts -->
                 <div id="pie-chart-container" class="viz-item">
                     <!--<h3>Pie Chart</h3>-->
-                    <div id="pie-charts" style="display: flex; justify-content: space-around;">
+                    <div id="pie-charts"> <!-- style="display: flex; justify-content: space-around;" -->
                         <div id="pie-chart"></div> <!-- Pie chart for domains -->
                         <div id="pie-chart-location"></div> <!-- Pie chart for locations -->
                     </div> 
                 </div>
             </div>
 
-            <!-- Scrollable List for "Other" Sources -->
-            <div id="other-sources-container" style="width: 100%; height: 150px; overflow-y: auto; margin-top: 20px; border: 1px solid #ddd;">
-                <!-- Sources will be dynamically listed here -->
-            </div>
+            <!-- Scrollable List for "Other" Sources— Sources will be dynamically listed here -->
+           <!--  <div id="other-sources-container" style="width: 100%; height: 150px; overflow-y: auto; margin-top: 20px; border: 1px solid #ddd;">
+            </div> -->
         </section>
 
         <!-- Scrollable Document Table Section -->
@@ -221,7 +208,7 @@
                                 {% elif tagged == 2 %}
                                     ❌
                                 {% else %}
-                                    x
+                                    __
                                 {% endif %}
                             </td>
                             <td>
