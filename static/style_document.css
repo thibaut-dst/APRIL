@@ -24,18 +24,50 @@ body {
 .return-button .button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
+    background-color: #e0e0e0;
+    color: #333;
     text-decoration: none;
     border-radius: 5px;
     font-size: 14px;
     transition: background-color 0.3s ease;
+    align-self: stretch;
+}
+.return-button .button:hover {
+    background-color: #c0c0c0;
+}
+.toppp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+select#tagged {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    flex: 1;
+}
+button#update-tagged-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: stretch;
+    transition: background-color 0.3s ease;
 }
 
-.return-button .button:hover {
+button#update-tagged-button:hover {
     background-color: #0056b3;
 }
 
+.tagging-section {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
 /* Header Section */
 .document-header {
     margin-bottom: 20px;
