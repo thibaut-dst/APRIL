@@ -80,7 +80,7 @@ section {
 #pie-charts{
     display: flex;
     position: relative;
-    width: 870px;
+    width: 100%;
     overflow: scroll;
     border: dashed;
     border-radius: 8px;

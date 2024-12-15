@@ -9,8 +9,20 @@
 <body>
     <main class="document-container">
         
-        <div class="return-button">
-            <a href="/" class="button">← Return to Main Page</a>
+        <div class="toppp">
+            <div class="return-button">
+                <a href="/" class="button">← Return to Main Page</a>
+            </div>
+            
+            <div class="tagging-section">
+                <label for="tagged">Update Tag:</label>
+                <select id="tagged" class="tagged-dropdown">
+                    <option value="0" {% if document['tagged'] == 0 %}selected{% endif %}>Untagged</option>
+                    <option value="1" {% if document['tagged'] == 1 %}selected{% endif %}>✅ &nbsp;Interesting</option>
+                    <option value="2" {% if document['tagged'] == 2 %}selected{% endif %}>❌ &nbsp;Not Interesting</option>
+                </select>
+                <button id="update-tagged-button" class="button">Apply</button>
+            </div>
         </div>
 
         <!-- Title Section -->
@@ -146,5 +158,58 @@
     
     </script>
 
+    <script>
+        document.getElementById('update-tagged-button').addEventListener('click', function () {
+            const docId = "{{ document['_id'] }}"
+            const selectedValue = document.getElementById('tagged').value;
+    
+            fetch('/update-tagged', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ doc_id: docId, value: parseInt(selectedValue) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.log(`Error: ${data.error}`);
+                } else {
+                    console.log(`Success: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the tag.');
+            });
+        });
+
+        const dropdown = document.getElementById('tagged');
+
+    // Function to update background color based on selected value
+    function updateBackgroundColor() {
+        const selectedValue = dropdown.value;
+
+        // Set the background color based on the value
+        switch (selectedValue) {
+            case "0": // Untagged
+                dropdown.style.backgroundColor = "white";
+                break;
+            case "1": // Interesting
+                dropdown.style.backgroundColor = "#e8fbe8";
+                break;
+            case "2": // Not Interesting
+                dropdown.style.backgroundColor = "#fde8e8";
+                break;
+            default:
+                dropdown.style.backgroundColor = "white"; // Default color
+        }
+    }
+
+    // Initial color update on page load
+    updateBackgroundColor();
+
+    // Add event listener for changes
+    dropdown.addEventListener('change', updateBackgroundColor);
+    </script>
+    
 </body>
 </html>
