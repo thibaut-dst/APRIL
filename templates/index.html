@@ -149,13 +149,13 @@
                 <input type="text" placeholder="Recherche par titre" class="search-bar large">
             </div>
             <div class="row search-button-row">
-                <button class="search-button">Rechercher</button>
+                <button class="search-button" onclick="updateTable()">Rechercher</button>
                 <button class="reset-button">Réinitialiser</button>
             </div>
         </section>
 
         <!-- Data Visualization Section -->
-        <section class="data-viz-section">
+        <section class="data-viz-section" style="display: none;">
             <div id="data-viz" class="data-viz-container">
                 <!-- Map -->
             <!--    <div id="map-container" class="viz-item">
@@ -193,112 +193,36 @@
                             <th>Source & Title</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for doc in documents %}
-                        {% set tagged = doc.get('tagged', None) %}
-
-                        <tr class="clickable-row {% if tagged == 1 %} tagged-green {% elif tagged == 2 %} tagged-red {% endif %}" 
-                            data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
-                            
-                            <td class="tagged-status" style="text-align: center;">
-                                {% if tagged is none %}
-                                    __
-                                {% elif tagged == 1 %}
-                                    ✅
-                                {% elif tagged == 2 %}
-                                    ❌
-                                {% else %}
-                                    __
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if doc.get("vocabulary_of_interest") and doc["vocabulary_of_interest"].get('Pertinence') is not none %}
-                                    {{ (doc["vocabulary_of_interest"]['Pertinence'] * 1000) | round(1) }}
-                                {% else %}
-                                    __
-                                {% endif %}
-                            </td>
-                            <td class="freq_words">
-                                {% if doc.vocabulary_of_interest and doc.vocabulary_of_interest.Top_5_words %}
-                                    {% set words = [] %}
-                                    {% for word, count in doc.vocabulary_of_interest.Top_5_words %}
-                                        {% set _ = words.append(word) %}
-                                    {% endfor %}
-                                    {{ words | join(", ") }}
-                                {% else %}
-                                    No words available
-                                {% endif %}
-                                
-                            </td>
-
-                             <td>{{ doc.get('localisation of scraping', '__') }}</td>
-                             <td>{{ doc.get('keyword of scraping', '__') }}</td>
-                            <td class="source_title"><span style="color:#027bff">{{ doc.get('domain', '__') }} </span><br><b>{{ doc['Title_updated'] }}</b></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                    {% include 'includes/table.html' %}
                 </table>
             </div>
         </section>
     </main>
 </body>
 <script>
-    // Gestion du bouton de recherche
-    document.querySelector('.search-button').addEventListener('click', async function () {
-    // Collecter les données du formulaire
-    const keyword = document.querySelector('.row input[type="text"]').value;
-    const analysis = document.querySelector('.row select:nth-of-type(1)').value;
-    const location = document.querySelector('.row select:nth-of-type(2)').value;
-
-    try {
-        // Effectuer une requête pour obtenir les documents filtrés
-        const response = await fetch('/search-documents', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ keyword, analysis, location })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des documents.');
-        }
-
-        const documents = await response.json();
-
-        // Cibler le tableau pour insérer les nouveaux documents
-        const tbody = document.querySelector('.document-table tbody');
-        tbody.innerHTML = ''; // Réinitialiser le contenu du tableau
-
-        if (documents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6">Aucun document trouvé</td></tr>';
-        } else {
-            documents.forEach(doc => {
-                let taggedStatus = '__';
-                if (doc.tagged === 1) taggedStatus = '✅';
-                else if (doc.tagged === 2) taggedStatus = '❌';
-
-                const row = `
-                    <tr class="clickable-row ${doc.tagged === 1 ? 'tagged-green' : doc.tagged === 2 ? 'tagged-red' : ''}" 
-                        data-url="/document/${doc._id}">
-                        <td class="tagged-status" style="text-align: center;">${taggedStatus}</td>
-                        <td>${doc.vocabulary_of_interest?.Pertinence ? (doc.vocabulary_of_interest.Pertinence * 1000).toFixed(1) : '__'}</td>
-                        <td>${doc.vocabulary_of_interest?.Top_5_words ? doc.vocabulary_of_interest.Top_5_words.map(([word]) => word).join(', ') : 'No words available'}</td>
-                        <td>${doc['localisation of scraping'] || '__'}</td>
-                        <td>${doc['keyword of scraping'] || '__'}</td>
-                        <td class="source_title">
-                            <span style="color:#027bff">${doc.domain || '__'}</span><br><b>${doc.Title_updated}</b>
-                        </td>
-                    </tr>`;
-                tbody.insertAdjacentHTML('beforeend', row);
+    async function updateTable() {
+        const keyword = document.querySelector('.row input[type="text"]').value;
+        const analysis = document.querySelector('.row select:nth-of-type(1)').value;
+        const location = document.querySelector('.row select:nth-of-type(2)').value;
+        try {
+            const response = await fetch('/search-table', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyword, analysis, location })
             });
-
-            attachRowClickEvents();
+    
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des documents.');
+            }
+    
+            const html = await response.text();
+            document.querySelector('.document-section tbody').innerHTML = html;    
+            attachRowClickEvents(); // Reattach click events to the new rows
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Une erreur est survenue lors de la recherche des documents.');
         }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue lors de la recherche des documents.');
     }
-});
-
 
     // Fonction pour attacher l'événement de clic aux lignes du tableau
     function attachRowClickEvents() {
@@ -310,7 +234,6 @@
             });
         });
     }
-
     // Gestion du bouton de réinitialisation
     document.querySelector('.reset-button').addEventListener('click', function () {
         // Réinitialiser tous les champs de recherche
@@ -321,10 +244,14 @@
                 field.value = ''; // Réinitialiser les champs de texte
             }
         });
+        updateTable();//trigger an empty search to reload the table without filters
     });
 
-    // Appeler cette fonction au chargement initial pour gérer les documents existants
-    attachRowClickEvents();
+    document.addEventListener('DOMContentLoaded', function () {
+        updateTable(); // This can be left as is, or handled as per your current page logic
+        attachRowClickEvents(); // Appeler cette fonction au chargement initial pour gérer les documents existants
+    });
+
 </script>
 
 </html>
