@@ -28,18 +28,23 @@ def document(doc_id):
         return render_template('not_processed.html', document=document)
     return render_template('document.html', document=document)
 
-@front.route('/update-vu/<doc_id>', methods=['GET'])
-def update_vu(doc_id):
-    mongo = current_app.mongo
-    mongo_collection = mongo.db.Documents
+@front.route('/document/<doc_id>/tag/0')
+def set_tagged_0(doc_id):
+    return update_tagged(doc_id, 0)
 
-    document = mongo_collection.find_one({'_id': ObjectId(doc_id)})
-    if not document:
-        return jsonify({"error": "Document not found."}), 404
+@front.route('/document/<doc_id>/tag/1')
+def set_tagged_1(doc_id):
+    return update_tagged(doc_id, 1)
 
-    current_vu = document.get('vu', 0)  
-    if current_vu == 1:
-        return jsonify({"message": "Document already marked as viewed.", "vu": current_vu}), 200
+@front.route('/document/<doc_id>/tag/2')
+def set_tagged_2(doc_id):
+    return update_tagged(doc_id, 2)
 
-    mongo_collection.update_one({'_id': ObjectId(doc_id)}, {'$set': {'vu': 1}})
-    return jsonify({"message": "Document marked as viewed.", "vu": 1})
+def update_tagged(doc_id, value):
+    try:
+        mongo = current_app.mongo
+        mongo_collection = mongo.db.Documents
+        mongo_collection.update_one({'_id': ObjectId(doc_id)}, {'$set': {'tagged': value}})
+        return jsonify({"message": f"Document {doc_id} tagged set to {value}."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
