@@ -1,6 +1,6 @@
 import re
 from urllib.parse import urlparse
-import db as db
+#import db as db
 import pandas as pd
 import spacy
 from typing import Optional
