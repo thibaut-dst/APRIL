@@ -120,7 +120,7 @@ def calculate_relevance(spacy_doc: Doc, words_of_research_and_analysis: dict) ->
         # Calculate and normalize the relevance score
         relevance_score = target_word_occurrences / total_content_words if total_content_words > 0 else 0.0
 
-        return relevance_score
+        return relevance_score, total_content_words
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         raise SystemExit(f"An error occurred: {e}")  
@@ -292,6 +292,8 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
         words_of_research = word_tracking(spacy_document, target_words_research)
         words_of_analysis = word_tracking(spacy_document, target_words_analysis)
         top_5_words, top_5_words_count = get_top_5_words(words_of_research, words_of_analysis)
+        relevance_score, total_content_words = calculate_relevance(spacy_document,{ **words_of_research, **words_of_analysis})
+
 
         if MongoDB_document["meta_data"]["file_type"] == "pdf" and "source_url" in MongoDB_document["meta_data"]:
             updated_title = get_pdf_title_from_url(MongoDB_document["meta_data"]["source_url"])
@@ -308,7 +310,8 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
                 'words_of_research' : words_of_research,
                 'words_of_analysis' : words_of_analysis,
                 'Top_5_words' : top_5_words_count,
-                'Pertinence' : calculate_relevance(spacy_document,{ **words_of_research, **words_of_analysis})
+                'Pertinence' : relevance_score,
+                'Document_Token_Weight' : total_content_words
                 }
         }
 
