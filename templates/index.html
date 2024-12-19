@@ -18,136 +18,70 @@
         <section class="search-bar-section">
             <!-- Première ligne -->
             <div class="row">
-                <input type="text" placeholder="Mot de recherche" class="search-bar small">
+                <!-- Liste déroulante pour les mots de recherche -->
                 <select class="search-bar small">
                     <option value="" disabled selected>Choisir un mot d'analyse</option>
-                    <option value="acidification">acidification</option>
-                    <option value="algue">algue</option>
-                    <option value="barrage">barrage</option>
-                    <option value="bassin versant">bassin versant</option>
-                    <option value="cordon dunaire">cordon dunaire</option>
-                    <option value="delta">delta</option>
-                    <option value="digue">digue</option>
-                    <option value="dune">dune</option>
-                    <option value="escarpement">escarpement</option>
-                    <option value="estran">estran</option>
-                    <option value="estuaire">estuaire</option>
-                    <option value="falaise">falaise</option>
-                    <option value="forêt de Varech">forêt de Varech</option>
-                    <option value="GEMAPI">GEMAPI</option>
-                    <option value="GIZC">GIZC</option>
-                    <option value="jetée">jetée</option>
-                    <option value="lagune">lagune</option>
-                    <option value="lido">lido</option>
-                    <option value="marais salant">marais salant</option>
-                    <option value="marias">marias</option>
-                    <option value="marécage">marécage</option>
-                    <option value="mer">mer</option>
-                    <option value="mission racine">mission racine</option>
-                    <option value="Natura 2000">Natura 2000</option>
-                    <option value="Plan Littoral 21">Plan Littoral 21</option>
-                    <option value="plage">plage</option>
-                    <option value="réserve de sable">réserve de sable</option>
-                    <option value="résilience">résilience</option>
-                    <option value="restructuration">restructuration</option>
-                    <option value="rewilding">rewilding</option>
-                    <option value="rivage">rivage</option>
-                    <option value="sable">sable</option>
-                    <option value="salinisation">salinisation</option>
-                    <option value="saline">saline</option>
-                    <option value="stock sédimentaire">stock sédimentaire</option>
-                    <option value="tombolo">tombolo</option>
-                    <option value="vasière">vasière</option>
-                    <option value="vulnérabilité">vulnérabilité</option>
-                    <option value="zone humide">zone humide</option>
+                    <script>
+                        const vocabularyPath = "path/to/vocabulary.csv";
+                        const researchWords = functions.text_processing.extract_columns_to_list(vocabularyPath, "Vocabulaire de recherche");
+                        analysisWords.forEach(word => {
+                            document.write(`<option value="${word}">${word}</option>`);
+                        });
+                    </script>
                 </select>
-                
+                  
+                <!-- Liste déroulante pour les mots d'analyse-->
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                    <script>
+                        const analysisWords = functions.text_processing.extract_columns_to_list(vocabularyPath, "analysis_words");
+                        analysisWords.forEach(word => {
+                            document.write(`<option value="${word}">${word}</option>`);
+                        });
+                    </script>
+                </select>                
+
+                <!-- Liste déroulante pour les localisations -->
                 <select class="search-bar small">
                     <option value="" disabled selected>Choisir une localisation</option>
-                    <option value="Agde">Agde</option>
-                    <option value="Argelès-sur-Mer">Argelès-sur-Mer</option>
-                    <option value="Banyuls-sur-Mer">Banyuls-sur-Mer</option>
-                    <option value="Canet-en-Roussillon">Canet-en-Roussillon</option>
-                    <option value="Cerbère">Cerbère</option>
-                    <option value="Collioure">Collioure</option>
-                    <option value="Elne">Elne</option>
-                    <option value="Fleury">Fleury</option>
-                    <option value="Frontignan">Frontignan</option>
-                    <option value="Gruissan">Gruissan</option>
-                    <option value="La Grande Motte">La Grande Motte</option>
-                    <option value="Le Barcarès">Le Barcarès</option>
-                    <option value="Le Grau du Roi">Le Grau du Roi</option>
-                    <option value="Leucate">Leucate</option>
-                    <option value="Marseillan">Marseillan</option>
-                    <option value="Mauguio-Carnon">Mauguio-Carnon</option>
-                    <option value="Narbonne">Narbonne</option>
-                    <option value="Palavas-les-Flots">Palavas-les-Flots</option>
-                    <option value="Port-la-Nouvelle">Port-la-Nouvelle</option>
-                    <option value="Portiragnes">Portiragnes</option>
-                    <option value="Port-Vendre">Port-Vendre</option>
-                    <option value="Saint-Cyprien">Saint-Cyprien</option>
-                    <option value="Sainte-Marie-la-Mer">Sainte-Marie-la-Mer</option>
-                    <option value="Sérignan">Sérignan</option>
-                    <option value="Sète">Sète</option>
-                    <option value="Torreilles">Torreilles</option>
-                    <option value="Valras">Valras</option>
-                    <option value="Vendres">Vendres</option>
-                    <option value="Villeneuve-lès-Maguelone">Villeneuve-lès-Maguelone</option>
-                    <option value="Vias">Vias</option>
-                </select>
-                
+                    <script>
+                        const locations = functions.text_processing.extract_columns_to_list(vocabularyPath, "Localisation de recherche");
+                        locations.forEach(location => {
+                            document.write(`<option value="${location}">${location}</option>`);
+                        });
+                    </script>
+                </select>                
             </div>
             <!-- Deuxième ligne -->
             <div class="row">
-                <input type="text" placeholder="Mot de recherche" class="search-bar small">
+                <!-- Liste déroulante pour les mots de recherche -->
                 <select class="search-bar small">
                     <option value="" disabled selected>Choisir un mot d'analyse</option>
-                    <option value="acidification">acidification</option>
-                    <option value="algue">algue</option>
-                    <option value="barrage">barrage</option>
-                    <option value="bassin versant">bassin versant</option>
-                    <option value="cordon dunaire">cordon dunaire</option>
-                    <option value="delta">delta</option>
-                    <option value="digue">digue</option>
-                    <option value="dune">dune</option>
-                    <option value="escarpement">escarpement</option>
-                    <option value="estran">estran</option>
-                    <option value="estuaire">estuaire</option>
-                    <option value="falaise">falaise</option>
-                    <option value="forêt de Varech">forêt de Varech</option>
-                    <option value="GEMAPI">GEMAPI</option>
-                    <option value="GIZC">GIZC</option>
-                    <option value="jetée">jetée</option>
-                    <option value="lagune">lagune</option>
-                    <option value="lido">lido</option>
-                    <option value="marais salant">marais salant</option>
-                    <option value="marias">marias</option>
-                    <option value="marécage">marécage</option>
-                    <option value="mer">mer</option>
-                    <option value="mission racine">mission racine</option>
-                    <option value="Natura 2000">Natura 2000</option>
-                    <option value="Plan Littoral 21">Plan Littoral 21</option>
-                    <option value="plage">plage</option>
-                    <option value="réserve de sable">réserve de sable</option>
-                    <option value="résilience">résilience</option>
-                    <option value="restructuration">restructuration</option>
-                    <option value="rewilding">rewilding</option>
-                    <option value="rivage">rivage</option>
-                    <option value="sable">sable</option>
-                    <option value="salinisation">salinisation</option>
-                    <option value="saline">saline</option>
-                    <option value="stock sédimentaire">stock sédimentaire</option>
-                    <option value="tombolo">tombolo</option>
-                    <option value="vasière">vasière</option>
-                    <option value="vulnérabilité">vulnérabilité</option>
-                    <option value="zone humide">zone humide</option>
+                    <script>
+                        const researchWords_2 = functions.text_processing.extract_columns_to_list(vocabularyPath, "Vocabulaire de recherche");
+                        analysisWords.forEach(word => {
+                            document.write(`<option value="${word}">${word}</option>`);
+                        });
+                    </script>
                 </select>
+                  
+                <!-- Liste déroulante pour les mots d'analyse-->
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                    <script>
+                        const analysisWords_2 = functions.text_processing.extract_columns_to_list(vocabularyPath, "analysis_words");
+                        analysisWords.forEach(word => {
+                            document.write(`<option value="${word}">${word}</option>`);
+                        });
+                    </script>
+                </select>   
                 
             </div>
             <!-- Troisième ligne -->
             <div class="row">
                 <input type="text" placeholder="Recherche par titre" class="search-bar large">
             </div>
+            <!-- Quatrième ligne -->
             <div class="search-button-row">
                 <button class="search-button" onclick="updateTable()">Rechercher</button>
                 <button class="reset-button">Réinitialiser</button>
@@ -179,14 +113,22 @@
 </body>
 <script>
     async function updateTable() {
-        const keyword = document.querySelector('.row input[type="text"]').value;
-        const analysis = document.querySelector('.row select:nth-of-type(1)').value;
-        const location = document.querySelector('.row select:nth-of-type(2)').value;
+
+        // Récupérer les valeurs des champs de recherche
+        const title = document.querySelector('.row:nth-of-type(3) input[type="text"]').value;
+
+        const analysis1 = document.querySelector('.row:nth-of-type(1) select:nth-of-type(1)').value;
+        const analysis2 = document.querySelector('.row:nth-of-type(1) select:nth-of-type(2)').value;
+        const location1 = document.querySelector('.row:nth-of-type(1) select:nth-of-type(3)').value;
+
+        const analysis3 = document.querySelector('.row:nth-of-type(2) select:nth-of-type(1)').value;
+        const analysis4 = document.querySelector('.row:nth-of-type(2) select:nth-of-type(2)').value;
+
         try {
             const response = await fetch('/search-table', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ keyword, analysis, location })
+                body: JSON.stringify({ title, analysis1, analysis2, location1, analysis3, analysis4 })
             });
     
             if (!response.ok) {

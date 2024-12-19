@@ -15,33 +15,57 @@ def search_table():
     query = {}
     and_conditions = []
 
-    # Build query conditions (similar to your original logic)
+    # Recherche par mot-clé dans Title_updated
     if 'keyword' in data and data['keyword']:
         words = data['keyword'].split()
         for word in words:
-            and_conditions.append({"keyword of scraping": {"$regex": word, "$options": "i"}})
+            and_conditions.append({"Title_updated": {"$regex": word, "$options": "i"}})
+
+    # Recherche par localisation
     if 'location' in data and data['location']:
         words = data['location'].split()
         for word in words:
             and_conditions.append({"localisation of scraping": {"$regex": word, "$options": "i"}})
-    if 'analysis' in data and data['analysis']:
-        word_of_analysis = data['analysis']
+
+    # Recherche dans vocabulary_of_interest.words_of_research (analysis1 et analysis3)
+    if 'analysis1' in data and data['analysis1']:
+        word_of_research = data['analysis1']
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{word_of_research}": {"$gt": 0}})
+
+    if 'analysis3' in data and data['analysis3']:
+        word_of_research = data['analysis3']
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{word_of_research}": {"$gt": 0}})
+
+    # Recherche dans vocabulary_of_interest.words_of_analysis (analysis2 et analysis4)
+    if 'analysis2' in data and data['analysis2']:
+        word_of_analysis = data['analysis2']
         and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{word_of_analysis}": {"$gt": 0}})
+
+    if 'analysis4' in data and data['analysis4']:
+        word_of_analysis = data['analysis4']
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{word_of_analysis}": {"$gt": 0}})
+
+    # Construction de la requête avec $and si nécessaire
     if and_conditions:
         query = {"$and": and_conditions}
-    if 'title' in data and data['title']:
-        query["Title_updated"] = {"$regex": data['title'], "$options": "i"}
 
     try:
+        # Exécuter la requête dans la base MongoDB
         documents = list(mongo_collection.find(query))
+
+        # Convertir les ObjectId en chaînes pour éviter les problèmes de sérialisation
         for doc in documents:
             if '_id' in doc:
                 doc['_id'] = str(doc['_id'])
+
+        # Rendre le tableau avec les résultats
         return render_template('includes/table.html', documents=documents), 200
 
     except Exception as e:
+        # Gestion des erreurs
         print(f"Error during search: {e}", flush=True)
         return jsonify({"error": str(e)}), 500
+
 
 
 """ 

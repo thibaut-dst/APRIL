@@ -138,3 +138,5 @@ Pipeline has been successfully stopped.
 2024-11-29 09:38:28,705 - INFO - Text processing execution completed successfully.
 Pipeline execution started.
 Text processing execution completed successfully.
+2024-12-19 12:10:36,307 - ERROR - Failed to fetch page http://example.com. Status code: 404
+2024-12-19 12:10:36,312 - INFO - Successfully fetched page: http://example.com
