@@ -38,7 +38,7 @@ def extract_columns_to_list(file_path: str, column_name: str) -> list:
             print(len(vocabulaire_recherche), len(vocabulaire_analyse), len(combined_list))
             """
             # Log the number of elements in the final list
-            logging.info(f"Number of elements in the combined list: {len(vocabulaire)}")
+            #logging.info(f"Number of elements in the combined list: {len(vocabulaire)}")
 
             return vocabulaire
     except FileNotFoundError:
@@ -80,7 +80,7 @@ def get_top_5_words(words_of_research: dict, words_of_analysis: dict) -> list:
         # Extract the top 5 most frequent words along with their counts
         top_5_words_count = [(word, count) for word, count in sorted_words[:5]]
 
-        return top_5_words_count
+        return top_5_words, top_5_words_count
     except Exception as e:
         logging.error(f"An error occurred: {e}")
         raise SystemExit(f"An error occurred: {e}")
@@ -291,7 +291,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
         target_words_analysis = extract_columns_to_list(vocabulary_path, "Vocabulaire d'analyse")
         words_of_research = word_tracking(spacy_document, target_words_research)
         words_of_analysis = word_tracking(spacy_document, target_words_analysis)
-
+        top_5_words, top_5_words_count = get_top_5_words(words_of_research, words_of_analysis)
 
         if MongoDB_document["meta_data"]["file_type"] == "pdf" and "source_url" in MongoDB_document["meta_data"]:
             updated_title = get_pdf_title_from_url(MongoDB_document["meta_data"]["source_url"])
@@ -307,7 +307,8 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
             'vocabulary_of_interest': {
                 'words_of_research' : words_of_research,
                 'words_of_analysis' : words_of_analysis,
-                'Top_5_words' : get_top_5_words(words_of_research, words_of_analysis),
+                'Top_5_words' : top_5_words,
+                'Top_5_words_count' : top_5_words_count,
                 'Pertinence' : calculate_relevance(spacy_document,{ **words_of_research, **words_of_analysis})
                 }
         }

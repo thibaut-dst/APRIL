@@ -11,11 +11,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 )
 
-database = 'April'
-collection = 'Documents'
-uri="mongodb://mongo:27017"
-
-def get_collection(db_name = database, collection_name = collection, uri = uri):
+def get_collection(db_name: str, collection_name: str, uri: str) -> Collection:
     """
     Connects to a MongoDB instance and returns the specified collection.
     If the database or collection does not exist, MongoDB will create it on the first write operation.
@@ -45,13 +41,16 @@ def get_collection(db_name = database, collection_name = collection, uri = uri):
 
 def store_processed_data(document_id: ObjectId, processed_data: dict, collection: Collection) -> None:
     """
-    Update a MongoDB document with the processed data fields (cleaned text, ner, target word counts, etc.)
-    
+    Update a MongoDB document with the processed data fields (cleaned text, NER, target word counts, etc.).
+
     Parameters:
         document_id (ObjectId): The unique identifier of the document to update.
         processed_data (dict): A dictionary of processed data to store in MongoDB.
                                Each key-value pair in the dictionary is added to the document.
         collection (Collection): The MongoDB collection in which the document resides.    
+
+    Raises:
+        Exception: If an error occurs while updating the document.
     """
 
     try:

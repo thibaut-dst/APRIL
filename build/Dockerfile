@@ -5,15 +5,15 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copier les fichiers dans l'image
-COPY requirements.txt requirements.txt
+COPY build/requirements.txt build/requirements.txt
 COPY app.py app.py
 COPY functions/ functions/
 COPY templates/ templates/
 COPY routes/ routes/
 COPY static/ static/
-COPY Vocabulaire_Expert_CSV.csv Vocabulaire_Expert_CSV.csv
+COPY data/ data/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r build/requirements.txt
 RUN python3 -m spacy download fr_core_news_lg
 RUN apt-get update && apt-get install -y iputils-ping
 RUN touch pipeline.log
