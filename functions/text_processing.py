@@ -307,8 +307,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
             'vocabulary_of_interest': {
                 'words_of_research' : words_of_research,
                 'words_of_analysis' : words_of_analysis,
-                'Top_5_words' : top_5_words,
-                'Top_5_words_count' : top_5_words_count,
+                'Top_5_words' : top_5_words_count,
                 'Pertinence' : calculate_relevance(spacy_document,{ **words_of_research, **words_of_analysis})
                 }
         }
