@@ -26,7 +26,7 @@
         <td class="freq_words">
             {% if doc.vocabulary_of_interest and doc.vocabulary_of_interest.Top_5_words %}
                 {% set words = [] %}
-                {% for word, count in doc.vocabulary_of_interest.Top_5_words %}
+                {% for word in doc.vocabulary_of_interest.Top_5_words %}
                     {% set _ = words.append(word) %}
                 {% endfor %}
                 {{ words | join(", ") }}

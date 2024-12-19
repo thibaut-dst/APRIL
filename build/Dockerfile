@@ -5,13 +5,13 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copier les fichiers dans l'image
-COPY build/requirements.txt build/requirements.txt
-COPY app.py app.py
-COPY functions/ functions/
-COPY templates/ templates/
-COPY routes/ routes/
-COPY static/ static/
-COPY data/ data/
+COPY ../build/requirements.txt build/requirements.txt
+COPY ../app.py app.py
+COPY ../functions/ functions/
+COPY ../templates/ templates/
+COPY ../routes/ routes/
+COPY ../static/ static/
+COPY ../data/ data/
 
 RUN pip install --no-cache-dir -r build/requirements.txt
 RUN python3 -m spacy download fr_core_news_lg
