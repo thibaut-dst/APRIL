@@ -110,12 +110,12 @@ def calculate_relevance(spacy_doc: Doc, words_of_research_and_analysis: dict) ->
         # Calculate the overlap of words between the text and the target dictionary
         target_word_occurrences = sum(word_frequencies.get(word, 0) for word in words_of_research_and_analysis.keys())
 
-        if target_word_occurrences == 0:
-            logging.warning("No target words found in the document.")
-            return 0.0
-
         # Total number of content words (excluding stop words and punctuation)
         total_content_words = len(content_words)
+
+        if target_word_occurrences == 0:
+            logging.warning("No target words found in the document.")
+            return 0.0, total_content_words
 
         # Calculate and normalize the relevance score
         relevance_score = target_word_occurrences / total_content_words if total_content_words > 0 else 0.0
