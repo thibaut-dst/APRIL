@@ -40,33 +40,36 @@ def pertinence_sementic(cleaned_text: str , mot_recherche_1 : str = None, mot_re
     try:
         words_not_none = [word for word in [mot_recherche_1, mot_recherche_2, mot_analyse_1, mot_analyse_2] if word is not None]
 
-        # Générer le nettoyage et l'embedding pour le texte
-        doc = nlp(cleaned_text)
-        filtered_tokens = [token.text for token in doc if not token.is_punct and not token.is_stop]
-        cleaned_text_filtered = " ".join(filtered_tokens)
+        if len(words_not_none) == 0:    
+            return 0 , 0
+        else :
+            # Générer le nettoyage et l'embedding pour le texte
+            doc = nlp(cleaned_text)
+            filtered_tokens = [token.text for token in doc if not token.is_punct and not token.is_stop]
+            cleaned_text_filtered = " ".join(filtered_tokens)
 
 
-        #text_embedding = np.mean([model.get_word_vector(w) for w in cleaned_text_filtered.split()], axis=0)    # Un modèle fasttext
-        text_embedding = model.encode([cleaned_text_filtered])                                                 # Un modèle léger de SBERT
+            #text_embedding = np.mean([model.get_word_vector(w) for w in cleaned_text_filtered.split()], axis=0)    # Un modèle fasttext
+            text_embedding = model.encode([cleaned_text_filtered])                                                 # Un modèle léger de SBERT
 
 
-        similarity_score = {}
-        similarity_values = [] 
+            similarity_score = {}
+            similarity_values = [] 
 
-        for word in words_not_none:
-            
-            # Générer l'embedding pour le mot
-            #word_embedding = model.get_word_vector(word)       # Un modèle fasttext
-            word_embedding = model.encode([word])              # Un modèle léger de SBERT
+            for word in words_not_none:
+                
+                # Générer l'embedding pour le mot
+                #word_embedding = model.get_word_vector(word)       # Un modèle fasttext
+                word_embedding = model.encode([word])              # Un modèle léger de SBERT
 
-            # Calculer la similarité cosinus
-            #similarity = cosine_similarity([word_embedding], [text_embedding])      # Un modèle fasttext
-            similarity = cosine_similarity(word_embedding, text_embedding)          # Un modèle léger de SBERT
-            
-            similarity_score[word] = similarity[0][0]
-            similarity_values.append(similarity[0][0]) 
-        score = np.mean(similarity_values)
-        return similarity_score, score
+                # Calculer la similarité cosinus
+                #similarity = cosine_similarity([word_embedding], [text_embedding])      # Un modèle fasttext
+                similarity = cosine_similarity(word_embedding, text_embedding)          # Un modèle léger de SBERT
+                
+                similarity_score[word] = similarity[0][0]
+                similarity_values.append(similarity[0][0]) 
+            score = np.mean(similarity_values)
+            return similarity_score, score
     
     except Exception as e:
         logging.error(f"Error processing document: {e}")

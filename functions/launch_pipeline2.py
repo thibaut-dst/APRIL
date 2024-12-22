@@ -1,7 +1,5 @@
-import scraping as scrape
-import db as db
-import text_processing as process
-import pandas as pd
+import db 
+import text_processing
 import logging
 
 
@@ -26,7 +24,7 @@ def iterate_documents(collection_name: str, vocabulary_path: str):
         logging.info(f'Starting nlp for document ID: {document_id}')
 
         try:
-            processed_data = process.process_document(document, vocabulary_path)
+            processed_data = text_processing.process_document(document, vocabulary_path)
             db.store_processed_data(document["_id"], processed_data, collection_name)
         
         except Exception as e:
@@ -36,8 +34,14 @@ def iterate_documents(collection_name: str, vocabulary_path: str):
 def main():
     logging.info("Document processing (NLP) - Pipeline initialization")
     try:
-        collection = db.get_collection()
-        vocabulary_path = 'Vocabulaire_Expert_CSV.csv'
+
+        database = 'April'
+        collection_name = 'Documents'
+        uri="mongodb://mongo:27017"
+        vocabulary_path = 'data/Vocabulaire_Expert_CSV.csv'
+
+
+        collection = db.get_collection(db_name=database, collection_name=collection_name, uri= uri)
         iterate_documents(collection, vocabulary_path)
         logging.info("Text processing execution completed successfully.")
     except Exception as e:

@@ -52,9 +52,9 @@ class TestNLPFunctions(unittest.TestCase):
         
         # Appeler la fonction
         result = text_processing.get_top_5_words(words_of_research, words_of_analysis)
-        
+
         # Résultat attendu (combinaisons et tri des mots)
-        expected = [("data", 14), ("python", 10), ("AI", 9), ("science", 8), ("machine", 6)]
+        expected = (['data', 'python', 'AI', 'science', 'machine'], [('data', 14), ('python', 10), ('AI', 9), ('science', 8), ('machine', 6)])
         
         self.assertEqual(result, expected)
 
