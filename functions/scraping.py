@@ -10,6 +10,7 @@ from datetime import datetime  # Importing datetime module
 import random
 import itertools
 
+# Step 1: General logger (pipeline.log)
 logging.basicConfig(
     filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
     filemode='a',                  # Append to the log file
@@ -17,7 +18,20 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
 ) 
 
-ERROR_LOG_FILE = "data/url_errors.log"
+# Step 2: Error-specific logger (data/url_errors.log)
+error_logger = logging.getLogger('errorLogger')  # Create a new logger
+error_logger.setLevel(logging.ERROR)             # Set the log level to ERROR
+
+# Create file handler for error logging
+error_handler = logging.FileHandler('data/url_errors.log')  # Log to 'data/url_errors.log'
+error_handler.setLevel(logging.ERROR)                       # Handle only ERROR level logs
+
+# Create formatter for error logs
+error_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+error_handler.setFormatter(error_formatter)                 # Apply the formatter to the handler
+
+# Add the error handler to the error logger
+error_logger.addHandler(error_handler)
 
 # Function for meta scraping
 def meta_scraping(url: str) -> dict:
@@ -161,76 +175,74 @@ def scrape_webpages_to_db(keywords_list: list, collection):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
-    with open(ERROR_LOG_FILE, 'a') as error_log:
-        
-        #for index, keyword in enumerate(keywords_list):
-        for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
-            logging.info(f"Starting Google search for: '{combined}'")
-            for url in search(combined, num_results=3):  # Limited to 3 results
-                try:
-                    # Check if document already exists in DB
-                    if collection.find_one({"url": url}):
-                        logging.info(f"Document already exists in DB, skipping: {url}")
-                        continue
+    #for index, keyword in enumerate(keywords_list):
+    for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
+        logging.info(f"Starting Google search for: '{combined}'")
+        for url in search(combined, num_results=3):  # Limited to 3 results
+            try:
+                # Check if document already exists in DB
+                if collection.find_one({"url": url}):
+                    logging.info(f"Document already exists in DB, skipping: {url}")
+                    continue
 
-                    response = requests.get(url, headers=headers)
-                    response.raise_for_status()
-                    content_type = response.headers.get('Content-Type', '').lower()
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                content_type = response.headers.get('Content-Type', '').lower()
 
-                    if 'application/pdf' in content_type:
-                        file_type = "pdf"
-                        pdf_name = f"temp_pdf_{index}.pdf"
-                        with open(pdf_name, 'wb') as f:
-                            f.write(response.content)
-                        text_content = pdf_to_text(pdf_name)
-                        pdf_metadata = pdf_meta_scraping(pdf_name)
+                if 'application/pdf' in content_type:
+                    file_type = "pdf"
+                    pdf_name = f"temp_pdf_{index}.pdf"
+                    with open(pdf_name, 'wb') as f:
+                        f.write(response.content)
+                    text_content = pdf_to_text(pdf_name)
+                    pdf_metadata = pdf_meta_scraping(pdf_name)
 
-                        os.remove(pdf_name)
+                    os.remove(pdf_name)
+                    page_data = {
+                        "url": url,
+                        "keyword of scraping": vocabulaire,
+                        "localisation of scraping": localisation,
+                        "content": text_content,
+                        "meta_data": {
+                            "file_type": file_type,
+                            "source_url": url,
+                            **pdf_metadata
+                        }
+                    }
+                    collection.insert_one(page_data)
+                    logging.info(f"PDF content stored in DB from {url}.")
+                    
+                elif 'text/html' in content_type: # Handle HTML pages
+                    file_type = "html" 
+                    soup = BeautifulSoup(response.text, 'html.parser')
+                    #content = soup.get_text()  # v0 du get_text
+
+                    paragraphs = soup.find_all('p')
+                    content = ""
+                    for p in paragraphs:
+                        content += p.get_text() + " <br> "
+                    content = content.strip()
+
+                    # Check if the keyword is present in the content
+                    if contains_keywords(content, vocabulaire):
                         page_data = {
                             "url": url,
                             "keyword of scraping": vocabulaire,
                             "localisation of scraping": localisation,
-                            "content": text_content,
+                            "content": content,
                             "meta_data": {
                                 "file_type": file_type,
-                                "source_url": url,
-                                **pdf_metadata
+                                **meta_scraping(url)
                             }
                         }
                         collection.insert_one(page_data)
-                        logging.info(f"PDF content stored in DB from {url}.")
-                        
-                    elif 'text/html' in content_type: # Handle HTML pages
-                        file_type = "html" 
-                        soup = BeautifulSoup(response.text, 'html.parser')
-                        #content = soup.get_text()  # v0 du get_text
-
-                        paragraphs = soup.find_all('p')
-                        content = ""
-                        for p in paragraphs:
-                            content += p.get_text() + " <br> "
-                        content = content.strip()
-
-                        # Check if the keyword is present in the content
-                        if contains_keywords(content, vocabulaire):
-                            page_data = {
-                                "url": url,
-                                "keyword of scraping": vocabulaire,
-                                "localisation of scraping": localisation,
-                                "content": content,
-                                "meta_data": {
-                                    "file_type": file_type,
-                                    **meta_scraping(url)
-                                }
-                            }
-                            collection.insert_one(page_data)
-                            logging.info(f"Page HTML stored in DB: {url}")
-
-                except requests.exceptions.RequestException as e:
-                    logging.error(f"Error accessing page {url}: {e}")
-                    error_log.write(f"{url}\t{str(e)}\n")  # Write the error to the log file
-                except Exception as e:
-                    logging.error(f"Unexpected error processing {url}: {e}")
+                        logging.info(f"Page HTML stored in DB: {url}")
+            except requests.exceptions.RequestException as e:
+                #logging.error(f"Error accessing page {url}: {e}")
+                error_logger.error(f"Error accessing page {url}: {e}")
+            except Exception or ValueError as e:
+                #logging.error(f"Unexpected error processing {url}: {e}")
+                error_logger.error(f"Unexpected error processing {url}: {e}")
 
 # Function for read and shuffle the csv 
 def read_and_shuffle_csv(file_path: str) -> list:
@@ -264,4 +276,4 @@ def read_and_shuffle_csv(file_path: str) -> list:
         return triple_list
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")

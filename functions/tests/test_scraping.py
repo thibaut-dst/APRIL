@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from functions import scraping
+import requests
 import logging
 
 class TestScrapingFunctions(unittest.TestCase):
