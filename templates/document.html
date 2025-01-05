@@ -37,7 +37,7 @@
          <!-- Additional Metadata Section -->
          <aside class="document-metadata">
              <div>
-                 <h3>Additional Metadata</h3>
+                 <h3>Metadata</h3>
                  <ul>
                      <li><strong>Domain:</strong> {{ document['domain'] }}</li>
                      <li><strong>Search keyword:</strong> {{ document.get('keyword of scraping', '__')}}</li>
@@ -52,7 +52,7 @@
                     </ul>
                 </div>
                 <div class="legend">
-                    <h3>Legend:</h3>
+                    <h3>Legend</h3>
                     <label>
                         <input type="checkbox" class="toggle-highlights" data-category="RESEARCH" checked>
                         <span class="highlight RESEARCH">Words of Research</span>
@@ -85,6 +85,38 @@
                 </div>
         </aside>
     
+        <aside class="info_computed">
+            <div class="top5occurences">
+                <h3>Top 5 Words</h3>
+                {% if document.vocabulary_of_interest and document.vocabulary_of_interest.Top_5_words %}
+                <table class="top-words-table compact">
+                    <thead>
+                        <tr>
+                            <th>Occurrences</th>
+                            {% for word, count in document.vocabulary_of_interest.Top_5_words %}
+                                <th>{{ count }}</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Words</th>
+                            {% for word, count in document.vocabulary_of_interest.Top_5_words %}
+                                <th>{{ word }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                </table>
+                {% else %}
+                    <p>No vocabulary data available.</p>
+                {% endif %}
+            </div>
+            <div class="docweight">
+                <h3>Document size</h3>
+                <p><strong>Word Count:</strong> {{ document.cleaned_text.split() | length }}</p>
+                {% if document.token_count %}
+                    <p><strong>Token Count:</strong> {{ document.token_count }}</p>
+                {% endif %}
+            </div>
+        </aside>
 
         <!-- Document Content Section -->
         <section id="content" class="document-content">

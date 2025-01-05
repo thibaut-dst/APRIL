@@ -16,7 +16,7 @@
                 __
             {% endif %}
         </td>
-        <td>
+        <td class="pertcontent">
             {% if doc.get("vocabulary_of_interest") and doc["vocabulary_of_interest"].get('Pertinence') is not none %}
                 {{ (doc["vocabulary_of_interest"]['Pertinence'] * 1000) | round(1) }}
             {% else %}
