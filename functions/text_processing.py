@@ -287,6 +287,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
         raw_text = MongoDB_document["content"]
         cleaned_text = clean_text(raw_text)
         spacy_document = nlp(cleaned_text)
+        token_count = len(spacy_document)
         target_words_research = extract_columns_to_list(vocabulary_path, 'Vocabulaire de recherche')
         target_words_analysis = extract_columns_to_list(vocabulary_path, "Vocabulaire d'analyse")
         words_of_research = word_tracking(spacy_document, target_words_research)
@@ -306,6 +307,7 @@ def process_document(MongoDB_document: dict, vocabulary_path: str) -> dict:
             'domain': get_domain_name(MongoDB_document["url"]),
             'cleaned_text': cleaned_text,
             'named_entities': ner(spacy_document),
+            'token_count': token_count,
             'vocabulary_of_interest': {
                 'words_of_research' : words_of_research,
                 'words_of_analysis' : words_of_analysis,
