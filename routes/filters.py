@@ -6,6 +6,7 @@ from flask import Blueprint, current_app, render_template
 filters = Blueprint('filters', __name__)
 
 
+# Build query conditions (similar to your original logic)
 @filters.route('/search-table', methods=['POST'])
 def search_table():
     mongo = current_app.mongo
@@ -15,23 +16,51 @@ def search_table():
     query = {}
     and_conditions = []
 
-    # Build query conditions (similar to your original logic)
-    if 'keyword' in data and data['keyword']:
-        words = data['keyword'].split()
-        for word in words:
-            and_conditions.append({"keyword of scraping": {"$regex": word, "$options": "i"}})
-    if 'location' in data and data['location']:
-        words = data['location'].split()
-        for word in words:
-            and_conditions.append({"localisation of scraping": {"$regex": word, "$options": "i"}})
-    if 'analysis' in data and data['analysis']:
-        word_of_analysis = data['analysis']
-        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{word_of_analysis}": {"$gt": 0}})
+
+
+    if 'location' in data and isinstance(data['location'], str) and data['location'].strip():
+        and_conditions.append({"localisation of scraping": {"$regex": data['location'], "$options": "i"}})
+
+
+    # Recherche avancée dans words_of_research
+    if 'searchword1' in data and data['searchword1']:
+        searchword1 = data['searchword1']
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword1}": {"$gt": 1}})
+
+    if 'searchword2' in data and data['searchword2']:
+        searchword2 = data['searchword2']
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword2}": {"$gt": 1}})
+
+    # Recherche avancée dans words_of_analysis
+    if 'analyseword1' in data and data['analyseword1']:
+        analyseword1 = data['analyseword1']
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword1}": {"$gt": 1}})
+
+    if 'analyseword2' in data and data['analyseword2']:
+        analyseword2 = data['analyseword2']
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword2}": {"$gt": 1}})
+
+    # Recherche par titre (Title_updated)
+    if 'title' in data and isinstance(data['title'], str) and data['title'].strip():
+        title = data['title'].strip()
+        and_conditions.append({"Title_updated": {"$regex": title, "$options": "i"}})
+
+    # Gestion du tag
+    if 'tag' in data and data['tag']:  # Vérifie que le tag existe ET n'est pas vide
+        tag_mapping = {"none": 0, "valid": 1, "wrong": 2}
+        tag_value = tag_mapping.get(data['tag'], None)  # None pour une valeur invalide ou vide
+
+        # Appliquer uniquement si une valeur valide est sélectionnée
+        if tag_value is not None:
+            and_conditions.append({"tagged": tag_value})
+
+
+
+
     if and_conditions:
         query = {"$and": and_conditions}
-    if 'title' in data and data['title']:
-        query["Title_updated"] = {"$regex": data['title'], "$options": "i"}
 
+    print("condition and : " , and_conditions)
     try:
         documents = list(mongo_collection.find(query))
         for doc in documents:
@@ -42,60 +71,3 @@ def search_table():
     except Exception as e:
         print(f"Error during search: {e}", flush=True)
         return jsonify({"error": str(e)}), 500
-
-
-""" 
-@filters.route('/search-documents', methods=['POST'])
-def search_documents():
-    mongo = current_app.mongo
-    mongo_collection = mongo.db.Documents
-
-    data = request.json
-    print("Received data:", data)
-
-    query = {}
-
-    # Construire la requête MongoDB
-    and_conditions = []
-
-    # Recherche dans 'keyword' pour les mots de localisation et d'analyse
-    if 'keyword' in data and data['keyword']:
-        words = data['keyword'].split()  # Divise par mot clé si nécessaire
-        for word in words:
-            and_conditions.append({"keyword of scraping": {"$regex": word, "$options": "i"}})
-
-    if 'location' in data and data['location']:
-        words = data['location'].split()  # Divise par mot clé si nécessaire
-        for word in words:
-            and_conditions.append({"localisation of scraping": {"$regex": word, "$options": "i"}})
-    
-    if 'analysis' in data and data['analysis']:
-        word_of_analysis = data['analysis']
-        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{word_of_analysis}": {"$gt": 0}})
-
-    # Ajoutez la condition combinée dans la requête principale
-    if and_conditions:
-        query = {"$and": and_conditions}
-
-    # Recherche dans 'Title_updated' (si fourni)
-    if 'title' in data and data['title']:
-        query["Title_updated"] = {"$regex": data['title'], "$options": "i"}
-
-    # Afficher la requête dans la console pour debug
-    print("Requête envoyée à MongoDB:", query, flush=True)
-
-    # Chercher les documents correspondants
-    try:
-        documents = list(mongo_collection.find(query))
-
-        # Conversion des ObjectId en chaînes pour la sérialisation JSON
-        for doc in documents:
-            if '_id' in doc:
-                doc['_id'] = str(doc['_id'])  # Convertir ObjectId en chaîne
-
-        print(f"Documents trouvés: {len(documents)}", flush=True)
-        return jsonify(documents), 200
-    except Exception as e:
-        print(f"Erreur lors de la recherche : {e}", flush=True)
-        return jsonify({"error": str(e)}), 500
- """

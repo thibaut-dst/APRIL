@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +8,7 @@
     <link rel="stylesheet" href="../static/main.css">
     <link rel="stylesheet" href="../static/header.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- Include PapaParse -->
     <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script> <!-- Link to data_viz.js -->
     <script src="{{ url_for('static', filename='data_viz_location.js') }}" defer></script>
 </head>
@@ -18,35 +18,27 @@
         <section class="search-bar-section">
             <!-- Première ligne -->
             <div class="row">            
-                <select class="search-bar small" >
+                <select class="search-bar small">
                     <option value="" disabled selected>Choose a search word</option>
-
                 </select>   
                 <select class="search-bar small">
                     <option value="" disabled selected>Choose another search word</option>
-              
                 </select>
-                <select class="search-bar small" >
+                <select class="search-bar small">
                     <option value="" disabled selected>Choisir un mot d'analyse</option>
-                   
                 </select>
                 <select class="search-bar small">
                     <option value="" disabled selected>Choose another word for analysis</option>
-              
                 </select>
             </div>
             
 
             <!-- Deuxième ligne -->
             <div class="row">
-                
-                <select class="search-bar search-1" >
+                <select class="search-bar search-1">
                     <option value="" disabled selected>Choose a location</option>
-                    {% for word in vocabulaire_localisation %}
-                    <option value="{{ word }}">{{ word }}</option>
-                    {% endfor %}    
                 </select>
-                <select class="search-bar tag-selector search-2" >
+                <select class="search-bar tag-selector search-2">
                     <option value="" disabled selected>Choose a tag</option>
                     <option value="none">__ None</option>
                     <option value="valid">✅ Valid</option>
@@ -104,72 +96,153 @@
             </div>
         </section>
     </main>
-</body>
-<script>
-    function toggleActive(button) {
-        // Check if the clicked button is already active
-        if (button.classList.contains('active')) {
-            // If it's active, remove the 'active' class
-            button.classList.remove('active');
-        } else {
-            // Otherwise, remove 'active' from all buttons and add to the clicked button
-            const buttons = document.querySelectorAll('.sort-button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        }
-    }
-    async function updateTable() {
-        const keyword = document.querySelector('.row input[type="text"]').value;
-        const analysis = document.querySelector('.row select:nth-of-type(1)').value;
-        const location = document.querySelector('.row select:nth-of-type(2)').value;
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    // Fonction pour charger et parser le fichier CSV
+    async function loadCSV() {
         try {
-            const response = await fetch('/search-table', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ keyword, analysis, location })
+            const response = await fetch('/data/Vocabulaire_Expert_CSV.csv');
+            const csvText = await response.text();
+
+            // Utilisation de PapaParse pour parser le CSV avec le bon séparateur
+            const parsedData = Papa.parse(csvText, {
+                header: true, // Utilise la première ligne comme en-têtes de colonne
+                skipEmptyLines: true, // Ignore les lignes vides
+                delimiter: ";" // Spécifie le séparateur pour le CSV
             });
-    
-            if (!response.ok) {
-                throw new Error('Erreur lors de la récupération des documents.');
+
+            const vocabulaireRecherche = [];
+            const localisationRecherche = [];
+            const vocabulaireAnalyse = [];
+
+            // Remplir les tableaux avec les valeurs du CSV
+            parsedData.data.forEach(row => {
+                if (row['Vocabulaire de recherche']) vocabulaireRecherche.push(row['Vocabulaire de recherche']);
+                if (row['Localisation de recherche']) localisationRecherche.push(row['Localisation de recherche']);
+                if (row['Vocabulaire d\'analyse']) vocabulaireAnalyse.push(row['Vocabulaire d\'analyse']);
+            });
+
+            // Trier les tableaux par ordre alphabétique
+            vocabulaireRecherche.sort();
+            localisationRecherche.sort();
+            vocabulaireAnalyse.sort();
+
+            // Fonction pour insérer des options dans un <select>
+            function populateSelect(selectElement, options) {
+                options.forEach(optionValue => {
+                    const option = document.createElement('option');
+                    option.value = optionValue;
+                    option.textContent = optionValue;
+                    selectElement.appendChild(option);
+                });
             }
-    
-            const html = await response.text();
-            document.querySelector('.document-section tbody').innerHTML = html;    
-            attachRowClickEvents(); // Reattach click events to the new rows
+
+            // Cibler les éléments <select> de manière plus précise
+            const selectRecherche1 = document.querySelector('.row select:nth-of-type(1)'); // Premier select de recherche
+            const selectRecherche2 = document.querySelector('.row select:nth-of-type(2)'); // Deuxième select de recherche
+            const selectAnalyse1 = document.querySelector('.row select:nth-of-type(3)'); // Premier select d'analyse
+            const selectAnalyse2 = document.querySelector('.row select:nth-of-type(4)'); // Deuxième select d'analyse
+            const selectLocalisation = document.querySelector('.row select.search-1'); // Select de localisation (ligne 2, avec classe search-1)
+
+            // Remplir les éléments <select> dans le HTML
+            populateSelect(selectRecherche1, vocabulaireRecherche);
+            populateSelect(selectRecherche2, vocabulaireRecherche); // Remplir les deux champs "mot de recherche"
+            populateSelect(selectAnalyse1, vocabulaireAnalyse); // Remplir les deux champs "mot d'analyse"
+            populateSelect(selectAnalyse2, vocabulaireAnalyse); // Remplir les deux champs "mot d'analyse"
+            populateSelect(selectLocalisation, localisationRecherche); // Remplir le champ "localisation"
+            
         } catch (error) {
-            console.error('Erreur:', error);
-            alert('Une erreur est survenue lors de la recherche des documents.');
+            console.error("Erreur lors du chargement du fichier CSV :", error);
         }
     }
 
-    // Fonction pour attacher l'événement de clic aux lignes du tableau
-    function attachRowClickEvents() {
-        const rows = document.querySelectorAll('.clickable-row');
-        rows.forEach(row => {
-            row.addEventListener('click', function () {
-                const url = row.getAttribute('data-url');
-                window.location = url;
-            });
+    loadCSV(); // Appeler la fonction pour charger le CSV
+});
+
+
+
+        // Fonction pour gérer l'activation des boutons de tri
+        function toggleActive(button) {
+            if (button.classList.contains('active')) {
+                button.classList.remove('active');
+            } else {
+                const buttons = document.querySelectorAll('.sort-button');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            }
+        }
+
+        async function updateTable() {
+    const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
+    const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
+    const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
+    const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
+    const location = document.querySelector('.row select.search-1').value || "";
+    const title = document.querySelector('.row input[type="text"]').value || "";
+
+    // Gérer le tag (valeur vide si rien n'est sélectionné)
+    const tag = document.querySelector('.row select.search-2').value || ""; 
+
+    try {
+        const response = await fetch('/search-table', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                searchword1,
+                searchword2,
+                analyseword1,
+                analyseword2,
+                location,
+                title,
+                tag  // Envoie la valeur vide si aucun tag sélectionné
+            })
         });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des documents.');
+        }
+
+        const html = await response.text();
+        document.querySelector('.document-section tbody').innerHTML = html;    
+        attachRowClickEvents();
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de la recherche des documents.');
     }
-    // Gestion du bouton de réinitialisation
-    document.querySelector('.reset-button').addEventListener('click', function () {
-        // Réinitialiser tous les champs de recherche
+}
+
+
+
+
+        // Fonction pour attacher l'événement de clic aux lignes du tableau
+        function attachRowClickEvents() {
+            const rows = document.querySelectorAll('.clickable-row');
+            rows.forEach(row => {
+                row.addEventListener('click', function () {
+                    const url = row.getAttribute('data-url');
+                    window.location = url;
+                });
+            });
+        }
+
+        document.querySelectorAll('.reset-button').forEach(button => {
+    button.addEventListener('click', function () {
         document.querySelectorAll('.search-bar').forEach(field => {
             if (field.tagName === 'SELECT') {
-                field.selectedIndex = 0; // Réinitialiser les listes déroulantes
+                field.selectedIndex = 0; // Réinitialise les sélections
             } else {
-                field.value = ''; // Réinitialiser les champs de texte
+                field.value = ''; // Réinitialise les champs texte
             }
         });
-        updateTable();//trigger an empty search to reload the table without filters
+
+        // Remet le tag à la valeur vide
+        document.querySelector('.row select.search-2').value = ""; // Vide
+
+        updateTable(); // Rafraîchir avec tous les documents
     });
+});
 
-    document.addEventListener('DOMContentLoaded', function () {
-        updateTable(); // This can be left as is, or handled as per your current page logic
-        attachRowClickEvents(); // Appeler cette fonction au chargement initial pour gérer les documents existants
-    });
 
-</script>
-
+    </script>
+</body>
 </html>
