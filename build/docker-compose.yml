@@ -1,6 +1,9 @@
 name: april
 services:
   web:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile  
     image: registry.mde.epf.fr/april-web:0.2
     ports:
       - "80:5000"

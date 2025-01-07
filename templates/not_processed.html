@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Not Processed</title>
+    <link rel="stylesheet" href="../static/main.css">
+</head>
+<body>
+    <main class="not-processed-container">
+        <h1>Document Not Processed</h1>
+        <p>This document has not been processed yet. Click the button below to start processing (run NLP).</p>
+        <div class="buttons">
+            <a href="/" class="button secondary">← Return to Main Page</a>
+            or
+            <button class="run-nlp" onclick="runNLP()">Run NLP</button>
+        </div>
+    </main>
+    <script>
+        function runNLP() {
+            fetch('/run-nlp', { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.error("NLP processing started.");
+                } else {
+                    console.error("NLP is already running or there was an error.");
+                }
+            })
+            .catch(error => {
+                console.error('Error starting NLP:', error);
+                console.error("Failed to start NLP.");
+            });
+        }
+    </script>
+</body>
+</html>

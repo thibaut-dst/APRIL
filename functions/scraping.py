@@ -4,13 +4,49 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from googlesearch import search
 import json
-import re
 import logging
 import fitz
 from datetime import datetime  # Importing datetime module
+import random
+import itertools
+
+# Step 1: General logger (pipeline.log)
+logging.basicConfig(
+    filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
+    filemode='a',                  # Append to the log file
+    level=logging.INFO,            # Set the log level to INFO
+    format='%(asctime)s - %(levelname)s - %(message)s'  # Log format
+) 
+
+# Step 2: Error-specific logger (data/url_errors.log)
+error_logger = logging.getLogger('errorLogger')  # Create a new logger
+error_logger.setLevel(logging.ERROR)             # Set the log level to ERROR
+
+# Create file handler for error logging
+error_handler = logging.FileHandler('data/url_errors.log')  # Log to 'data/url_errors.log'
+error_handler.setLevel(logging.ERROR)                       # Handle only ERROR level logs
+
+# Create formatter for error logs
+error_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+error_handler.setFormatter(error_formatter)                 # Apply the formatter to the handler
+
+# Add the error handler to the error logger
+error_logger.addHandler(error_handler)
 
 # Function for meta scraping
-def meta_scraping(url):
+def meta_scraping(url: str) -> dict:
+    """
+    Scrapes metadata from a given URL (HTML page).
+
+    Parameters:
+        url (str): The URL of the webpage to scrape.
+
+    Returns:
+        dict: A dictionary containing metadata such as title, description, author, and published date.
+
+    Raises:
+        None: Handles exceptions internally and logs errors.
+    """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
@@ -70,11 +106,30 @@ def meta_scraping(url):
         return None
 
 # Function to extract Text from HTML content
-def contains_keywords(content, keyword):
+def contains_keywords(content: str, keyword: str) -> bool:
+    """
+    Checks if a given keyword is present in the content.
+
+    Parameters:
+        content (str): The text content to search within.
+        keyword (str): The keyword to search for.
+
+    Returns:
+        bool: True if the keyword is found in the content, False otherwise.
+    """
     return keyword.lower() in content.lower()
 
 # Function to transform PDF into Text 
-def pdf_to_text(pdf_path):
+def pdf_to_text(pdf_path: str) -> str:
+    """
+    Extracts text content from a PDF file.
+
+    Parameters:
+        pdf_path (str): The file path to the PDF document.
+
+    Returns:
+        str: The extracted text content from the PDF.
+    """
     text = ""
     with fitz.open(pdf_path) as pdf:
         for page_num in range(pdf.page_count):
@@ -83,7 +138,16 @@ def pdf_to_text(pdf_path):
     return text
 
 # Function for meta scraping for the PDF file
-def pdf_meta_scraping(pdf_path):
+def pdf_meta_scraping(pdf_path: str) -> dict:
+    """
+    Extracts metadata from a PDF file.
+
+    Parameters:
+        pdf_path (str): The file path to the PDF document.
+
+    Returns:
+        dict: A dictionary containing metadata such as title, author, and creation date.
+    """
     with fitz.open(pdf_path) as doc:
         metadata = doc.metadata  
         title = metadata.get('title', 'No title')
@@ -97,18 +161,22 @@ def pdf_meta_scraping(pdf_path):
     }
 
 # Function for scraping into the Database
-def scrape_webpages_to_db(keywords_list, collection):
+def scrape_webpages_to_db(keywords_list: list, collection):
     """
-    Google search and scraping function
-    Supports both HTML and PDF files and stores data in MongoDB.
+    Searches Google for webpages and PDFs based on keywords, scrapes the content, and stores it in a MongoDB collection.
+
+    Parameters:
+        keywords_list (list): A list of keyword triples in the format [combined, vocabulaire, localisation].
+        collection: The MongoDB collection object where scraped data will be stored.
+
+    Returns:
+        None
     """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-    }    
+    }
     #for index, keyword in enumerate(keywords_list):
     for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
-
-        
         logging.info(f"Starting Google search for: '{combined}'")
         for url in search(combined, num_results=3):  # Limited to 3 results
             try:
@@ -120,7 +188,7 @@ def scrape_webpages_to_db(keywords_list, collection):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 content_type = response.headers.get('Content-Type', '').lower()
-                
+
                 if 'application/pdf' in content_type:
                     file_type = "pdf"
                     pdf_name = f"temp_pdf_{index}.pdf"
@@ -169,8 +237,8 @@ def scrape_webpages_to_db(keywords_list, collection):
                         }
                         collection.insert_one(page_data)
                         logging.info(f"Page HTML stored in DB: {url}")
-
             except requests.exceptions.RequestException as e:
+<<<<<<< HEAD
                 logging.error(f"Error accessing page {url}: {e}")
             except Exception as e:
                 logging.error(f"Unexpected error processing {url}: {e}")
@@ -204,3 +272,44 @@ if __name__ == "__main__":
 
     # Execute the scraping function
     scrape_webpages_to_db(keywords_list, collection)
+=======
+                #logging.error(f"Error accessing page {url}: {e}")
+                error_logger.error(f"Error accessing page {url}: {e}")
+            except Exception or ValueError as e:
+                #logging.error(f"Unexpected error processing {url}: {e}")
+                error_logger.error(f"Unexpected error processing {url}: {e}")
+
+# Function for read and shuffle the csv 
+def read_and_shuffle_csv(file_path: str) -> list:
+    """
+    Reads a CSV file, extracts keywords and locations, and generates randomized triples for scraping.
+
+    Parameters:
+        file_path (str): The path to the CSV file containing 'Vocabulaire de recherche' and 'Localisation de recherche' columns.
+
+    Returns:
+        list: A list of keyword triples in the format [combined, vocabulaire, localisation].
+
+    Raises:
+        Exception: If the file cannot be read or processed.
+    """
+    try:
+        # Attempt to read the CSV file
+        df = pd.read_csv(file_path, sep=";")
+
+        # Extract the first two columns into lists
+        vocabulaire_recherche = df['Vocabulaire de recherche'].dropna().tolist()  # First column
+        localisation_recherche = df['Localisation de recherche'].dropna().tolist()  # Second column
+
+        # Generate triples: [vocabulaire + localisation, vocabulaire, localisation]
+        triple_list = [[f"{vocab} {loc.strip()}", vocab, loc.strip()] for vocab, loc in itertools.product(vocabulaire_recherche, localisation_recherche)]
+
+        # Shuffle the triples randomly
+        random.shuffle(triple_list)
+
+        logging.info(f"Number of triples generated: {len(triple_list)}")
+        return triple_list
+
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+>>>>>>> d01e82a91f3ad846f0f9733f94684b9d631758ac

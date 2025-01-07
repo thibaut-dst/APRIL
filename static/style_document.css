@@ -1,0 +1,279 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+/* Document Container */
+.document-container {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+
+
+/* Return Button */
+.return-button .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #e0e0e0;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    align-self: stretch;
+}
+.return-button .button:hover {
+    background-color: #c0c0c0;
+}
+.toppp {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+select#tagged {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    flex: 1;
+}
+button#update-tagged-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: stretch;
+    transition: background-color 0.3s ease;
+}
+
+button#update-tagged-button:hover {
+    background-color: #0056b3;
+}
+
+.tagging-section {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+/* Header Section */
+.document-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.document-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.document-info {
+    font-size: 14px;
+    color: #666;
+}
+
+.document-info span {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Metadata Section */
+.document-metadata, .info_computed {
+    display: flex;
+    justify-content: space-between;
+    align-items: self-start;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+    gap: 20px;
+}
+
+.document-container h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+    border-bottom: 2px solid #f4f6f8;
+    padding-bottom: 4px;
+    margin-top: 0;
+}
+
+.document-metadata ul {
+    list-style: none;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.document-metadata li {
+    margin: 8px 0;
+}
+.document-metadata li .desc{
+    overflow-y: scroll;
+    max-height: 150px;
+    border-left: solid 1px gray;
+    padding-left: 10px;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.document-metadata a {
+    color: #0073e6;
+    text-decoration: none;
+}
+
+.document-metadata a:hover {
+    text-decoration: underline;
+}
+
+/* Legend Section */
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+.legend label{
+    display: flex;
+    gap: 5px;
+}
+
+.legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+/* Highlight Styles */
+.highlight {
+    padding: 2px 5px;
+    border-radius: 8px;
+    width: max-content;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.highlight.DATE {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+.highlight.PER {
+    background-color: #e91e63;
+    color: #fff;
+}
+
+.highlight.LOC {
+    background-color: #03a9f4;
+    color: #fff;
+}
+
+.highlight.ORG {
+    background-color: #30d045;
+    color: #000;
+}
+
+.highlight.MISC {
+    background-color: #9e9e9e;
+    color: #fff;
+}
+
+.highlight.RESEARCH {
+    background-color: #6a1b9a;
+    color: #fff;
+}
+
+.highlight.ANALYSIS {
+    background-color: #1de9b6;
+    color: #000;
+}
+.hide-RESEARCH .document-content .highlight.RESEARCH,
+.hide-ANALYSIS .document-content .highlight.ANALYSIS,
+.hide-PER .document-content .highlight.PER,
+.hide-LOC .document-content .highlight.LOC,
+.hide-DATE .document-content .highlight.DATE,
+.hide-ORG .document-content .highlight.ORG,
+.hide-MISC .document-content .highlight.MISC {
+    background: transparent;
+    color: inherit;
+    font-weight: unset;
+    font-size: unset;
+    padding: inherit;
+}
+
+/* Document Content Section */
+.document-content {
+    line-height: 1.7;
+    font-size: 16px;
+    color: #333;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .document-metadata {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .legend h3{
+        margin-bottom: 0;
+        padding: 0;
+    }
+}
+
+
+
+
+.info_computed {
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+.top5occurences{width:75%;}
+.docweight{
+    min-width: 162px;
+}
+
+.top-words-table {
+    width: 100%;
+}
+
+.top-words-table th, 
+.top-words-table td {
+    text-align: left;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+}
+
+.top-words-table th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+}

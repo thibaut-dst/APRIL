@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,114 +7,181 @@
     <title>Document Explorer</title>
     <link rel="stylesheet" href="../static/style.css">
     <link rel="stylesheet" href="../static/main.css">
+    <link rel="stylesheet" href="../static/header.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
+    <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script> <!-- Link to data_viz.js -->
+    <script src="{{ url_for('static', filename='data_viz_location.js') }}" defer></script>
 </head>
 <body>
-    
-    <!-- Sticky Top Header -->
-    <header class="sticky-header">
-        <div class="header-content">
-            <div class="header-left">
-                <img src="logo.png" alt="Logo" class="logo">
-                <span class="header-title">Coastal Risk Perception Analysis</span>
-            </div>
-            <div class="header-right">
-                <a href="/launch-pipeline" class="header-button">Launch Pipeline</a>
-                <a href="/" class="header-button">Explore Documents</a>
-            </div>
-        </div>
-    </header>
+    {% include "includes/header.html" %}
     <main>
-        <!-- Top Search Bar Section -->
         <section class="search-bar-section">
-            <input type="text" placeholder="Search documents.." class="search-bar">
-            <button class="search-button">Search</button>
+            <!-- Première ligne -->
+            <div class="row">            
+                <select class="search-bar small" >
+                    <option value="" disabled selected>Choose a search word</option>
+
+                </select>   
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choose another search word</option>
+              
+                </select>
+                <select class="search-bar small" >
+                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                   
+                </select>
+                <select class="search-bar small">
+                    <option value="" disabled selected>Choose another word for analysis</option>
+              
+                </select>
+            </div>
+            
+
+            <!-- Deuxième ligne -->
+            <div class="row">
+                
+                <select class="search-bar search-1" >
+                    <option value="" disabled selected>Choose a location</option>
+                    {% for word in vocabulaire_localisation %}
+                    <option value="{{ word }}">{{ word }}</option>
+                    {% endfor %}    
+                </select>
+                <select class="search-bar tag-selector search-2" >
+                    <option value="" disabled selected>Choose a tag</option>
+                    <option value="none">__ None</option>
+                    <option value="valid">✅ Valid</option>
+                    <option value="wrong">❌ Wrong</option>
+                </select>
+                <button class="search-button" onclick="updateTable()">Rechercher</button>
+                <button class="reset-button">Réinitialiser</button>                
+            </div>
+
+            <!-- Troisième ligne -->
+            <div class="row">
+                <input type="text" placeholder="Search by title or title deed" class="search-bar search-1">
+                <button class="search-button" onclick="updateTable()">Rechercher</button>
+                <button class="reset-button">Réinitialiser</button>
+            </div>
+
         </section>
 
         <!-- Data Visualization Section -->
-        <section class="data-viz-section">
-            <div id="data-viz">
-                <!-- Chart will go here -->
-                data visualisation section
-            </div>
-        </section>
+        {% include 'includes/data-viz.html' %}
 
         <!-- Scrollable Document Table Section -->
         <section class="document-section">
+            <!-- Barre de tri -->
+            <div class="sorting-bar">
+                <span>Sorting:</span>
+                <button class="sort-button" onclick="toggleActive(this)">Date</button>
+                <button class="sort-button" onclick="toggleActive(this)">Pertinence</button>
+                <button class="sort-button" onclick="toggleActive(this)">Semantics</button>
+            </div>
+            <!-- Catalogue -->            
             <div class="document-table">
-                <div class="sort-options">
-                    <label for="sort-selector">Sort by:</label>
-                    <select id="sort-selector" onchange="sortTable()">
-                        <option value="score">Score</option>
-                        <option value="date">Date Published</option>
-                    </select>
-                    <label for="sort-order">Order:</label>
-                    <select id="sort-order" onchange="sortTable()">
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
-                    </select>
-                </div>
                 <table>
                     <thead>
                         <tr>
-                            <th>Title</th>
-                            <th>Source</th>
-                            <th>Research keyword</th>
+                            <th>
+                                Tag
+                                <a href="/documents?sort_by=tagged&order=asc" class="sort-arrow up {% if sort_by == 'tagged' and order == 'asc' %}active{% endif %}"></a>
+                                <a href="/documents?sort_by=tagged&order=desc" class="sort-arrow down {% if sort_by == 'tagged' and order == 'desc' %}active{% endif %}"></a>
+                            </th>
+                            <th>
+                                Pertinence
+                                <a href="/documents?sort_by=pertinence&order=asc" class="sort-arrow up {% if sort_by == 'pertinence' and order == 'asc' %}active{% endif %}"></a>
+                                <a href="/documents?sort_by=pertinence&order=desc" class="sort-arrow down {% if sort_by == 'pertinence' and order == 'desc' %}active{% endif %}"></a>
+                            </th>
+                            <th>Frequent words</th>
+                            <th>
+                                Location
+                                <a href="/documents?sort_by=localisation&order=asc" class="sort-arrow up {% if sort_by == 'localisation' and order == 'asc' %}active{% endif %}"></a>
+                                <a href="/documents?sort_by=localisation&order=desc" class="sort-arrow down {% if sort_by == 'localisation' and order == 'desc' %}active{% endif %}"></a>
+                            </th>
+                            <th>
+                                Keyword
+                                <a href="/documents?sort_by=keyword&order=asc" class="sort-arrow up {% if sort_by == 'keyword' and order == 'asc' %}active{% endif %}"></a>
+                                <a href="/documents?sort_by=keyword&order=desc" class="sort-arrow down {% if sort_by == 'keyword' and order == 'desc' %}active{% endif %}"></a>
+                            </th>
+                            <th>
+                                Source & Title
+                                <a href="/documents?sort_by=title&order=asc" class="sort-arrow up {% if sort_by == 'title' and order == 'asc' %}active{% endif %}"></a>
+                                <a href="/documents?sort_by=title&order=desc" class="sort-arrow down {% if sort_by == 'title' and order == 'desc' %}active{% endif %}"></a>
+                            </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for doc in documents %}
-                        <tr class="clickable-row" 
-                            data-url="{{ url_for('document', doc_id=doc['_id']) }}" 
-                            data-score="{{ doc.get('score', 0) }}" 
-                            data-date="{{ doc['meta_data'].get('Date Published', '1970-01-01') }}">
-                            <td>{{ doc['meta_data'].get('Title', 'No Title') }}</td>
-                            <td>{{ doc['meta_data'].get('Author', 'Unknown Author') }}</td>
-                            <td>{{ doc.get('keyword of scraping', 'No Keyword') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                    
+                    {% include 'includes/table.html' %}
                 </table>
             </div>
         </section>
     </main>
 </body>
 <script>
-    function sortTable() {
-        const sortKey = document.getElementById('sort-selector').value; // Get selected sorting key
-        const sortOrder = document.getElementById('sort-order').value; // Get sorting order
-        const rows = Array.from(document.querySelectorAll('.document-table tbody tr')); // Get all rows
-
-        rows.sort((a, b) => {
-            const aValue = sortKey === 'score' 
-                ? parseFloat(a.getAttribute('data-score')) || 0 
-                : new Date(a.getAttribute('data-date')) || new Date(0);
-            const bValue = sortKey === 'score' 
-                ? parseFloat(b.getAttribute('data-score')) || 0 
-                : new Date(b.getAttribute('data-date')) || new Date(0);
-
-            // Compare based on sort order
-            if (sortOrder === 'asc') {
-                return aValue - bValue;
-            } else {
-                return bValue - aValue;
+    function toggleActive(button) {
+        // Check if the clicked button is already active
+        if (button.classList.contains('active')) {
+            // If it's active, remove the 'active' class
+            button.classList.remove('active');
+        } else {
+            // Otherwise, remove 'active' from all buttons and add to the clicked button
+            const buttons = document.querySelectorAll('.sort-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+    }
+    async function updateTable() {
+        const keyword = document.querySelector('.row input[type="text"]').value;
+        const analysis = document.querySelector('.row select:nth-of-type(1)').value;
+        const location = document.querySelector('.row select:nth-of-type(2)').value;
+        try {
+            const response = await fetch('/search-table', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyword, analysis, location })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Erreur lors de la récupération des documents.');
             }
-        });
-
-        // Clear and rebuild the table with sorted rows
-        const tbody = document.querySelector('.document-table tbody');
-        tbody.innerHTML = ''; // Clear existing rows
-        rows.forEach(row => tbody.appendChild(row)); // Append sorted rows
+    
+            const html = await response.text();
+            document.querySelector('.document-section tbody').innerHTML = html;    
+            attachRowClickEvents(); // Reattach click events to the new rows
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Une erreur est survenue lors de la recherche des documents.');
+        }
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
+    // Fonction pour attacher l'événement de clic aux lignes du tableau
+    function attachRowClickEvents() {
         const rows = document.querySelectorAll('.clickable-row');
         rows.forEach(row => {
-            row.addEventListener('click', function() {
+            row.addEventListener('click', function () {
                 const url = row.getAttribute('data-url');
                 window.location = url;
             });
         });
+    }
+    // Gestion du bouton de réinitialisation
+    document.querySelector('.reset-button').addEventListener('click', function () {
+        // Réinitialiser tous les champs de recherche
+        document.querySelectorAll('.search-bar').forEach(field => {
+            if (field.tagName === 'SELECT') {
+                field.selectedIndex = 0; // Réinitialiser les listes déroulantes
+            } else {
+                field.value = ''; // Réinitialiser les champs de texte
+            }
+        });
+        updateTable();//trigger an empty search to reload the table without filters
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateTable(); // This can be left as is, or handled as per your current page logic
+        attachRowClickEvents(); // Appeler cette fonction au chargement initial pour gérer les documents existants
+    });
+
 </script>
 
 </html>

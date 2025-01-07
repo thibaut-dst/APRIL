@@ -1,3 +1,5 @@
 .april_project_venv
+*/pipeline.log
 */__pycache__
 __pycache__
+.DS_Store
