@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 import threading
@@ -79,6 +79,12 @@ def start_pipeline():
         with open('pipeline.log', 'a') as log_file:
             log_file.write(f"Failed to start pipeline: {str(e)}\n")
         return f"Failed to start pipeline: {str(e)}", 500
+
+@app.route('/data/<filename>')
+def serve_csv(filename):
+    # Sert le fichier CSV depuis le dossier 'data'
+    return send_from_directory(os.path.join(app.root_path, 'data'), filename)
+
 
 @app.route('/stop-pipeline', methods=['POST'])
 def stop_pipeline():
