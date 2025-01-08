@@ -3,8 +3,12 @@
     {% set tagged = doc.get('tagged', None) %}
 
     <tr class="clickable-row {% if tagged == 1 %} tagged-green {% elif tagged == 2 %} tagged-red {% endif %}" 
-        data-url="{{ url_for('front.document', doc_id=doc['_id']) }}">
+        data-url="{{ url_for('front.document', doc_id=doc['_id']) }}"
         
+        data-pertinence="{{ doc['vocabulary_of_interest']['Pertinence'] | default(0) }}"
+        data-date="{{ doc['meta_data']['Date Scraped'] | default('') }}"
+        data-semantics="{{ doc['semantic_score'] | default(0) }}">
+
         <td class="tagged-status" style="text-align: center;">
             {% if tagged is none %}
                 __
@@ -21,6 +25,11 @@
                 {{ (doc["vocabulary_of_interest"]['Pertinence'] * 1000) | round(1) }}
             {% else %}
                 __
+            {% endif %}
+
+            {% if doc.get("semantic_score") %}
+            <br>
+            s: {{ doc.get('semantic_score', '') }}
             {% endif %}
         </td>
         <td class="freq_words">
