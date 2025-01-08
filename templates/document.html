@@ -40,6 +40,7 @@
                  <h3>Metadata</h3>
                  <ul>
                      <li><strong>Domain:</strong> {{ document['domain'] }}</li>
+                     <li><strong>Date of collection:</strong> {{ document['meta_data']['Date Scraped'] }}</li>
                      <li><strong>Search keyword:</strong> {{ document.get('keyword of scraping', '__')}}</li>
                      <li><strong>Search location:</strong> {{ document.get('localisation of scraping', '__')}}</li>
                      <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
