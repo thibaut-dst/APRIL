@@ -25,20 +25,20 @@ def search_table():
     # Recherche avancée dans words_of_research
     if 'searchword1' in data and data['searchword1']:
         searchword1 = data['searchword1']
-        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword1}": {"$gt": 1}})
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword1}": {"$gt": 0}})
 
     if 'searchword2' in data and data['searchword2']:
         searchword2 = data['searchword2']
-        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword2}": {"$gt": 1}})
+        and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword2}": {"$gt": 0}})
 
     # Recherche avancée dans words_of_analysis
     if 'analyseword1' in data and data['analyseword1']:
         analyseword1 = data['analyseword1']
-        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword1}": {"$gt": 1}})
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword1}": {"$gt": 0}})
 
     if 'analyseword2' in data and data['analyseword2']:
         analyseword2 = data['analyseword2']
-        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword2}": {"$gt": 1}})
+        and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword2}": {"$gt": 0}})
 
     # Recherche par titre (Title_updated)
     if 'title' in data and isinstance(data['title'], str) and data['title'].strip():
@@ -60,7 +60,7 @@ def search_table():
     if and_conditions:
         query = {"$and": and_conditions}
 
-    print("condition and : " , and_conditions)
+    print("final query " , query, flush=True)
     try:
         documents = list(mongo_collection.find(query))
         for doc in documents:
