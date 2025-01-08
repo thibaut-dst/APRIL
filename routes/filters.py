@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, Response
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from flask import Blueprint, current_app, render_template
-
+from functions.score_sementic import pertinence_sementic
 filters = Blueprint('filters', __name__)
 
 
@@ -66,6 +66,32 @@ def search_table():
         for doc in documents:
             if '_id' in doc:
                 doc['_id'] = str(doc['_id'])
+
+            # Skip semantic calculation if no search words are provided
+            if not any([
+                data.get('searchword1'), 
+                data.get('searchword2'), 
+                data.get('analyseword1'), 
+                data.get('analyseword2')
+            ]):
+                continue
+
+            # Perform semantic calculation
+            cleaned_text = doc.get('cleaned_text', '')
+            mot_recherche_1 = data.get('searchword1')
+            mot_recherche_2 = data.get('searchword2')
+            mot_analyse_1 = data.get('analyseword1')
+            mot_analyse_2 = data.get('analyseword2')
+
+            _, semantic_score = pertinence_sementic(
+                cleaned_text=cleaned_text,
+                mot_recherche_1=mot_recherche_1,
+                mot_recherche_2=mot_recherche_2,
+                mot_analyse_1=mot_analyse_1,
+                mot_analyse_2=mot_analyse_2
+            )
+            doc['semantic_score'] = round(semantic_score, 2)
+            
         return render_template('includes/table.html', documents=documents), 200
 
     except Exception as e:
