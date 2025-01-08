@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import spacy
-nlp = spacy.load("fr_core_news_sm") 
+nlp = spacy.load("fr_core_news_lg") 
 
 import logging
 
