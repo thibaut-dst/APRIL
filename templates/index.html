@@ -163,12 +163,36 @@
         }
 
         async function updateTable() {
-            const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
-            const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
-            const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
-            const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
-            const location = document.querySelector('.row select.search-1').value || "";
-            const title = document.querySelector('.row input[type="text"]').value || "";
+
+    const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
+    const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
+    const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
+    const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
+    const location = document.querySelector('.row select.search-1').value || "";
+    const title = document.querySelector('.row input[type="text"]').value || "";
+
+    // Gérer le tag (valeur vide si rien n'est sélectionné)
+    const tag = document.querySelector('.row select.search-2').value || ""; 
+
+    try {
+        const response = await fetch('/search-table', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                searchword1,
+                searchword2,
+                analyseword1,
+                analyseword2,
+                location,
+                title,
+                tag  
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des documents.');
+        }
+
 
             // Gérer le tag (valeur vide si rien n'est sélectionné)
             const tag = document.querySelector('.row select.search-2').value || ""; 
