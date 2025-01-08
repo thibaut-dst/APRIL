@@ -73,9 +73,9 @@
             <!-- Barre de tri -->
             <div class="sorting-bar">
                 <span>Sorting:</span>
-                <button class="sort-button" onclick="toggleActive(this)">Date</button>
-                <button class="sort-button" onclick="toggleActive(this)">Pertinence</button>
-                <button class="sort-button" onclick="toggleActive(this)">Semantics</button>
+                <button class="sort-button" onclick="toggleSort(this, 'date')">Date</button>
+                <button class="sort-button" onclick="toggleSort(this, 'pertinence')">Pertinence</button>
+                <button class="sort-button" onclick="toggleSort(this, 'semantics')">Semantics</button>
             </div>
             <!-- Catalogue -->            
             <div class="document-table">
@@ -182,6 +182,17 @@
         attachRowClickEvents(); // Appeler cette fonction au chargement initial pour gérer les documents existants
     });
 
+</script>
+
+<script>
+    function toggleSort(button, sortType) {
+        const buttons = document.querySelectorAll('.sort-button');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        button.classList.add('active');
+
+        console.log(`Sorting by ${sortType}`);
+    }
 </script>
 
 </html>

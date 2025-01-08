@@ -133,6 +133,36 @@ def get_logs():
         return jsonify({'logs': logs[-30:]})
     else:
         return jsonify({'logs': []})
+    
+@app.route('/test-table')
+def test_table():
+    mock_documents = [
+        {
+            "_id": "1234567890abcdef12345678",
+            "tagged": 1,
+            "vocabulary_of_interest": {
+                "Pertinence": 0.8,
+                "Top_5_words": [("word1", 5), ("word2", 3)]
+            },
+            "localisation of scraping": "Test Location",
+            "keyword of scraping": "Test Keyword",
+            "domain": "test.com",
+            "Title_updated": "Test Title"
+        },
+        {
+            "_id": "abcdef1234567890abcdef12",
+            "tagged": 2,
+            "vocabulary_of_interest": {
+                "Pertinence": 0.6,
+                "Top_5_words": [("word3", 4), ("word4", 2)]
+            },
+            "localisation of scraping": "Another Location",
+            "keyword of scraping": "Another Keyword",
+            "domain": "example.com",
+            "Title_updated": "Another Title"
+        }
+    ]
+    return render_template('includes/table.html', documents=mock_documents)
 
 
 
