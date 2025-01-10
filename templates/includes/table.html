@@ -1,4 +1,11 @@
 <tbody>
+
+    <tr id="loading-spinner" style="display: none;">
+        <td colspan="6" style="text-align: center;">
+            <div class="spinner"></div>
+        </td>
+    </tr>
+    
     {% for doc in documents %}
     {% set tagged = doc.get('tagged', None) %}
 
