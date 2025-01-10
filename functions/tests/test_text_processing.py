@@ -25,7 +25,7 @@ class TestProcessingFunctions(unittest.TestCase):
 
 class TestNLPFunctions(unittest.TestCase):
     def test_valid_column(self):
-        # Crée un fichier CSV temporaire
+        # Creates a temporary CSV file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".csv") as temp_file:
             file_path = temp_file.name
             data = {
@@ -46,41 +46,41 @@ class TestNLPFunctions(unittest.TestCase):
                 os.remove(file_path)
 
     def test_top_5_words(self):
-        # Jeux de données d'entrée
+        # Input data sets
         words_of_research = {"data": 10, "analysis": 5, "python": 7, "code": 3, "machine": 6}
         words_of_analysis = {"data": 4, "science": 8, "python": 3, "learning": 5, "AI": 9}
         
-        # Appeler la fonction
+        # Call the function
         result = text_processing.get_top_5_words(words_of_research, words_of_analysis)
 
-        # Résultat attendu (combinaisons et tri des mots)
+        # Expected result (word combinations and sorting)
         expected = (['data', 'python', 'AI', 'science', 'machine'], [('data', 14), ('python', 10), ('AI', 9), ('science', 8), ('machine', 6)])
         
         self.assertEqual(result, expected)
 
     def test_relevance_score(self):
-        # Charger le modèle spaCy
+        # Load spaCy model
         nlp = spacy.load("en_core_web_sm")
 
-        # Exemple de texte
+        # Example of text
         text = "Data science and machine learning are transforming industries."
 
-        # Traiter le texte avec spaCy
+        # Process text with spaCy
         doc = nlp(text)
 
-        # Dictionnaire de mots cibles
+        # Dictionary of target words
         words_of_research_and_analysis = {"data": 10, "science": 5, "learning": 3, "AI": 2}
 
-        # Appeler la fonction
+        # Call the function
         relevance_score = text_processing.calculate_relevance(doc, words_of_research_and_analysis)
 
-        # Total des occurrences des mots cibles dans le texte
+        # Total occurrences of target words in the text
         # "data" (1), "science" (1), "learning" (1) => Total : 3
-        # Total de mots significatifs (sans mots vides ni ponctuation) : ["data", "science", "machine", "learning", "transforming", "industries"] => Total : 6
+        # Total significant words (without empty words or punctuation): [‘data’, ‘science’, ‘machine’, ‘learning’, ‘transforming’, ‘industries’] => Total: 6
         # Relevance = 3 / 6 = 0.5
         expected_score = 0.5
 
-        # Vérification du score attendu
+        # Checking the expected score
         self.assertAlmostEqual(relevance_score, expected_score, places=2)
 
     def test_domain_extraction(self):
@@ -98,10 +98,10 @@ class TestNLPFunctions(unittest.TestCase):
                 self.assertEqual(text_processing.get_domain_name(url), expected_domain)
 
     def test_ner(self):
-        # Charger le modèle spaCy pour le français
+        # Load the spaCy model for French
         nlp = spacy.load("fr_core_news_lg")
 
-        # Cas de test : liste des textes et des résultats attendus
+        # Test cases: list of texts and expected results
         test_cases = [
             ("Apple is looking at buying U.K. startup for $1 billion", 
              {"ORG": ["Apple"]}),
@@ -113,23 +113,24 @@ class TestNLPFunctions(unittest.TestCase):
             # {})
         ]
 
-        # Teste chaque cas
+        # Test each case
         for text, expected_entities in test_cases:
             with self.subTest(text=text):
-                # Traite le texte avec spaCy
+                # Process the text with spaCy
                 doc = nlp(text)
                 
-                # Appelle la fonction ner
-                result = text_processing.ner(doc)  # Utilisez directement la fonction ner
+                # Calls the ner function
+                result = text_processing.ner(doc)  # Use the ner function directly
 
-                # Compare les résultats attendus avec ceux obtenus
+
+                # Compare expected results with those achieved
                 self.assertEqual(result, expected_entities)
 
     def test_word_tracking(self):
-        # Charger le modèle spaCy pour le français
+        # Load the spaCy model for French
         nlp = spacy.load("fr_core_news_lg")
 
-        # Cas de test : liste des textes et des résultats attendus
+        # Test cases: list of texts and expected results
         test_cases = [
             ("Apple is looking at buying U.K. startup for $1 billion", 
              ["apple", "startup", "billion"], 
@@ -151,46 +152,46 @@ class TestNLPFunctions(unittest.TestCase):
              {"word": 0, "target": 1})
         ]
 
-        # Teste chaque cas
+        # Test each case
         for text, targets, expected_word_count in test_cases:
             with self.subTest(text=text, targets=targets):
                 # Traite le texte avec spaCy
                 doc = nlp(text)
                 
-                # Appelle la fonction word_tracking
+                # Calls the word_tracking function
                 result = text_processing.word_tracking(doc, targets)
 
-                # Compare les résultats attendus avec ceux obtenus
+                # Compare expected results with those achieved
                 self.assertEqual(result, expected_word_count)
 
     def test_get_pdf_title_from_url(self):
-        # Faux URLs pour différents types de fichiers
+        # Fake URLs for different file types
         fake_urls = [
-            # Liens PDF fictifs
+            # Fictitious PDF links
             "http://example.com/documentation/example1.pdf",
             "https://fakewebsite.org/resources/guide123.pdf",
             "http://mysite.fake/docs/manual_v2.pdf",
 
-            # Liens HTML fictifs
+            # Dummy HTML links
             "http://example.com/home/index.html",
             "https://fakesite.net/blog/post.html",
             "http://nonexistentpage.xyz/pages/info.html",
-            # Autres formats fictifs
+            # Other fictitious formats
             "https://example-site.com/data/file.txt",
             "http://placeholder.org/files/sample.json",
             "https://my-fake-domain.fake/download/report.docx"
         ]
 
-        # Résultats attendus pour les URLs PDF
+        # Expected results for PDF URLs
         expected_titles = [
             "example1.pdf",
             "guide123.pdf",
             "manual_v2.pdf",
 
-            None,  # HTML: devrait retourner None ou une autre valeur significative
+            None,  # HTML: should return None or another meaningful value
             None,
             None,
-            None,  # Autres formats : None ou une autre valeur significative
+            None,  # Other formats: None or another significant value
             None,
             None
         ]

@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             // Set the dynamic title with the number of layers
             const numberOfLayers = modifiedLabels.length;  // Count the number of unique layers
-            const titleText = `Le filtre affiche ${numberOfLayers} lieux différents`;
+            const titleText = `The filter displays ${numberOfLayers} different locations`;
 
             // Prepare the Plotly data
             const pieData = [{

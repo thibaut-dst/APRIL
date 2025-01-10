@@ -22,7 +22,7 @@ def search_table():
         and_conditions.append({"localisation of scraping": {"$regex": data['location'], "$options": "i"}})
 
 
-    # Recherche avancée dans words_of_research
+    # Advanced search in words_of_research
     if 'searchword1' in data and data['searchword1']:
         searchword1 = data['searchword1']
         and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword1}": {"$gt": 0}})
@@ -31,7 +31,7 @@ def search_table():
         searchword2 = data['searchword2']
         and_conditions.append({f"vocabulary_of_interest.words_of_research.{searchword2}": {"$gt": 0}})
 
-    # Recherche avancée dans words_of_analysis
+    # Advanced search in words_of_analysis
     if 'analyseword1' in data and data['analyseword1']:
         analyseword1 = data['analyseword1']
         and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword1}": {"$gt": 0}})
@@ -40,17 +40,18 @@ def search_table():
         analyseword2 = data['analyseword2']
         and_conditions.append({f"vocabulary_of_interest.words_of_analysis.{analyseword2}": {"$gt": 0}})
 
-    # Recherche par titre (Title_updated)
+    # Search by title (Title_updated)
     if 'title' in data and isinstance(data['title'], str) and data['title'].strip():
         title = data['title'].strip()
         and_conditions.append({"Title_updated": {"$regex": title, "$options": "i"}})
 
-    # Gestion du tag
-    if 'tag' in data and data['tag']:  # Vérifie que le tag existe ET n'est pas vide
+    # Tag management
+    if 'tag' in data and data['tag']:  # Checks that the tag exists AND is not empty
         tag_mapping = {"none": 0, "valid": 1, "wrong": 2}
-        tag_value = tag_mapping.get(data['tag'], None)  # None pour une valeur invalide ou vide
+        tag_value = tag_mapping.get(data['tag'], None)  # None for an invalid or empty value
 
-        # Appliquer uniquement si une valeur valide est sélectionnée
+
+        # Apply only if a valid value is selected
         if tag_value is not None:
             and_conditions.append({"tagged": tag_value})
 

@@ -1,10 +1,10 @@
-# Utiliser une image officielle Python
+# Use an official Python image
 FROM python:3.9-slim
 
-# Définir le répertoire de travail
+# Define the working directory
 WORKDIR /app
 
-# Copier les fichiers dans l'image
+# Copy files to image
 COPY build/requirements.txt build/requirements.txt
 COPY app.py app.py
 COPY functions/ functions/
@@ -18,8 +18,8 @@ RUN python3 -m spacy download fr_core_news_lg
 RUN apt-get update && apt-get install -y iputils-ping
 RUN touch pipeline.log
 
-# Exposer le port de l'API Flask
+# Expose the Flask API port
 EXPOSE 5000
 
-# Lancer Flask en mode développement
+# Launch Flask in development mode
 CMD ["python", "app.py"]

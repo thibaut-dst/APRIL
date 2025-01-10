@@ -16,7 +16,7 @@
     {% include "includes/header.html" %}
     <main>
         <section class="search-bar-section">
-            <!-- Première ligne -->
+            <!-- First line -->
             <div class="row">            
                 <select class="search-bar small">
                     <option value="" disabled selected>Choose a search word</option>
@@ -25,7 +25,7 @@
                     <option value="" disabled selected>Choose another search word</option>
                 </select>
                 <select class="search-bar small">
-                    <option value="" disabled selected>Choisir un mot d'analyse</option>
+                    <option value="" disabled selected>Choose an analysis word</option>
                 </select>
                 <select class="search-bar small">
                     <option value="" disabled selected>Choose another word for analysis</option>
@@ -33,26 +33,26 @@
             </div>
             
 
-            <!-- Deuxième ligne -->
+            <!-- Second line -->
             <div class="row">
                 <select class="search-bar search-1">
                     <option value="" disabled selected>Choose a location</option>
                 </select>
                 <select class="search-bar tag-selector search-2">
                     <option value="" disabled selected>Choose a tag</option>
-                    <option value="none">__ None</option>
-                    <option value="valid">✅ Valid</option>
-                    <option value="wrong">❌ Wrong</option>
+                    <option value="none">Untagged</option>
+                    <option value="valid">✅ Interesting</option>
+                    <option value="wrong">❌ Not Interesting</option>
                 </select>
-                <button class="search-button" onclick="updateTable()">Rechercher</button>
-                <button class="reset-button">Réinitialiser</button>                
+                <button class="search-button" onclick="updateTable()">Search</button>
+                <button class="reset-button">Reset</button>                
             </div>
 
-            <!-- Troisième ligne -->
+            <!-- Third line -->
             <div class="row">
                 <input type="text" placeholder="Search by title or title deed" class="search-bar search-1">
                 <button class="search-button" onclick="updateTable()">Rechercher</button>
-                <button class="reset-button">Réinitialiser</button>
+                <button class="reset-button">Reset</button>
             </div>
 
         </section>
@@ -114,14 +114,14 @@
                 button.addEventListener('click', function () {
                     document.querySelectorAll('.search-bar').forEach(field => {
                         if (field.tagName === 'SELECT') {
-                            field.selectedIndex = 0; // Réinitialise les sélections
+                            field.selectedIndex = 0; // Resets selections
                         } else {
-                            field.value = ''; // Réinitialise les champs texte
+                            field.value = ''; // Reset text fields
                             }
                         });
-                        // Remet le tag à la valeur vide
+                        // Resets the tag to empty
                         document.querySelector('.row select.search-2').value = ""; // Vide
-                        updateTable(); // Rafraîchir avec tous les documents
+                        updateTable(); // Refresh with all documents
                     });
             });
         });
@@ -151,7 +151,7 @@
             rows.forEach(row => tableBody.appendChild(row));
         }
 
-        // Fonction pour gérer l'activation des boutons de tri
+        // Function to manage the activation of sort buttons
         function toggleActive(button) {
             if (button.classList.contains('active')) {
                 button.classList.remove('active');
@@ -163,6 +163,7 @@
         }
 
         async function updateTable() {
+
             const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
             const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
             const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
@@ -201,7 +202,7 @@
             }
         }
 
-        // Fonction pour attacher l'événement de clic aux lignes du tableau
+        // Function for attaching the click event to the table rows
         function attachRowClickEvents() {
             const rows = document.querySelectorAll('.clickable-row');
             rows.forEach(row => {
@@ -212,37 +213,37 @@
             });
         }
 
-        // Fonction pour charger et parser le fichier CSV
+        // Function to load and parse the CSV file
         async function loadCSV() {
             try {
                 const response = await fetch('/data/Vocabulaire_Expert_CSV.csv');
                 const csvText = await response.text();
 
-                // Utilisation de PapaParse pour parser le CSV avec le bon séparateur
+                // Use PapaParse to parse the CSV with the correct separator
                 const parsedData = Papa.parse(csvText, {
-                    header: true, // Utilise la première ligne comme en-têtes de colonne
-                    skipEmptyLines: true, // Ignore les lignes vides
-                    delimiter: ";" // Spécifie le séparateur pour le CSV
+                    header: true, // Use the first row as column headers
+                    skipEmptyLines: true, // Ignore empty lines
+                    delimiter: ";" // Specifies the separator for the CSV
                 });
 
                 const vocabulaireRecherche = [];
                 const localisationRecherche = [];
                 const vocabulaireAnalyse = [];
 
-                // Remplir les tableaux avec les valeurs du CSV
+                // Fill the tables with the CSV values
                 parsedData.data.forEach(row => {
                     if (row['Vocabulaire de recherche']) vocabulaireRecherche.push(row['Vocabulaire de recherche']);
                     if (row['Localisation de recherche']) localisationRecherche.push(row['Localisation de recherche']);
                     if (row['Vocabulaire d\'analyse']) vocabulaireAnalyse.push(row['Vocabulaire d\'analyse']);
                 });
 
-                // Trier les tableaux par ordre alphabétique
+                // Sort tables alphabetically
                 vocabulaireRecherche.sort();
                 localisationRecherche.sort();
                 vocabulaireAnalyse.sort();
 
-                // Fonction pour insérer des options dans un <select>
-                function populateSelect(selectElement, options) {
+                // Function for inserting options in a <select>.
+                    function populateSelect(selectElement, options) {
                     options.forEach(optionValue => {
                         const option = document.createElement('option');
                         option.value = optionValue;
@@ -251,19 +252,19 @@
                     });
                 }
 
-                // Cibler les éléments <select> de manière plus précise
-                const selectRecherche1 = document.querySelector('.row select:nth-of-type(1)'); // Premier select de recherche
-                const selectRecherche2 = document.querySelector('.row select:nth-of-type(2)'); // Deuxième select de recherche
-                const selectAnalyse1 = document.querySelector('.row select:nth-of-type(3)'); // Premier select d'analyse
-                const selectAnalyse2 = document.querySelector('.row select:nth-of-type(4)'); // Deuxième select d'analyse
-                const selectLocalisation = document.querySelector('.row select.search-1'); // Select de localisation (ligne 2, avec classe search-1)
+                // Target <select> elements more precisely
+                    const selectRecherche1 = document.querySelector('.row select:nth-of-type(1)'); // First search select
+                const selectRecherche2 = document.querySelector('.row select:nth-of-type(2)'); // Second search selection
+                const selectAnalyse1 = document.querySelector('.row select:nth-of-type(3)'); // First select analysis
+                const selectAnalyse2 = document.querySelector('.row select:nth-of-type(4)'); // Second analysis selection
+                const selectLocalisation = document.querySelector('.row select.search-1'); // Select location (line 2, with search-1 class)
 
-                // Remplir les éléments <select> dans le HTML
+                // Fill in <select> elements in HTML
                 populateSelect(selectRecherche1, vocabulaireRecherche);
-                populateSelect(selectRecherche2, vocabulaireRecherche); // Remplir les deux champs "mot de recherche"
-                populateSelect(selectAnalyse1, vocabulaireAnalyse); // Remplir les deux champs "mot d'analyse"
-                populateSelect(selectAnalyse2, vocabulaireAnalyse); // Remplir les deux champs "mot d'analyse"
-                populateSelect(selectLocalisation, localisationRecherche); // Remplir le champ "localisation"
+                populateSelect(selectRecherche2, vocabulaireRecherche); // Fill in the two ‘search word’ fields
+                populateSelect(selectAnalyse1, vocabulaireAnalyse); // Fill in the two ‘analysis word’ fields
+                populateSelect(selectAnalyse2, vocabulaireAnalyse); // Fill in the two ‘analysis word’ fields
+                populateSelect(selectLocalisation, localisationRecherche); // Fill in the ‘location’ field
                 
             } catch (error) {
                 console.error("Erreur lors du chargement du fichier CSV :", error);
