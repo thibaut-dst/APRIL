@@ -40,21 +40,23 @@ def pertinence_sementic(cleaned_text: str , mot_recherche_1 : str = None, mot_re
         if len(words_not_none) == 0:    
             return 0 , 0
         else :
-            # Générer le nettoyage et l'embedding pour le texte
+            # Generate cleaning and embedding for the text
             doc = nlp(cleaned_text)
             filtered_tokens = [token.text for token in doc if not token.is_punct and not token.is_stop]
             cleaned_text_filtered = " ".join(filtered_tokens)
 
-            text_embedding = model.encode([cleaned_text_filtered])                                                 # Un modèle léger de SBERT
+            text_embedding = model.encode([cleaned_text_filtered])                                                 # A lightweight SBERT model
+
 
             similarity_score = {}
             for word in words_not_none:
                 
-                # Générer l'embedding pour le mot
-                word_embedding = model.encode([word])              # Un modèle léger de SBERT
+                # Generate embedding for the word
+                word_embedding = model.encode([word])              # A lightweight SBERT model
 
-                # Calculer la similarité cosinus
-                similarity = cosine_similarity(word_embedding, text_embedding)          # Un modèle léger de SBERT
+                # Calculate cosine similarity
+                similarity = cosine_similarity(word_embedding, text_embedding)          # A lightweight SBERT model
+
 
                 similarity_score[word] = similarity[0][0]
             score = np.mean(list(similarity_score.values()))

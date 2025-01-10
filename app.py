@@ -82,7 +82,7 @@ def start_pipeline():
 
 @app.route('/data/<filename>')
 def serve_csv(filename):
-    # Sert le fichier CSV depuis le dossier 'data'
+    # Serves the CSV file from the ‘data’ folder
     return send_from_directory(os.path.join(app.root_path, 'data'), filename)
 
 

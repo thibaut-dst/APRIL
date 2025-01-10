@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const totalDocuments = modifiedSizes.reduce((sum, value) => sum + value, 0);
 
             // Set the dynamic title with the total count
-            const titleText = `Le filtre affiche ${totalDocuments} documents`;
+            const titleText = `The filter displays ${totalDocuments} documents`;
 
             // Prepare the Plotly data
             const pieData = [{
