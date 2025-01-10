@@ -163,40 +163,14 @@
         }
 
         async function updateTable() {
-
-    const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
-    const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
-    const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
-    const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
-    const location = document.querySelector('.row select.search-1').value || "";
-    const title = document.querySelector('.row input[type="text"]').value || "";
-
-    // Gérer le tag (valeur vide si rien n'est sélectionné)
-    const tag = document.querySelector('.row select.search-2').value || ""; 
-
-    try {
-        const response = await fetch('/search-table', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                searchword1,
-                searchword2,
-                analyseword1,
-                analyseword2,
-                location,
-                title,
-                tag  
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erreur lors de la récupération des documents.');
-        }
-
-
-            // Gérer le tag (valeur vide si rien n'est sélectionné)
-            const tag = document.querySelector('.row select.search-2').value || ""; 
-
+            const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
+            const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
+            const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
+            const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
+            const location = document.querySelector('.row select.search-1').value || "";
+            const title = document.querySelector('.row input[type="text"]').value || "";
+            const tag = document.querySelector('.row select.search-2').value || "";  // Single declaration
+        
             try {
                 const response = await fetch('/search-table', {
                     method: 'POST',
@@ -208,17 +182,19 @@
                         analyseword2,
                         location,
                         title,
-                        tag  // Envoie la valeur vide si aucun tag sélectionné
+                        tag
                     })
                 });
-
+        
                 if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des documents.');
+                    const errorMsg = await response.text();
+                    throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
                 }
-
+        
                 const html = await response.text();
                 document.querySelector('.document-section tbody').innerHTML = html;    
                 attachRowClickEvents();
+        
             } catch (error) {
                 console.error('Erreur:', error);
                 alert('Une erreur est survenue lors de la recherche des documents.');
