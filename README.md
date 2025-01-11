@@ -41,7 +41,7 @@ Once docker containers are runing, access the application at:
 
 For more details, refer to the [project documentation](https://github.com/thibaut-dst/APRIL/wiki).
 
-### Main Features
+## Main Features
 
 - Data Collection: Automated scraping of web-based data sources related to coastal risks.
 - NLP Analysis: Identification of key themes, sentiments, and stakeholder perspectives.
