@@ -117,6 +117,7 @@ section {
 .document-table thead{
     position: sticky;
     top: 0px;
+    z-index: 100000;
 }
 
 .document-table {
@@ -187,11 +188,13 @@ section {
     box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
     white-space: normal;
     z-index: 10;
-    max-width: 630px;
+    font-weight: 500;
+    max-width: 800px;
 }
 
 .tooltip-container:hover .tooltip-content {
     display: flex;
+    flex-direction: column;
 }
 
 .document-table tbody{

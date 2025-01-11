@@ -80,10 +80,16 @@
                                     <i class="info-icon">i</i>
                                     <div class="tooltip-content">
                                         The score is calculated as the proportion of target word 
-                                        (words of research or analysis) occurrences 
+                                        (words of research + analysis) occurrences 
                                         relative to the total number of words in the text.
+                                        There is no min/max, the score is relative each document, 
+                                        so it is very sensitive to the document size.
+
                                         <br><br>
-                                        s: is a semantic matchig score based on the keyword input when searching
+                                        <span style="color:#bcbcbc">Only available when filtering with at least one keyword:</span>
+                                        s: is a semantic matchig score between the document and the keywords used for filtering.
+                                        It takes each word (not empty) one by one from the filters, and calculates the semantic proximity with the document, 
+                                        then it returns the average score of all the words.
                                     </div>
                                 </span>
                             </th>
