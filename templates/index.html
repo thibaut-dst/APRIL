@@ -51,7 +51,7 @@
             <!-- Third line -->
             <div class="row">
                 <input type="text" placeholder="Search by title or title deed" class="search-bar search-1">
-                <button class="search-button" onclick="updateTable()">Rechercher</button>
+                <button class="search-button" onclick="updateTable()">Search</button>
                 <button class="reset-button">Reset</button>
             </div>
 
@@ -80,10 +80,16 @@
                                     <i class="info-icon">i</i>
                                     <div class="tooltip-content">
                                         The score is calculated as the proportion of target word 
-                                        (words of research or analysis) occurrences 
+                                        (words of research + analysis) occurrences 
                                         relative to the total number of words in the text.
+                                        There is no min/max, the score is relative each document, 
+                                        so it is very sensitive to the document size.
+
                                         <br><br>
-                                        s: is a semantic matchig score based on the keyword input when searching
+                                        <span style="color:#bcbcbc">Only available when filtering with at least one keyword:</span>
+                                        s: is a semantic matchig score between the document and the keywords used for filtering.
+                                        It takes each word (not empty) one by one from the filters, and calculates the semantic proximity with the document, 
+                                        then it returns the average score of all the words.
                                     </div>
                                 </span>
                             </th>
@@ -163,16 +169,21 @@
         }
 
         async function updateTable() {
-
             const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
             const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
             const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
             const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
             const location = document.querySelector('.row select.search-1').value || "";
             const title = document.querySelector('.row input[type="text"]').value || "";
-            const tag = document.querySelector('.row select.search-2').value || "";  // Single declaration
+            const tag = document.querySelector('.row select.search-2').value || "";  
+        
+            const spinnerRow = document.getElementById('loading-spinner');
+            const tbody = document.querySelector('.document-section tbody');
         
             try {
+                // Show the spinner
+                spinnerRow.style.display = '';
+        
                 const response = await fetch('/search-table', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -193,14 +204,22 @@
                 }
         
                 const html = await response.text();
-                document.querySelector('.document-section tbody').innerHTML = html;    
+        
+                // Replace table content with new data
+                tbody.innerHTML = html;
+        
+                // Reattach event listeners after updating table
                 attachRowClickEvents();
         
             } catch (error) {
                 console.error('Erreur:', error);
                 alert('Une erreur est survenue lors de la recherche des documents.');
+            } finally {
+                // Hide the spinner after the response (success or error)
+                spinnerRow.style.display = 'none';
             }
         }
+        
 
         // Function for attaching the click event to the table rows
         function attachRowClickEvents() {
