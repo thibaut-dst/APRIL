@@ -91,9 +91,13 @@ def search_table():
                 mot_analyse_1=mot_analyse_1,
                 mot_analyse_2=mot_analyse_2
             )
-            doc['semantic_score'] = round(semantic_score, 2)
-            
-        return render_template('includes/table.html', documents=documents), 200
+
+            # Convert float32 to float (to ensure JSON serializability)
+            doc['semantic_score'] = float(semantic_score)
+
+        #print("documents" , documents, flush=True)
+        html_response = render_template('includes/table.html', documents=documents)
+        return jsonify({"html": html_response, "documents": documents}), 200
 
     except Exception as e:
         print(f"Error during search: {e}", flush=True)

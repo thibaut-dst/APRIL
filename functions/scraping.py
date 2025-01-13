@@ -7,8 +7,6 @@ import json
 import logging
 import fitz
 from datetime import datetime  # Importing datetime module
-<<<<<<< HEAD
-=======
 import random
 import itertools
 
@@ -34,7 +32,6 @@ error_handler.setFormatter(error_formatter)                 # Apply the formatte
 
 # Add the error handler to the error logger
 error_logger.addHandler(error_handler)
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
 
 # Function for meta scraping
 def meta_scraping(url: str) -> dict:
@@ -109,13 +106,6 @@ def meta_scraping(url: str) -> dict:
         return None
 
 # Function to extract Text from HTML content
-<<<<<<< HEAD
-def contains_keywords(content, keyword):
-    return keyword.lower() in content.lower()
-
-# Function to transform PDF into Text 
-def pdf_to_text(pdf_path):
-=======
 def contains_keywords(content: str, keyword: str) -> bool:
     """
     Checks if a given keyword is present in the content.
@@ -140,7 +130,6 @@ def pdf_to_text(pdf_path: str) -> str:
     Returns:
         str: The extracted text content from the PDF.
     """
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
     text = ""
     with fitz.open(pdf_path) as pdf:
         for page_num in range(pdf.page_count):
@@ -149,9 +138,6 @@ def pdf_to_text(pdf_path: str) -> str:
     return text
 
 # Function for meta scraping for the PDF file
-<<<<<<< HEAD
-def pdf_meta_scraping(pdf_path):
-=======
 def pdf_meta_scraping(pdf_path: str) -> dict:
     """
     Extracts metadata from a PDF file.
@@ -162,7 +148,6 @@ def pdf_meta_scraping(pdf_path: str) -> dict:
     Returns:
         dict: A dictionary containing metadata such as title, author, and creation date.
     """
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
     with fitz.open(pdf_path) as doc:
         metadata = doc.metadata  
         title = metadata.get('title', 'No title')
@@ -176,11 +161,7 @@ def pdf_meta_scraping(pdf_path: str) -> dict:
     }
 
 # Function for scraping into the Database
-<<<<<<< HEAD
-def scrape_webpages_to_db(keywords_list, collection):
-=======
 def scrape_webpages_to_db(keywords_list: list, collection):
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
     """
     Searches Google for webpages and PDFs based on keywords, scrapes the content, and stores it in a MongoDB collection.
 
@@ -193,17 +174,9 @@ def scrape_webpages_to_db(keywords_list: list, collection):
     """
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-<<<<<<< HEAD
-    }    
-    #for index, keyword in enumerate(keywords_list):
-    for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
-
-        
-=======
     }
     #for index, keyword in enumerate(keywords_list):
     for index, (combined, vocabulaire, localisation) in enumerate(keywords_list):
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
         logging.info(f"Starting Google search for: '{combined}'")
         for url in search(combined, num_results=3):  # Limited to 3 results
             try:
@@ -215,11 +188,6 @@ def scrape_webpages_to_db(keywords_list: list, collection):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 content_type = response.headers.get('Content-Type', '').lower()
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> c5d4366627ea515c5fc67d6dd8a19543e3c649eb
                 if 'application/pdf' in content_type:
                     file_type = "pdf"
                     pdf_name = f"temp_pdf_{index}.pdf"

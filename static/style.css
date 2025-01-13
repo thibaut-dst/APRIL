@@ -106,7 +106,7 @@ section {
     border-radius: 8px;
 }
 
-#pie-chart, #pie-chart-location{
+#pie-chart-domain, #pie-chart-location{
     width: 500px;
 
 }

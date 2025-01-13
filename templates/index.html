@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="../static/header.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- Include PapaParse -->
-    <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script> <!-- Link to data_viz.js -->
-    <script src="{{ url_for('static', filename='data_viz_location.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script>
+
+    
 </head>
 <body>
     {% include "includes/header.html" %}
@@ -109,6 +110,7 @@
 
             attachRowClickEvents();
             loadCSV(); 
+            updateTable();
             document.querySelector('.sorting-bar').addEventListener('click', (e) => {
                 if (e.target.classList.contains('sort-button')) {
                     const criterion = e.target.textContent.toLowerCase(); // Match criterion
@@ -169,56 +171,65 @@
         }
 
         async function updateTable() {
-            const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
-            const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
-            const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
-            const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
-            const location = document.querySelector('.row select.search-1').value || "";
-            const title = document.querySelector('.row input[type="text"]').value || "";
-            const tag = document.querySelector('.row select.search-2').value || "";  
-        
-            const spinnerRow = document.getElementById('loading-spinner');
-            const tbody = document.querySelector('.document-section tbody');
-        
-            try {
-                // Show the spinner
-                spinnerRow.style.display = '';
-        
-                const response = await fetch('/search-table', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        searchword1,
-                        searchword2,
-                        analyseword1,
-                        analyseword2,
-                        location,
-                        title,
-                        tag
-                    })
-                });
-        
-                if (!response.ok) {
-                    const errorMsg = await response.text();
-                    throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
-                }
-        
-                const html = await response.text();
-        
-                // Replace table content with new data
-                tbody.innerHTML = html;
-        
-                // Reattach event listeners after updating table
-                attachRowClickEvents();
-        
-            } catch (error) {
-                console.error('Erreur:', error);
-                alert('Une erreur est survenue lors de la recherche des documents.');
-            } finally {
-                // Hide the spinner after the response (success or error)
-                spinnerRow.style.display = 'none';
-            }
+    const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
+    const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
+    const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
+    const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
+    const location = document.querySelector('.row select.search-1').value || "";
+    const title = document.querySelector('.row input[type="text"]').value || "";
+    const tag = document.querySelector('.row select.search-2').value || "";  
+
+    const spinnerRow = document.getElementById('loading-spinner');
+    const tbody = document.querySelector('.document-section tbody');
+
+    try {
+        // Show the spinner
+        spinnerRow.style.display = '';
+
+        const response = await fetch('/search-table', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                searchword1,
+                searchword2,
+                analyseword1,
+                analyseword2,
+                location,
+                title,
+                tag
+            })
+        });
+
+        if (!response.ok) {
+            const errorMsg = await response.text();
+            throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
         }
+
+        // Parse the response as JSON to extract documents and HTML
+        const result = await response.json();
+        const { html, documents } = result;
+
+        // Replace table content with new data
+        tbody.innerHTML = html;
+
+        // Reattach event listeners after updating table
+        attachRowClickEvents();
+
+        // Call the JS function to create a pie chart
+        if (documents && Array.isArray(documents)) {
+            createPieChartLocation(documents);
+            createPieChartDomain(documents); 
+        }
+
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de la recherche des documents.');
+    } finally {
+        // Hide the spinner after the response (success or error)
+        spinnerRow.style.display = 'none';
+    }
+}
+
         
 
         // Function for attaching the click event to the table rows
