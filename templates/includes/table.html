@@ -1,0 +1,59 @@
+<tbody>
+
+    <tr id="loading-spinner" style="display: none;">
+        <td colspan="6" style="text-align: center;">
+            <div class="spinner"></div>
+        </td>
+    </tr>
+    
+    {% for doc in documents %}
+    {% set tagged = doc.get('tagged', None) %}
+
+    <tr class="clickable-row {% if tagged == 1 %} tagged-green {% elif tagged == 2 %} tagged-red {% endif %}" 
+        data-url="{{ url_for('front.document', doc_id=doc['_id']) }}"
+        
+        data-pertinence="{{ doc.get('vocabulary_of_interest', {}).get('Pertinence', 0) }}"
+        data-date="{{ doc.get('meta_data', {}).get('Date Scraped', '') }}"
+        data-semantics="{{ doc.get('semantic_score', 0) }}">
+
+        <td class="tagged-status" style="text-align: center;">
+            {% if tagged is none %}
+                __
+            {% elif tagged == 1 %}
+                ✅
+            {% elif tagged == 2 %}
+                ❌
+            {% else %}
+                __
+            {% endif %}
+        </td>
+        <td class="pertcontent">
+            {% if doc.get("vocabulary_of_interest") and doc["vocabulary_of_interest"].get('Pertinence') is not none %}
+                {{ (doc["vocabulary_of_interest"]['Pertinence'] * 1000) | round(1) }}
+            {% else %}
+                __
+            {% endif %}
+
+            {% if doc.get("semantic_score") %}
+            <br>
+            s: {{ doc.get('semantic_score', '') }}
+            {% endif %}
+        </td>
+        <td class="freq_words">
+            {% if doc.get("vocabulary_of_interest") and doc["vocabulary_of_interest"].get("Top_5_words") %}
+                {% set words = [] %}
+                {% for word, count in doc["vocabulary_of_interest"]["Top_5_words"] %}
+                    {% set _ = words.append(word) %}
+                {% endfor %}
+                {{ words | join(", ") }}
+            {% else %}
+                No words available
+            {% endif %}
+        </td>
+
+        <td>{{ doc.get('localisation of scraping', '__') }}</td>
+        <td>{{ doc.get('keyword of scraping', '__') }}</td>
+        <td class="source_title"><span style="color:#027bff">{{ doc.get('domain', '__') }} </span><br><b>{{ doc.get('Title_updated', '__') }}</b></td>
+    </tr>
+    {% endfor %}
+</tbody>

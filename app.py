@@ -1,35 +1,34 @@
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_from_directory
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 import threading
 import os
 import subprocess
 import logging
+
+
+from routes.front import front
+from routes.filters import filters
+from routes.api_mongo import api_mongo
+from routes.data_viz import data_viz_bp
+
 app = Flask(__name__)
+app.register_blueprint(front)
+app.register_blueprint(filters)
+app.register_blueprint(api_mongo)
+app.register_blueprint(data_viz_bp, url_prefix='/api')
 
 #===================== Database config =====================
 
 app.config["MONGO_URI"] = "mongodb://mongo:27017/April"
 mongo = PyMongo(app)
-mongo_collection = mongo.db.Documents
+app.mongo = mongo
 
 #===================== Pipeline config =====================
 
 # Global variable to track the process
 pipeline_process = None
 nlp_process = None
-
-@app.route('/get-doc-count', methods=['GET'])
-def get_doc_count():
-    count = mongo_collection.count_documents({})
-    return jsonify({'count': count})
-
-@app.route('/get-doc-processed-count', methods=['GET'])
-def get_doc_processed_count():
-    query = {"cleaned_text": {"$exists": True}} 
-    count = mongo_collection.count_documents(query) 
-    return jsonify({'count': count})
-
 
 def log_pipeline_output(process):
     with open('pipeline.log', 'a') as log_file:
@@ -81,6 +80,12 @@ def start_pipeline():
             log_file.write(f"Failed to start pipeline: {str(e)}\n")
         return f"Failed to start pipeline: {str(e)}", 500
 
+@app.route('/data/<filename>')
+def serve_csv(filename):
+    # Serves the CSV file from the ‘data’ folder
+    return send_from_directory(os.path.join(app.root_path, 'data'), filename)
+
+
 @app.route('/stop-pipeline', methods=['POST'])
 def stop_pipeline():
     global pipeline_process
@@ -125,35 +130,15 @@ def run_nlp():
         return f"Failed to start NLP processing: {str(e)}", 500
 
 
-
-
 @app.route('/get-logs', methods=['GET'])
 def get_logs():
     log_file = 'pipeline.log'
     if os.path.exists(log_file):
         with open(log_file, 'r') as f:
             logs = f.readlines()
-        return jsonify({'logs': logs[-20:]})  # Return the last 20 lines of logs
+        return jsonify({'logs': logs[-30:]})
     else:
         return jsonify({'logs': []})
-
-
-#===================== Frontend routing =====================
-
-@app.route('/')
-def index():
-    documents = mongo_collection.find()
-    return render_template('index.html', documents=documents)
-
-@app.route('/launch-pipeline')
-def launch_pipeline():
-    return render_template('launch_pipeline.html')
-
-@app.route('/document/<doc_id>')
-def document(doc_id):
-    document = mongo_collection.find_one({'_id': ObjectId(doc_id)})
-    return render_template('document.html', document=document)
-
 
 
 

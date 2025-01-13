@@ -4,18 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Details</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/style_document.css">
 </head>
 <body>
     <main class="document-container">
         
-        <div class="return-button">
-            <a href="/" class="button">← Return to Main Page</a>
+        <div class="toppp">
+            <div class="return-button">
+                <a href="/" class="button">← Return to Main Page</a>
+            </div>
+            
+            <div class="tagging-section">
+                <label for="tagged">Update Tag:</label>
+                <select id="tagged" class="tagged-dropdown">
+                    <option value="0" {% if document['tagged'] == 0 %}selected{% endif %}>Untagged</option>
+                    <option value="1" {% if document['tagged'] == 1 %}selected{% endif %}>✅ &nbsp;Interesting</option>
+                    <option value="2" {% if document['tagged'] == 2 %}selected{% endif %}>❌ &nbsp;Not Interesting</option>
+                </select>
+                <button id="update-tagged-button" class="button">Apply</button>
+            </div>
         </div>
 
         <!-- Title Section -->
         <header class="document-header">
-            <h1>{{ document['meta_data']['Title'] }}</h1>
+            <h1>{{ document['Title_updated'] }}</h1>
             <p class="document-info">
                 <span>Author: {{ document['meta_data']['Author'] or 'Unknown' }}</span> |
                 <span>Published: {{ document['meta_data']['Date Published'] or 'No Date Available' }}</span>
@@ -25,38 +37,87 @@
          <!-- Additional Metadata Section -->
          <aside class="document-metadata">
              <div>
-                 <h3>Additional Metadata</h3>
+                 <h3>Metadata</h3>
                  <ul>
                      <li><strong>Domain:</strong> {{ document['domain'] }}</li>
-                     <li><strong>Keyword:</strong> {{ document['keyword'] }}</li>
+                     <li><strong>Date of collection:</strong> {{ document['meta_data']['Date Scraped'] }}</li>
+                     <li><strong>Search keyword:</strong> {{ document.get('keyword of scraping', '__')}}</li>
+                     <li><strong>Search location:</strong> {{ document.get('localisation of scraping', '__')}}</li>
                      <li><strong>URL:</strong> <a href="{{ document['url'] }}" target="_blank">{{ document['url'] }}</a></li>
                      <li><strong>Open Graph Title:</strong> {{ document['meta_data']['Open Graph Title'] or 'N/A' }}</li>
-                     <li><strong>Open Graph Description:</strong> {{ document['meta_data']['Open Graph Description'] or 'N/A' }}</li>
+                     <li><strong>Open Graph Description:</strong> 
+                        <div class="desc">
+                            {{ document['meta_data']['Open Graph Description'] or 'N/A' }}
+                        </div>
+                    </li>
                     </ul>
                 </div>
                 <div class="legend">
-                    <span>
-                        Légende: 
-                    </span>
-                    <span class="highlight DATE">
-                        Date
-                    </span>
-                    <span class="highlight PER">
-                        Person
-                    </span>
-                    
-                    <span class="highlight LOC">
-                        Location
-                    </span>
-                    <span class="highlight ORG">
-                        Organization
-                    </span>
-                    <span class="highlight MISC">
-                        Miscellaneous
-                    </span>
+                    <h3>Legend</h3>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="RESEARCH" checked>
+                        <span class="highlight RESEARCH">Words of Research</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="ANALYSIS" checked>
+                        <span class="highlight ANALYSIS">Words of Analysis</span>
+                    </label>
+                    <br>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="PER" checked>
+                        <span class="highlight PER">Person</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="LOC" checked>
+                        <span class="highlight LOC">Location</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="DATE" checked>
+                        <span class="highlight DATE">Date</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="ORG" checked>
+                        <span class="highlight ORG">Organization</span>
+                    </label>
+                    <label>
+                        <input type="checkbox" class="toggle-highlights" data-category="MISC" checked>
+                        <span class="highlight MISC">Miscellaneous</span>
+                    </label>
                 </div>
         </aside>
     
+        <aside class="info_computed">
+            <div class="top5occurences">
+                <h3>Top 5 Words</h3>
+                {% if document.vocabulary_of_interest and document.vocabulary_of_interest.Top_5_words %}
+                <table class="top-words-table compact">
+                    <thead>
+                        <tr>
+                            <th>Occurrences</th>
+                            {% for word, count in document.vocabulary_of_interest.Top_5_words %}
+                                <th>{{ count }}</th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Words</th>
+                            {% for word, count in document.vocabulary_of_interest.Top_5_words %}
+                                <th>{{ word }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                </table>
+                {% else %}
+                    <p>No vocabulary data available.</p>
+                {% endif %}
+            </div>
+            <div class="docweight">
+                <h3>Document size</h3>
+                <p><strong>Word Count:</strong> {{ document.cleaned_text.split() | length }}</p>
+                {% if document.token_count %}
+                    <p><strong>Token Count:</strong> {{ document.token_count }}</p>
+                {% endif %}
+            </div>
+        </aside>
 
         <!-- Document Content Section -->
         <section id="content" class="document-content">
@@ -65,39 +126,123 @@
     
         
     </main>
-    <!-- Inject named entities data from Flask using a script tag with JSON -->
-    <script type="application/json" id="namedEntitiesData">
-        {{ document['named_entities'] | tojson }}
-    </script>
+
+        <!-- Inject named entities and vocabulary data from Flask using script tags with JSON -->
+        <script type="application/json" id="namedEntitiesData">
+            {{ document['named_entities'] | tojson }}
+        </script>
+        <script type="application/json" id="vocabularyData">
+            {{ document['vocabulary_of_interest'] | tojson }}
+        </script>
     
     <script>
         // Retrieve named entities data from the JSON script element
         const namedEntities = JSON.parse(document.getElementById('namedEntitiesData').textContent);
+        const vocabulary = JSON.parse(document.getElementById('vocabularyData').textContent);
 
-        // Function to escape special characters in entities for use in regular expressions
         function escapeRegExp(string) {
+            // Function to escape special characters in entities for use in regular expressions
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
         }
 
-        // Function to highlight named entities in text
-        function highlightEntities() {
+        // Function to highlight entities and vocabulary in text
+        function highlightEntitiesAndVocabulary() {
             const contentElement = document.getElementById('content');
             let contentHTML = contentElement.innerHTML;
 
-            // Loop through each entity type and wrap matches with span elements
+            // Highlight named entities
             for (const [type, entities] of Object.entries(namedEntities)) {
                 entities.forEach(entity => {
-                    const escapedEntity = escapeRegExp(entity); // Escape special characters
+                    const escapedEntity = escapeRegExp(entity);
                     const entityRegex = new RegExp(`\\b(${escapedEntity})\\b`, 'gi');
                     contentHTML = contentHTML.replace(entityRegex, `<span class="highlight ${type}">$1</span>`);
                 });
             }
 
+            // Highlight vocabulary categories
+            for (const [type, words] of Object.entries(vocabulary)) {
+                if (type === 'words_of_research' || type === 'words_of_analysis') {
+                    const classType = type === 'words_of_research' ? 'RESEARCH' : 'ANALYSIS';
+                    for (const word of Object.keys(words)) {
+                        const escapedWord = escapeRegExp(word);
+                        const wordRegex = new RegExp(`\\b(${escapedWord})\\b`, 'gi');
+                        contentHTML = contentHTML.replace(wordRegex, `<span class="highlight ${classType}">$1</span>`);
+                    }
+                }
+            }
+            
+
             contentElement.innerHTML = contentHTML;
         }
 
-        document.addEventListener('DOMContentLoaded', highlightEntities);
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            highlightEntitiesAndVocabulary();
+
+            const checkboxes = document.querySelectorAll('.toggle-highlights');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (event) => {
+                    const category = event.target.getAttribute('data-category');
+                    document.body.classList.toggle(`hide-${category}`, !event.target.checked);
+                });
+            });
+        });
+    
     </script>
 
+    <script>
+        document.getElementById('update-tagged-button').addEventListener('click', function () {
+            const docId = "{{ document['_id'] }}"
+            const selectedValue = document.getElementById('tagged').value;
+    
+            fetch('/update-tagged', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ doc_id: docId, value: parseInt(selectedValue) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.log(`Error: ${data.error}`);
+                } else {
+                    console.log(`Success: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the tag.');
+            });
+        });
+
+        const dropdown = document.getElementById('tagged');
+
+    // Function to update background color based on selected value
+    function updateBackgroundColor() {
+        const selectedValue = dropdown.value;
+
+        // Set the background color based on the value
+        switch (selectedValue) {
+            case "0": // Untagged
+                dropdown.style.backgroundColor = "white";
+                break;
+            case "1": // Interesting
+                dropdown.style.backgroundColor = "#e8fbe8";
+                break;
+            case "2": // Not Interesting
+                dropdown.style.backgroundColor = "#fde8e8";
+                break;
+            default:
+                dropdown.style.backgroundColor = "white"; // Default color
+        }
+    }
+
+    // Initial color update on page load
+    updateBackgroundColor();
+
+    // Add event listener for changes
+    dropdown.addEventListener('change', updateBackgroundColor);
+    </script>
+    
 </body>
 </html>
