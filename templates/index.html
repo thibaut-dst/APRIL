@@ -18,18 +18,24 @@
     <main>
         <section class="search-bar-section">
             <!-- First line -->
-            <div class="row">            
+            <div class="row r1">            
                 <select class="search-bar small">
-                    <option value="" disabled selected>Choose a search word</option>
+                    <option value="" disabled selected>Search word 1</option>
                 </select>   
                 <select class="search-bar small">
-                    <option value="" disabled selected>Choose another search word</option>
+                    <option value="" disabled selected>Search word 2</option>
                 </select>
                 <select class="search-bar small">
-                    <option value="" disabled selected>Choose an analysis word</option>
+                    <option value="" disabled selected>Analysis word 1</option>
                 </select>
                 <select class="search-bar small">
-                    <option value="" disabled selected>Choose another word for analysis</option>
+                    <option value="" disabled selected>Analysis word 2</option>
+                </select>
+                <select class="search-bar tag-selector search-2">
+                    <option value="" disabled selected>Tag</option>
+                    <option value="none">Untagged</option>
+                    <option value="valid">✅ Interesting</option>
+                    <option value="wrong">❌ Not Interesting</option>
                 </select>
             </div>
             
@@ -37,25 +43,26 @@
             <!-- Second line -->
             <div class="row">
                 <select class="search-bar search-1">
-                    <option value="" disabled selected>Choose a location</option>
+                    <option value="" disabled selected>Location</option>
                 </select>
-                <select class="search-bar tag-selector search-2">
-                    <option value="" disabled selected>Choose a tag</option>
-                    <option value="none">Untagged</option>
-                    <option value="valid">✅ Interesting</option>
-                    <option value="wrong">❌ Not Interesting</option>
-                </select>
-                <button class="search-button" onclick="updateTable()">Search</button>
-                <button class="reset-button">Reset</button>                
+                <input type="text" placeholder="Search a title or title excerpt" class="search-bar search-8">
             </div>
 
             <!-- Third line -->
-            <div class="row">
-                <input type="text" placeholder="Search by title or title deed" class="search-bar search-1">
-                <button class="search-button" onclick="updateTable()">Search</button>
-                <button class="reset-button">Reset</button>
+            <div class="row r3">
+                <div class="sem-score-activation">
+                    <span>Semantic scoring (this feature takes longer to return search result)
+                    </span>
+                    <label class="switch">
+                        <input type="checkbox" id="semantic-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="search-button" onclick="updateTable()">Search</button>
+                    <button class="reset-button">Reset</button>
+                </div>
             </div>
-
         </section>
 
         <!-- Data Visualization Section -->
@@ -68,7 +75,7 @@
                 <span>Sorting:</span>
                 <button class="sort-button" onclick="sortTable('date', 'text')">Date of collection</button>
                 <button class="sort-button" onclick="sortTable('pertinence', 'numeric')">Pertinence</button>
-                <button class="sort-button" onclick="sortTable('semantics', 'numeric')">Semantics</button>
+                <button class="sort-button" onclick="sortTable('semantics', 'numeric')">Semantic</button>
             </div>
             <!-- Catalogue -->            
             <div class="document-table">
@@ -87,7 +94,7 @@
                                         so it is very sensitive to the document size.
 
                                         <br><br>
-                                        <span style="color:#bcbcbc">Only available when filtering with at least one keyword:</span>
+                                        <span style="color:#bcbcbc">Only available when filtering with at least one keyword and when the feature is enabled:</span>
                                         s: is a semantic matchig score between the document and the keywords used for filtering.
                                         It takes each word (not empty) one by one from the filters, and calculates the semantic proximity with the document, 
                                         then it returns the average score of all the words.
@@ -171,66 +178,62 @@
         }
 
         async function updateTable() {
-    const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
-    const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
-    const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
-    const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
-    const location = document.querySelector('.row select.search-1').value || "";
-    const title = document.querySelector('.row input[type="text"]').value || "";
-    const tag = document.querySelector('.row select.search-2').value || "";  
-
-    const spinnerRow = document.getElementById('loading-spinner');
-    const tbody = document.querySelector('.document-section tbody');
-
-    try {
-        // Show the spinner
-        spinnerRow.style.display = '';
-
-        const response = await fetch('/search-table', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                searchword1,
-                searchword2,
-                analyseword1,
-                analyseword2,
-                location,
-                title,
-                tag
-            })
-        });
-
-        if (!response.ok) {
-            const errorMsg = await response.text();
-            throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
-        }
-
-        // Parse the response as JSON to extract documents and HTML
-        const result = await response.json();
-        const { html, documents } = result;
-
-        // Replace table content with new data
-        tbody.innerHTML = html;
-
-        // Reattach event listeners after updating table
-        attachRowClickEvents();
-
-        // Call the JS function to create a pie chart
-        if (documents && Array.isArray(documents)) {
-            createPieChartLocation(documents);
-            createPieChartDomain(documents); 
-        }
-
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue lors de la recherche des documents.');
-    } finally {
-        // Hide the spinner after the response (success or error)
-        spinnerRow.style.display = 'none';
-    }
-}
-
+            const searchword1 = document.querySelector('.row select:nth-of-type(1)').value || ""; 
+            const searchword2 = document.querySelector('.row select:nth-of-type(2)').value || "";
+            const analyseword1 = document.querySelector('.row select:nth-of-type(3)').value || "";
+            const analyseword2 = document.querySelector('.row select:nth-of-type(4)').value || "";
+            const location = document.querySelector('.row select.search-1').value || "";
+            const title = document.querySelector('.row input[type="text"]').value || "";
+            const tag = document.querySelector('.row select.search-2').value || "";  
         
+            const semanticScoringEnabled = document.querySelector('#semantic-toggle').checked;
+
+            const spinnerRow = document.getElementById('loading-spinner');
+            const tbody = document.querySelector('.document-section tbody');
+        
+            try {
+                // Show the spinner
+                spinnerRow.style.display = '';
+        
+                const response = await fetch('/search-table', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        searchword1,
+                        searchword2,
+                        analyseword1,
+                        analyseword2,
+                        location,
+                        title,
+                        tag,
+                        semanticScoringEnabled
+                    })
+                });
+        
+                if (!response.ok) {
+                    const errorMsg = await response.text();
+                    throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
+                }
+                      
+                const result = await response.json();
+                const { html, documents } = result;
+             
+                tbody.innerHTML = html;
+                attachRowClickEvents();
+              
+              // Call the JS function to create a pie chart
+              if (documents && Array.isArray(documents)) {
+                  createPieChartLocation(documents);
+                  createPieChartDomain(documents); 
+              }
+              
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la recherche des documents.');
+            } finally {
+                spinnerRow.style.display = 'none';
+            }
+        }
 
         // Function for attaching the click event to the table rows
         function attachRowClickEvents() {
@@ -283,7 +286,7 @@
                 }
 
                 // Target <select> elements more precisely
-                    const selectRecherche1 = document.querySelector('.row select:nth-of-type(1)'); // First search select
+                const selectRecherche1 = document.querySelector('.row select:nth-of-type(1)'); // First search select
                 const selectRecherche2 = document.querySelector('.row select:nth-of-type(2)'); // Second search selection
                 const selectAnalyse1 = document.querySelector('.row select:nth-of-type(3)'); // First select analysis
                 const selectAnalyse2 = document.querySelector('.row select:nth-of-type(4)'); // Second analysis selection

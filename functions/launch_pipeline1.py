@@ -3,7 +3,6 @@ import db
 import logging
 
 
-# Configure logging
 logging.basicConfig(
     filename='pipeline.log',       # Logs will be saved to 'pipeline.log'
     filemode='a',                  # Append to the log file
