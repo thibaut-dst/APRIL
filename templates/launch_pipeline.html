@@ -90,11 +90,11 @@
                         else if(log.includes("stored in DB")){
                             logElement.style.color = "#5959dc"; // Highlight error messages in blue
                         }
-                        else if(log.includes("NLP")){
-                            logElement.style.color = "#be57d6"; // Highlight error messages in purple
-                        }
                         else if(log.includes("Pipeline initialization")){
                             logElement.style.fontWeight = 900; // Highlight error messages in purple
+                        }
+                        else if(log.includes("NLP")){
+                            logElement.style.color = "#be57d6"; // Highlight error messages in purple
                         }
                         logElement.textContent = log.trim();
                         logContainer.appendChild(logElement);

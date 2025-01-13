@@ -17,7 +17,6 @@ def search_table():
     and_conditions = []
 
 
-
     if 'location' in data and isinstance(data['location'], str) and data['location'].strip():
         and_conditions.append({"localisation of scraping": {"$regex": data['location'], "$options": "i"}})
 
@@ -50,23 +49,24 @@ def search_table():
         tag_mapping = {"none": 0, "valid": 1, "wrong": 2}
         tag_value = tag_mapping.get(data['tag'], None)  # None for an invalid or empty value
 
-
         # Apply only if a valid value is selected
         if tag_value is not None:
             and_conditions.append({"tagged": tag_value})
 
-
-
-
     if and_conditions:
         query = {"$and": and_conditions}
 
-    print("final query " , query, flush=True)
+    #print("final query " , query, flush=True)
     try:
         documents = list(mongo_collection.find(query))
         for doc in documents:
             if '_id' in doc:
                 doc['_id'] = str(doc['_id'])
+
+            # Check if semantic scoring is enabled
+            if not data.get('semanticScoringEnabled', False):  # Skip if disabled
+                doc['semantic_score'] = None  # Or skip adding the field
+                continue
 
             # Skip semantic calculation if no search words are provided
             if not any([
