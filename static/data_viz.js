@@ -33,65 +33,74 @@ function createPieChartDomain(documents) {
 }
 
 // Generic function to generate pie charts
-// Fonction générique pour générer les graphiques en secteurs
 function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
     let modifiedLabels = [];
     let modifiedSizes = [];
     let otherSize = 0;
-    let otherSources = []; // Tableau pour stocker les sources groupées dans "Autres"
+    let otherSources = []; // Sources groupées dans "Other"
     
     // Calculer le nombre total de documents
     const totalDocuments = Object.values(dataCount).reduce((sum, value) => sum + value, 0);
 
-    // Regrouper dans "Autres" si plus de 15 documents
-    const shouldGroupOthers = totalDocuments > 15;
+    // Trier les labels par taille décroissante
+    const sortedData = Object.entries(dataCount).sort((a, b) => b[1] - a[1]);
 
-    Object.entries(dataCount).forEach(([label, size]) => {
-        if (shouldGroupOthers && size <= 2) {
-            otherSize += size;
-            otherSources.push(label);
-        } else {
+    // Si moins ou égal à 10 sources, tout afficher
+    if (sortedData.length <= 10) {
+        sortedData.forEach(([label, size]) => {
             modifiedLabels.push(label);
             modifiedSizes.push(size);
-        }
-    });
+        });
+    } else {
+        // Afficher les 10 premières sources avec le count le plus élevé
+        sortedData.slice(0, 10).forEach(([label, size]) => {
+            modifiedLabels.push(label);
+            modifiedSizes.push(size);
+        });
 
-    if (otherSize > 0 && shouldGroupOthers) {
-        modifiedLabels.push('Other (2 or less documents)');
-        modifiedSizes.push(otherSize);
+        // Regrouper le reste dans "Other"
+        sortedData.slice(10).forEach(([label, size]) => {
+            otherSize += size;
+            otherSources.push(label);
+        });
+
+        if (otherSize > 0) {
+            modifiedLabels.push('Other (less frequent sources)');
+            modifiedSizes.push(otherSize);
+        }
     }
 
-    const titleText = `${titlePrefix} ${totalDocuments} documents`;
+    const titleText = `${titlePrefix} (${totalDocuments} documents)`;
 
     const pieData = [{
         type: 'pie',
         values: modifiedSizes,
         labels: modifiedLabels,
         textinfo: 'value',
-        hoverinfo: 'label+value',  // Affiche l'étiquette et la valeur dans l'info-bulle
+        hoverinfo: 'label+value',
         automargin: true
     }];
 
     const layout = {
         title: titleText,
-        height: 300,
-        width: '100%',
+        height: Math.min(400 + totalDocuments * 0.1, 800), // Ajuste la hauteur pour grands ensembles
+        width: 600,
         margin: {
             l: 10,
             r: 10,
             t: 50,
             b: 10
         },
-        showlegend: false,
+        showlegend: false, // N'affiche pas la légende
         hoverlabel: {
-            bgcolor: 'rgba(255, 255, 255, 0.8)',  // Fond blanc semi-transparent
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
             font: {
-                size: 14,  // Ajuste la taille de la police
-                family: 'Arial, sans-serif',  // Police de l'info-bulle
+                size: 14,
+                family: 'Arial, sans-serif',
             },
-            align: 'center',  // Aligne le texte au centre
-            namelength: -1,  // Permet de ne pas couper le texte du label
-            borderpad: 10,   // Ajoute un espacement intérieur pour l'info-bulle
+            align: 'center',
+            namelength: -1,
+            borderpad: 10,
         },
     };
 
@@ -99,13 +108,12 @@ function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
         const pieChart = document.getElementById(chartId);
         pieChart.on('plotly_click', function(eventData) {
             const clickedLabel = eventData.points[0].label;
-            if (clickedLabel === 'Other (2 or less documents)') {
+            if (clickedLabel === 'Other (less frequent sources)') {
                 displayOtherSources(otherSources, containerId);
             }
         });
     });
 }
-
 
 // Function to display the sources in the "Other" section
 function displayOtherSources(sources, containerId) {
