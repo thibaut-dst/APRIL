@@ -44,7 +44,7 @@ For more details, refer to the [project documentation](https://github.com/thibau
 ## Main Features
 
 - Data Collection: Automated scraping of web-based data sources related to coastal risks.
-- NLP Analysis: Identification of key themes, sentiments, and stakeholder perspectives.
+- NLP Analysis: Identification of key themes, Named Entity Recognition, semantic scoring.
 - Interactive Dashboard: Visualization of data insights to support policy-making.
 
 Explore more in the [Wiki 'Features'](https://github.com/thibaut-dst/APRIL/wiki/Features).
