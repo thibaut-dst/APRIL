@@ -223,25 +223,25 @@ def scrape_webpages_to_db(keywords_list: list, collection):
                         content += p.get_text() + " <br> "
                     content = content.strip()
 
-                    # Check if the keyword is present in the content
-                    if contains_keywords(content, vocabulaire):
-                        page_data = {
-                            "url": url,
-                            "keyword of scraping": vocabulaire,
-                            "localisation of scraping": localisation,
-                            "content": content,
-                            "meta_data": {
-                                "file_type": file_type,
-                                **meta_scraping(url)
-                            }
+                    page_data = {
+                        "url": url,
+                        "keyword of scraping": vocabulaire,
+                        "localisation of scraping": localisation,
+                        "content": content,
+                        "meta_data": {
+                            "file_type": file_type,
+                            **meta_scraping(url)
                         }
-                        collection.insert_one(page_data)
-                        logging.info(f"Page HTML stored in DB: {url}")
+                    }
+                    collection.insert_one(page_data)
+                    logging.info(f"Page HTML stored in DB: {url}")
+                else: 
+                    logging.info(f"skipping because content type not html nor pdf: {content_type}")
             except requests.exceptions.RequestException as e:
-                #logging.error(f"Error accessing page {url}: {e}")
+                logging.error(f"Error accessing page {url}: {e}")
                 error_logger.error(f"Error accessing page {url}: {e}")
             except Exception or ValueError as e:
-                #logging.error(f"Unexpected error processing {url}: {e}")
+                logging.error(f"Unexpected error processing {url}: {e}")
                 error_logger.error(f"Unexpected error processing {url}: {e}")
 
 # Function for read and shuffle the csv 

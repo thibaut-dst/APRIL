@@ -218,8 +218,7 @@
                 attachRowClickEvents();
         
             } catch (error) {
-                console.error('Erreur:', error);
-                alert('Une erreur est survenue lors de la recherche des documents.');
+                console.error('Une erreur est survenue lors de la recherche des documents:', error);
             } finally {
                 spinnerRow.style.display = 'none';
             }
