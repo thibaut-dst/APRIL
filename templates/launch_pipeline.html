@@ -81,7 +81,10 @@
                 .then(response => response.json())
                 .then(data => {
                     const logContainer = document.getElementById('log-output');
+
+                    const recentLogs = data.logs.slice(-200);
                     logContainer.innerHTML = ''; // Clear the existing logs
+                    
                     data.logs.forEach(log => {
                         const logElement = document.createElement('div');
                         if (log.includes("ERROR")) {
@@ -99,7 +102,7 @@
                         logElement.textContent = log.trim();
                         logContainer.appendChild(logElement);
                     });
-                    logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to the bottom
+                    //logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to the bottom
                 })
                 .catch(error => console.error('Error fetching logs:', error));
         }

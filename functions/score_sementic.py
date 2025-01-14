@@ -6,7 +6,7 @@ nlp = spacy.load("fr_core_news_lg")
 
 import logging
 
-model = SentenceTransformer('all-MiniLM-L6-v2')             # Un modèle léger de SBERT
+model = SentenceTransformer('all-MiniLM-L6-v2') # Un modèle léger de SBERT
 logging.info("model load")
 
 
