@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="../static/header.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Include Plotly -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script> <!-- Include PapaParse -->
-    <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script> <!-- Link to data_viz.js -->
-    <script src="{{ url_for('static', filename='data_viz_location.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='data_viz.js') }}" defer></script>
+
+    
 </head>
 <body>
     {% include "includes/header.html" %}
@@ -116,6 +117,7 @@
 
             attachRowClickEvents();
             loadCSV(); 
+            updateTable();
             document.querySelector('.sorting-bar').addEventListener('click', (e) => {
                 if (e.target.classList.contains('sort-button')) {
                     const criterion = e.target.textContent.toLowerCase(); // Match criterion
@@ -212,18 +214,25 @@
                     const errorMsg = await response.text();
                     throw new Error(`Erreur lors de la récupération des documents: ${errorMsg}`);
                 }
-        
-                const html = await response.text();        
+                      
+                const result = await response.json();
+                const { html, documents } = result;
+             
                 tbody.innerHTML = html;
                 attachRowClickEvents();
-        
+              
+              // Call the JS function to create a pie chart
+              if (documents && Array.isArray(documents)) {
+                  createPieChartLocation(documents);
+                  createPieChartDomain(documents); 
+              }
+              
             } catch (error) {
                 console.error('Une erreur est survenue lors de la recherche des documents:', error);
             } finally {
                 spinnerRow.style.display = 'none';
             }
         }
-        
 
         // Function for attaching the click event to the table rows
         function attachRowClickEvents() {

@@ -188,7 +188,6 @@ def scrape_webpages_to_db(keywords_list: list, collection):
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
                 content_type = response.headers.get('Content-Type', '').lower()
-
                 if 'application/pdf' in content_type:
                     file_type = "pdf"
                     pdf_name = f"temp_pdf_{index}.pdf"

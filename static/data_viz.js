@@ -1,97 +1,115 @@
-document.addEventListener("DOMContentLoaded", async function () {
+// Function to create pie chart for location
+function createPieChartLocation(documents) {
     try {
-        // Fetch data from the backend endpoint
-        const response = await fetch('/api/piechart_domain');
-        if (!response.ok) throw new Error('Failed to fetch data');
+        const locationCount = {};
+        documents.forEach(doc => {
+            const location = doc['localisation of scraping'];
+            console.log(location);  // Affichera la valeur du champ "localisation of scraping"
 
-        const data = await response.json();
+            locationCount[location] = (locationCount[location] || 0) + 1;
+        });
 
-        // Check if the response contains the required data
-        if (data.labels && data.sizes) {
-
-            // Modify the labels and sizes to group values equal to 1 as "Other"
-            let modifiedLabels = [];
-            let modifiedSizes = [];
-            let otherSize = 0;
-            let otherSources = []; // Array to store sources grouped into "Other"
-
-            // Loop through the data and modify it
-            data.labels.forEach((label, index) => {
-                if (data.sizes[index] <= 2) {
-                    // Add the size to 'otherSize' and skip adding it as a separate slice
-                    otherSize += data.sizes[index];
-                    // Add the label to "Other" sources
-                    otherSources.push(label);
-                } else {
-                    // Add normal data
-                    modifiedLabels.push(label);
-                    modifiedSizes.push(data.sizes[index]);
-                }
-            });
-
-            // If there's any value to group into "Other", add it as a new slice
-            if (otherSize > 0) {
-                modifiedLabels.push('Other (2 or less documents)');
-                modifiedSizes.push(otherSize);
-            }
-
-            // Calculate the total count of documents (sum of sizes)
-            const totalDocuments = modifiedSizes.reduce((sum, value) => sum + value, 0);
-
-            // Set the dynamic title with the total count
-            const titleText = `The filter displays ${totalDocuments} documents`;
-
-            // Prepare the Plotly data
-            const pieData = [{
-                type: 'pie',
-                values: modifiedSizes,//data.sizes
-                labels: modifiedLabels,//data.labels
-                textinfo: 'value', // Disable labels inside or outside the chart
-                automargin: true
-            }];
-
-            // Define the layout for the pie chart
-            const layout = {
-                title: titleText,
-                height: 300,
-                width: '100%',
-                margin: {
-                    l: 10, // Left margin
-                    r: 10, // Right margin
-                    t: 50, // Top margin
-                    b: 10  // Bottom margin
-                },
-                showlegend: false,
-            };
-
-
-            // Render the pie chart inside the #pie-chart div
-            Plotly.newPlot('pie-chart', pieData, layout).then(() => {
-
-            // Event listener for clicking on the pie chart
-            const pieChart = document.getElementById('pie-chart');
-            pieChart.on('plotly_click', function(eventData) {
-                    const clickedLabel = eventData.points[0].label;
-                    if (clickedLabel === 'Other') {
-                        // Display the sources that were grouped into "Other"
-                        displayOtherSources(otherSources);
-                    }
-                });
-            });
-        } else {
-            // Display an error message if no data is available
-            document.getElementById('pie-chart-container').innerHTML += '<p>Pie chart could not be loaded.</p>';
-        }
+        generatePieChart(locationCount, 'pie-chart-location', 'other-sources-container-location', 'Locations');
     } catch (error) {
-        // Log any errors that occur
-        console.error('Error rendering pie chart:', error);
-        document.getElementById('pie-chart-container').innerHTML += '<p>Error loading pie chart.</p>';
+        console.error('Error rendering location pie chart:', error);
+        document.getElementById('pie-chart-container-location').innerHTML += '<p>Error loading pie chart location.</p>';
     }
-});
+}
+
+// Function to create pie chart for domain
+function createPieChartDomain(documents) {
+    try {
+        const domainCount = {};
+        documents.forEach(doc => {
+            const domain = doc['domain'];
+            domainCount[domain] = (domainCount[domain] || 0) + 1;
+        });
+
+        generatePieChart(domainCount, 'pie-chart-domain', 'other-sources-container-domain', 'Domains');
+    } catch (error) {
+        console.error('Error rendering domain pie chart:', error);
+        document.getElementById('pie-chart-container-domain').innerHTML += '<p>Error loading pie chart domain.</p>';
+    }
+}
+
+// Generic function to generate pie charts
+// Fonction générique pour générer les graphiques en secteurs
+function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
+    let modifiedLabels = [];
+    let modifiedSizes = [];
+    let otherSize = 0;
+    let otherSources = []; // Tableau pour stocker les sources groupées dans "Autres"
+    
+    // Calculer le nombre total de documents
+    const totalDocuments = Object.values(dataCount).reduce((sum, value) => sum + value, 0);
+
+    // Regrouper dans "Autres" si plus de 15 documents
+    const shouldGroupOthers = totalDocuments > 15;
+
+    Object.entries(dataCount).forEach(([label, size]) => {
+        if (shouldGroupOthers && size <= 2) {
+            otherSize += size;
+            otherSources.push(label);
+        } else {
+            modifiedLabels.push(label);
+            modifiedSizes.push(size);
+        }
+    });
+
+    if (otherSize > 0 && shouldGroupOthers) {
+        modifiedLabels.push('Other (2 or less documents)');
+        modifiedSizes.push(otherSize);
+    }
+
+    const titleText = `${titlePrefix} ${totalDocuments} documents`;
+
+    const pieData = [{
+        type: 'pie',
+        values: modifiedSizes,
+        labels: modifiedLabels,
+        textinfo: 'value',
+        hoverinfo: 'label+value',  // Affiche l'étiquette et la valeur dans l'info-bulle
+        automargin: true
+    }];
+
+    const layout = {
+        title: titleText,
+        height: 300,
+        width: '100%',
+        margin: {
+            l: 10,
+            r: 10,
+            t: 50,
+            b: 10
+        },
+        showlegend: false,
+        hoverlabel: {
+            bgcolor: 'rgba(255, 255, 255, 0.8)',  // Fond blanc semi-transparent
+            font: {
+                size: 14,  // Ajuste la taille de la police
+                family: 'Arial, sans-serif',  // Police de l'info-bulle
+            },
+            align: 'center',  // Aligne le texte au centre
+            namelength: -1,  // Permet de ne pas couper le texte du label
+            borderpad: 10,   // Ajoute un espacement intérieur pour l'info-bulle
+        },
+    };
+
+    Plotly.newPlot(chartId, pieData, layout).then(() => {
+        const pieChart = document.getElementById(chartId);
+        pieChart.on('plotly_click', function(eventData) {
+            const clickedLabel = eventData.points[0].label;
+            if (clickedLabel === 'Other (2 or less documents)') {
+                displayOtherSources(otherSources, containerId);
+            }
+        });
+    });
+}
+
 
 // Function to display the sources in the "Other" section
-function displayOtherSources(sources) {
-    const otherSourcesContainer = document.getElementById('other-sources-container');
+function displayOtherSources(sources, containerId) {
+    const otherSourcesContainer = document.getElementById(containerId);
     otherSourcesContainer.style.display = 'block'; // Make the container visible
     otherSourcesContainer.innerHTML = '';  // Clear any previous content
 
@@ -105,7 +123,6 @@ function displayOtherSources(sources) {
             list.appendChild(listItem);
         });
 
-        // Append the list to the container
         otherSourcesContainer.appendChild(list);
     }
 }
