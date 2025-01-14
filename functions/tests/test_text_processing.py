@@ -149,7 +149,10 @@ class TestNLPFunctions(unittest.TestCase):
              {"simple": 1, "tracking": 1, "functionality": 1}),
             ("No target words here.", 
              ["word", "target"], 
-             {"word": 0, "target": 1})
+             {"word": 1, "target": 1}),
+            ("Le gouvernement vient de publier au journal officiel de la République la liste des 126 communes françaises "'prioritaires'" quant aux effets de l'érosion du littoral. En Occitanie, Collioure, Fleury-d'Aude et Villeneuve-lès-Maguelone sont les trois seules concernées pour l'instant. Le samedi 30 avril, la liste des 126 communes françaises dites "'prioritaires'" concernant les effets de l'érosion du littoral a été publiée au Journal Officiel de la République (sachant qu'à terme 864 communes sont potentiellement menacées par le recul du trait de côte). Trois sont situées en région Occitanie : Collioure dans les Pyrénées-Orientales, Fleury-d'Aude et Villeneuve-lès-Maguelone dans l'Hérault.", 
+             ["trait de côte"],
+             {"trait de côte": 1})
         ]
 
         # Test each case
