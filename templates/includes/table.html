@@ -36,7 +36,7 @@
 
             {% if doc.get("semantic_score") %}
             <br>
-            s: {{ doc.get('semantic_score', '') }}
+            s: {{ (doc.get('semantic_score', '') * 10) | round(4) }}
             {% endif %}
         </td>
         <td class="freq_words">
