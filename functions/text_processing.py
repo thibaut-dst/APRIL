@@ -217,25 +217,30 @@ def word_tracking(spacy_doc: Doc, targets: list[str]) -> dict:
     Track and count occurrences of specific target words within a spaCy Doc object.
     
     Parameters:
-        targets (list[str]): List of target words to track in the text.
+        targets (list[str]): List of target words/phrases to track in the text.
         spacy_doc (Doc): A spaCy Doc object with processed text.
         
     Returns:
-        dict: Dictionary with target words as keys and their respective occurrence counts as values.
+        dict: Dictionary with target words/phrases as keys and their respective occurrence counts as values.
     """
     try:
         if not isinstance(spacy_doc, Doc):
             logging.error("Input is not a valid spaCy Doc object.")
             raise ValueError("Input is not a valid spaCy Doc object.")
 
+        # Initialize count dictionary for all target words/phrases
         word_count = {word: 0 for word in targets}
-    
-        # Tokenize the text and check for specific words
-        for token in spacy_doc:
-            if not token.is_punct:  # Exclude punctuation
-                if token.lemma_.lower() in word_count:  # Check if the word is in our list
-                    word_count[token.lemma_.lower()] += 1
-        return word_count
+
+        # Convert the entire spacy_doc back to lowercase text for matching
+        text = spacy_doc.text.lower()
+
+        # Track occurrences of both single words and phrases
+        for target in targets:
+            # Count occurrences of the target word/phrase in the text
+            count = text.count(target.lower())
+            word_count[target] = count
+
+        return word_count    
     except Exception as e:
         logging.error(f"Error on word tracking: {e}")
         raise SystemExit(f"Error on word tracking: {e}")
