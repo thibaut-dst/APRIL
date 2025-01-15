@@ -39,9 +39,9 @@ function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
     let otherSize = 0;
     let otherSources = []; // Sources groupées dans "Other"
     
-    // Calculer le nombre total de documents
-    const totalDocuments = Object.values(dataCount).reduce((sum, value) => sum + value, 0);
-
+    // Calculer le nombre total de domaines ou de localisations distincts
+    const distinctCount = Object.keys(dataCount).length; // Nombre de clés uniques
+    
     // Trier les labels par taille décroissante
     const sortedData = Object.entries(dataCount).sort((a, b) => b[1] - a[1]);
 
@@ -70,7 +70,7 @@ function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
         }
     }
 
-    const titleText = `${titlePrefix} (${totalDocuments} documents)`;
+    const titleText = `${titlePrefix} (${distinctCount} different ${titlePrefix.toLowerCase()})`; // Afficher le nombre distincts (domains ou locations)
 
     const pieData = [{
         type: 'pie',
@@ -83,8 +83,8 @@ function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
 
     const layout = {
         title: titleText,
-        height: Math.min(400 + totalDocuments * 0.1, 800), // Ajuste la hauteur pour grands ensembles
-        width: 600,
+        height: Math.min(250 + distinctCount * 0.05, 500), // Ajuster la hauteur pour plus de flexibilité
+        width: 500, // Réduire la largeur du graphique
         margin: {
             l: 10,
             r: 10,
@@ -95,7 +95,7 @@ function generatePieChart(dataCount, chartId, containerId, titlePrefix) {
         hoverlabel: {
             bgcolor: 'rgba(255, 255, 255, 0.8)',
             font: {
-                size: 14,
+                size: 12, // Réduire la taille du texte
                 family: 'Arial, sans-serif',
             },
             align: 'center',
