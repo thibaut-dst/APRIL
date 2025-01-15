@@ -16,7 +16,7 @@ The APRIL project analyzes how the population of the Occitanie region of souther
 
 Or pull the pre-built image:
 
-```docker pull registry.mde.epf.fr/april-web:1.1```
+```docker pull registry.mde.epf.fr/april-web:1.0```
 
 3. Ensure the docker-compose.yml file uses the correct version (1.1).
 
@@ -37,7 +37,7 @@ docker compose up -d
 
 Once docker containers are runing, access the application at:
 
-```http://127.0.0.1:5000/```
+```http://127.0.0.1```
 
 For more details, refer to the [project documentation](https://github.com/thibaut-dst/APRIL/wiki).
 
